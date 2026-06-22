@@ -7,12 +7,13 @@
 
 ## Základní datové typy
 
+* [TODO Object](zakladni-datove-typy/todo-object.md)
+* [TODO Primitivní datové typy](zakladni-datove-typy/todo-primitivni-datove-typy.md)
+* [TODO String, StringBuilder](zakladni-datove-typy/todo-string-stringbuilder.md)
+* [TODO Datum a čas](zakladni-datove-typy/todo-datum-a-cas.md)
+
 ***
 
-* [TODO Primitivní datové typy](todo-primitivni-datove-typy.md)
-* [TODO Object](todo-object.md)
-* [TODO String, StringBuilder](todo-string-stringbuilder.md)
-* [TODO Datum a čas](todo-datum-a-cas.md)
 * [TODO Testování aplikací](todo-testovani-aplikaci.md)
 
 ## Pole, Kolekce
@@ -24,11 +25,6 @@
 * [TODO Comparable](pole-kolekce/todo-comparable.md)
 * [TODO Comparator](pole-kolekce/todo-comparator.md)
 
-***
-
-* [TODO Výjimky](todo-vyjimky.md)
-* [TODO Generické datové typy](todo-genericke-datove-typy.md)
-
 ## Java Stream API
 
 * [Lambda výrazy, Reference na funkce](java-stream-api/lambda-vyrazy-reference-na-funkce.md)
@@ -39,12 +35,12 @@
 * [JSA - Množinové a pokročilé operace](java-stream-api/jsa-mnozinove-a-pokrocile-operace.md)
 * [JSA - Best Practices](java-stream-api/jsa-best-practices.md)
 
+***
+
+* [TODO Výjimky](todo-vyjimky.md)
+* [TODO Generické datové typy](todo-genericke-datove-typy.md)
+
 ## Soubory
 
 * [TODO Práce se souborovým systémem](soubory/todo-prace-se-souborovym-systemem.md)
 * [TODO Práce se soubory](soubory/todo-prace-se-soubory.md)
-* [Page 1](soubory/page-1.md)
-
-***
-
-* [Page](page.md)
