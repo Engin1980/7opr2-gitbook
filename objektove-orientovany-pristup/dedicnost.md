@@ -2,7 +2,7 @@
 
 Dědičnost je jeden ze základních principů objektově orientovaného paradigmatu. Vychází z předpokladu, že mezi objekty neexistují jen klasické relace reprezentující využívání jednoho objektu druhým (auto má motor, předmět má studenty), ale umožňuje také relace vycházející ze generalizace a specializace objektů - tzv. gen-spec vztah. Obecně lze pro skupinu objektů nalézt obecného předka (také se používá termín _nadtřída_, nebo _superclass_), který určitým způsobem zastřešuje chování svých potomků (zobecnění, generalizace); nebo naopak, pro určitou třídu nalézt skupinu potomků (_podtřída_, _subclass_), které blíže specifikují a rozvíjejí chování předka (specifikace). Příkladem může být například níže uvedená hierarchie.
 
-TODO Obrázek - Hierarchie dědičnosti
+![Hierarchie dědičnosti](../imgs/inheritance-hierarchy.svg)
 
 Je vidět, že dopravní prostředek jako obecný pojem zastřešuje všechno, co se hýbe a umí něco dopravovat. Déle jsou prostředky rozlišeny podle prostředí, ve kterém se pohybují; a hierarchie pokračuje dále, až u silničních prostředků jsou uvedeny konkrétní typy. Při tvorbě hierarchie je třeba si uvědomit několik bodů:
 
@@ -10,6 +10,15 @@ Je vidět, že dopravní prostředek jako obecný pojem zastřešuje všechno, c
 * Zejména vyšší úrovně hierarchie reprezentují obecné pojmy, ne konkrétní předměty (na instanci dopravního prostředku, který by zároveň nepatřil do některé z nižších kategorií, nemůžete sáhnout), nižší úrovně již reprezentují typicky odkazy na konkrétní objekty reálného světa (osobní auta můžeme dále dělit na SUV/hatchback/…, ale již na konkrétní osobní auto si sáhnout můžete).
 * Hierarchie a vztahy objektů záleží při tvorbě aplikace čistě na programátorovi, který sám usoudí, jakým způsobem bude hierarchie vypadat. Pokud však bude utvořena hierarchie nesprávně, dostanete se do konfliktu při snaze splnit první bod.
 * V různých pohledech (např. různých aplikacích) může hierarchie vypadat odlišně.
+
+Podívejme se ještě jednou na stejný, mírně upravený obrázek:
+
+![Hierarchie dědičnosti s proměnnými](../imgs/inheritance-hierarchy-extended.svg)
+
+Je vidět, že při průchodu stromem k listům jdeme k více specifickým třídám a tedy máme více specifické vlastnost - například `Auto` má počet kol, ale `Pozemní` vozidlo ještě ne, protože může být pásové. Oproti tomu ale `Auto` má i `rychlost` získanou od `Dopravni prostredek` pomocí dědičnosti, protože při průchodu ke specifičtějším typům se generičtější definice neztrácejí.
+
+{% hint style="info" %}  Povšimněte si, že ale některé vlastosti definované u určitých tříd lze přenést na jiné třídy - například maximální náklad může mít `Auto` i `Letadlo`. Znamenalo by to, že `Auto` má být potomek letadla?
+Nikoliv. Je třeba vztahy konstruovat opravdu pečlivě a nehledat ve společných atributech automaticky dědičnost. Pokud bychom opravdu potřebovali říci, že oba tyto typy mají `max_náklad_kg` ve stejném významu, mohli bychom například využít rozhraní `Nákladní`, které bychom k daným třídám přiřadili. {% endhint %} 
 
 Různé programovací jazyky se k implementaci dědičnosti mohou stavět trochu odlišným způsobem. V jazyce Java je implementována tzv. jednoduchá dědičnost tříd. To znamená, že dědičnost zahrnuje pouze třídy a platí, že každá třída má maximálně jednoho předka. Navíc, v Javě existuje předek, který je nejvyšší třídou a obecným předkem všech ostatních tříd - i pokud své třídě nespecifikujete žádného předka, bude vaše třída dědit automaticky z této třídy. Tato třída se nazývá _Object_ (plným názvem _java.lang.Object_). Všechny ostatní třídy jsou tedy přímými nebo nepřímými potomky tohoto typu.
 
