@@ -1,4 +1,4 @@
-# TODO Třída, Objekt
+# Základní pojmy
 
 ## Základní pojmy
 
@@ -16,7 +16,7 @@ Ve dvou různých aplikacích se mohou tyto pohledy lišit. Záleží vždy na p
 
 Velmi často se stane, že lze skupina objektů zařadit pod nějaký pojem, který ji reprezentuje. Taková skupina objektů má typicky určité společné vlastnosti a také společné chování. Příkladem takové skupiny objektů mohou být (vzhledem k výše uvedenému) například auta (skupina aut zaparkovaných před domem) nebo lidé (opět skupina fyzických osob). Obě tyto skupiny mají své společné vlastnosti a chování - společnou vlastností aut může být výrobní číslo, barva, maximální povolená rychlost, množství PHM v nádrži a podobně; jejich společným chováním je, že mohou jezdit a přepravovat jiné objekty z jednoho místa na jiné. Obdobně, lidé mají jako společné vlastnosti jméno, datum narození, výšku nebo barvu očí, a poskytují společné chování - mohou mezi sebou komunikovat, vykonávat nějaké činnosti a podobně.
 
-Pro takovou skupinu objektů lze vytvořit určitou definici (nebo šablonu), která bude říkat, jaké vlastnosti a jaké chování každý objekt z této skupiny umožňuje. Tato šablona v OOP vystupuje jako *datový typ*. Příkladem datového typu pro auta na parkovišti bude právě typ `auto`, který bude říkat, že všechna auta na parkovišti mají barvu a výrobní číslo.
+Pro takovou skupinu objektů lze vytvořit určitou definici (nebo šablonu), která bude říkat, jaké vlastnosti a jaké chování každý objekt z této skupiny umožňuje. Tato šablona v OOP vystupuje jako _datový typ_. Příkladem datového typu pro auta na parkovišti bude právě typ `auto`, který bude říkat, že všechna auta na parkovišti mají barvu a výrobní číslo.
 
 Objekt je potom chápán jako **instance** datového typu. Sousedovo auto bude instancí datového typu `auto`, a protože datový typ `auto` říká, že všechna auta mají barvu a výrobní číslo, i sousedovo auto bude mít nějakou barvu (například červenou) a nějaké výrobní číslo.
 
@@ -80,11 +80,11 @@ Jak již je z výše uvedeného zřejmé, programátor si v jazyce Java může v
 * proměnné, které reprezentují daný stav objektu (např. hmotnost je 400 kg, nebo délka je 3 metry) a
 * metody, které reprezentují operace proveditelné s objektem (například „spočítej svůj objem" nebo „převeď kilogramy na tuny".
 
-![Proměnné a metody v objektu](../imgs/encapsulation.png)
+![Proměnné a metody v objektu](../.gitbook/assets/encapsulation.png)
 
 ### Instanční proměnná
 
-Instanční proměnná je vlastně klasická proměnná, která je ale definována pro instanci třídy a její hodnota je dostupná kdekoliv uvnitř této instance. V různých zdrojích se těmto definicí říká také vlastnosti třídy, atributy třídy nebo pole třídy (z anglického *field*). Protože ale tyto pojmy mohou být v konfliktu s jinými pojmy týkajícími se OOP, bude dál používán pojem instanční proměnné.
+Instanční proměnná je vlastně klasická proměnná, která je ale definována pro instanci třídy a její hodnota je dostupná kdekoliv uvnitř této instance. V různých zdrojích se těmto definicí říká také vlastnosti třídy, atributy třídy nebo pole třídy (z anglického _field_). Protože ale tyto pojmy mohou být v konfliktu s jinými pojmy týkajícími se OOP, bude dál používán pojem instanční proměnné.
 
 Minimální definice každé instanční proměnné je shodná s definicí klasické proměnné například ve funkci - tedy musí mít datový typ a název proměnné.
 
@@ -370,6 +370,6 @@ public class Opora {
 
 Výše uvedený zdrojový kód definuje třídu `Opora` v balíčku `eng`. Navíc připojuje všechny třídy z balíčku `java.util` a třídu `eng.opora.Demo`. Díky tomu lze využívat jak odkaz přes plný název třídy (`eng.opora.Demo` - funguje vždy), tak pouze název třídy (`Demo` - funguje právě kvůli výše uvedenému příkazu `import`).
 
-**Poznámka.** Pouze zajímavost. Příkaz import má ještě jednu syntaxi. Pomocí sekvence `import static` plný_název_třídy_a_statické_metody lze připojit přímo statickou metodu pro volání bez tečkové notace a prefixu názvu třídy. Lze navíc využít opět i hvězdičky namísto názvu metody. Tehdy se připojí všechny veřejné statické metody třídy. Například pro kód v kapitole 2.5 lze vložit kód „`import static eng.opora.Demo.*;`". Potom lze kdekoliv v takové třídě volat „`convertMPStoKPH()`" a kód bude fungovat a vyvolá statickou metodu třídy `eng.opora.Demo`.
+**Poznámka.** Pouze zajímavost. Příkaz import má ještě jednu syntaxi. Pomocí sekvence `import static` plný\_název\_třídy\_a\_statické\_metody lze připojit přímo statickou metodu pro volání bez tečkové notace a prefixu názvu třídy. Lze navíc využít opět i hvězdičky namísto názvu metody. Tehdy se připojí všechny veřejné statické metody třídy. Například pro kód v kapitole 2.5 lze vložit kód „`import static eng.opora.Demo.*;`". Potom lze kdekoliv v takové třídě volat „`convertMPStoKPH()`" a kód bude fungovat a vyvolá statickou metodu třídy `eng.opora.Demo`.
 
 Na závěr je třeba zmínit, že určité třídy jsou dostupné programátorovi ihned, aniž by musel používat `import`. Kompilátor totiž každé třídě automaticky připojí import balíčku `java.lang`.

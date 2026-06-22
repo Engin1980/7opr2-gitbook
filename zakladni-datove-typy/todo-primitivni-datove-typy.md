@@ -16,7 +16,7 @@ Java nabízí základní celočíselné datové typy _byte_, _short_, _int_ a _l
 
 Ve zdrojovém kódu je zapsané celé číslo vždy chápáno jako datový typ _int_, při přiřazení konstanty do proměnné se ale automaticky převádí na odpovídající datový typ a kontroluje se jeho rozsah. Stejně tak všechny základní matematické operace se provádějí nad datovým typem _int_, není-li specifikováno jinak.
 
-Speciálními prefixy[\[11\]](https://word2md.com/#footnote-11) nebo postfixy lze ale docílit odlišného chování, kdy můžeme explicitně říci, že číslo je _long_, případně jiné změny - že číslo je v jiné číselné soustavě. Možné varianty jsou:
+Speciálními prefixy nebo postfixy lze ale docílit odlišného chování, kdy můžeme explicitně říci, že číslo je _long_, případně jiné změny - že číslo je v jiné číselné soustavě. Možné varianty jsou:
 
 * Postfix _l_ (malé písmeno L) nebo _L_ uvádí, že číslo je _long_.
 * Prefix 0 (nula) znamená, že číslo je v osmičkové soustavě (lze použít pouze cifry 01234567).
@@ -68,7 +68,7 @@ BUILD SUCCESSFUL (total time: 1 second)
 Výsledek výpočtu se nevejde do rozsahu typu _int_, díky tomu **operace nad&#x20;**_**int**_**&#x20;přetečou přes rozsah typu a program pokračuje dále bez chyby a vrátí špatný výsledek.**
 
 {% hint style="info" %}
-Zápis velkých čísel s oddělovači tisíců pomocí podtržítka je novou vlastností jazyka Java 7 a v dřívějších verzích nebude fungovat.
+Zápis velkých čísel s oddělovači tisíců pomocí podtržítka je vlastností jazyka Java 7 a v dřívějších verzích nebude fungovat.
 {% endhint %}
 
 ### Reálné datové typy
