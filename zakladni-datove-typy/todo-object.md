@@ -6,7 +6,7 @@ V kapitole 3 byla zopakována, či upřesněna problematika dědičnosti tříd.
 
 Nejvyšším předkem, tj. nejvyšší třídou v hierarchii dědičnosti, je třída _System.Object_. Tato třída funguje jako nejvyšší předek - do instance této třídy je tedy na základě vztahu generalizace-specializace (kapitola 3.2) možno vložit instanci libovolné možné třídy. Je tomu tak proto, že **každá třída dědí ze třídy&#x20;**_**Object**_**, i pokud nemá žádnou dědičnost specifikovánu programátorem.** Proto, pokud programátor u vlastní třídy neuvede explicitně dědění z jiné třídy pomocí klíčového slova _extends_, automaticky se doplní _extends Object_ a třída tak bude v hierarchii dědičnosti zahrnuta jako přímý potomek třídy _Object_.
 
-Díky dědičnosti získávají všechny třídy implementaci některých metod, které mohou dále přetížit. Některé metody se věnují vícevláknovému[\[12\]](https://word2md.com/#footnote-12) programování. Některé z nich lze však velmi často využít i při implementaci vlastních tříd a proto musí být představeny.
+Díky dědičnosti získávají všechny třídy implementaci některých metod, které mohou dále přetížit. Některé metody se věnují vícevláknovému programování (mimo rozsah této opory). Některé z nich lze však velmi často využít i při implementaci vlastních tříd a proto musí být představeny.
 
 ## Metody třídy Object
 
@@ -14,7 +14,7 @@ Díky dědičnosti získávají všechny třídy implementaci některých metod,
 
 Metoda _toString()_ je využívána při potřebě reprezentace instance třídy jako řetězce. Kdykoliv je třeba reprezentovat instanci jako řetězec, vykoná se tato metoda a vrátí se její výsledek.
 
-Základní implementace ve třídě _Object_ vrací typ, od kterého je vytvořena instance, doplněný o číselný kód získaný z funkce _hashCode()_[_\[13\]_](https://word2md.com/#footnote-13). Tato informace samozřejmě programátorovi typicky moc informací o instanci neřekne. Navíc - výsledek volání této metody využívá nejen programátorské prostředí, ale i některé nástroje realizující zobrazení dat uživateli a tehdy bychom uživateli zobrazili nějaká podivná data.
+Základní implementace ve třídě _Object_ vrací typ, od kterého je vytvořena instance, doplněný o číselný kód získaný z funkce _hashCode()_ (tato funkce bude představena později; zatím si pod ní představte nějaké náhodné číslo). Tato informace samozřejmě programátorovi typicky moc informací o instanci neřekne. Navíc - výsledek volání této metody využívá nejen programátorské prostředí, ale i některé nástroje realizující zobrazení dat uživateli a tehdy bychom uživateli zobrazili nějaká podivná data.
 
 ```java
 Car c = new Car();
@@ -214,7 +214,11 @@ public class Car {
 
 Výše uvedený příklad ukazuje nejjednodušší překrytí metody _hashCode()_ pro výše třídu _Car_. Pokud víme, že chceme porovnávat hodnoty pouze podle jednoho atributu, prostě vrátíme hashCode tohoto atributu.
 
-**Poznámka.** Stejně jako u metody toString(), i u metod hashCode() a equals() můžeme využít možnosti nechat si kód vygenerovat. Opět pomocí nástroje „Insert code" zvolíme, které z metod chceme generovat a na základě jakých vlastností chceme definovat shodnost objektu a IDE NetBeans nám odpovídající metody vytvoří samo. Následující kód ukazuje automaticky generovaný kód těchto metod pro třídu Car.
+{% hint style="info" %}
+Stejně jako u metody toString(), i u metod hashCode() a equals() můžeme využít možnosti nechat si kód vygenerovat. Průvodce v IDE nám většinou dá na výběr, které třídní proměnné chceme zahrnout do výpočtu `hashcode()`a `equasl()` a odpovídající kód vytvoří.
+
+Následující kód ukazuje automaticky generovaný kód těchto metod pro třídu Car.
+{% endhint %}
 
 ```java
 public boolean equals(Object obj) {
