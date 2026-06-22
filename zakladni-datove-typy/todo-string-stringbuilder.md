@@ -117,7 +117,7 @@ Bližší informace o regulárních výrazech lze najít například na [www.reg
 
 Důležitou operací je porovnávání řetězců. **Řetězce v Javě nikdy nelze porovnávat pomocí operátoru ==.** V Javě operátor „==" slouží pro porovnání referencí mezi objekty, zjišťuje tedy, zda dvě proměnné ukazují do paměti na stejné místo. U řetězců tento případ však velmi jednoduše nastat nemusí - pokud máme dvě proměnné, mohou ukazovat do paměti na různá místa, ale tyto místa mohou obsahovat stejný řetězec.
 
-![Řetězce a umístění v paměti](../imgs/string-in-memory.png)
+![Řetězce a umístění v paměti](../.gitbook/assets/string-in-memory.png)
 
 Pokud chceme jednoduše porovnat hodnoty proměnných na shodnost řetězců, využijeme funkci `equals()`, která vrací příznak true/false, zda jsou hodnoty v obou řetězcích shodné. Můžeme využít také funkce `equalsIgnoreCase()`, která porovná řetězce bez ohledu na malá/velká písmena.
 
