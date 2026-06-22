@@ -1,4 +1,4 @@
-# TODO Primitivní datové typy
+# Primitivní a wrapovací datové typy
 
 ## Primitivní datové typy
 
@@ -105,7 +105,7 @@ Primitivní typy, jak bylo zmíněno, nejsou o sobě třídami. Stojí mimo hier
 
 V jazyce Java je však někdy vhodné a někdy dokonce nutné používat doménu realizovanou pomocí těchto primitivních typů (tj. čísla, znaky, nebo příznaky true/false) jako objekty - instance tříd. Proto pro každý primitivní datový typ existuje obdobný typ, který je ale realizován jako třída a zabaluje - _wrapuje_ - tak původní primitivní typ.
 
-![Hierarchie wrapovacích typů pro primitivní typy](../imgs/wrapping-types.svg)
+![Hierarchie wrapovacích typů pro primitivní typy](../.gitbook/assets/wrapping-types.svg)
 
 Tyto typy oproti primitivním typům přinášejí několik výhod, přičemž ty aktuálně důležité pro nás jsou:
 

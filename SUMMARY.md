@@ -9,7 +9,7 @@
 
 ## Základní datové typy
 
-* [TODO Primitivní datové typy](zakladni-datove-typy/todo-primitivni-datove-typy.md)
+* [Primitivní a wrapovací datové typy](zakladni-datove-typy/todo-primitivni-datove-typy.md)
 * [TODO Object](zakladni-datove-typy/todo-object.md)
 * [TODO String, StringBuilder](zakladni-datove-typy/todo-string-stringbuilder.md)
 * [TODO Datum a čas](zakladni-datove-typy/todo-datum-a-cas.md)
