@@ -1,8 +1,10 @@
 # Table of contents
 
+* [Index](README.md)
+
 ## Objektově orientovaný přístup
 
-* [TODO Třída, Objekt](README.md)
+* [TODO Třída, Objekt](<README (1).md>)
 * [Dědičnost](objektove-orientovany-pristup/dedicnost.md)
 
 ## Základní datové typy
