@@ -174,12 +174,15 @@ Varianty ukazuje následující příklad.
 double primitiveDouble = 1241.51;
 Double wrappedDouble = 1241.51;
 String s;
+
 // primitivní datový typ
 s = Double.toString(primitiveDouble);
 s = "Hodnota je " + primitiveDouble;
+
 // wrapovací typ
 s = wrappedDouble.toString();
 s = "Hodnota je " + wrappedDouble;
+
 // Metoda println() má přetížení na primitivní typy
 // Není třeba nic přidávat
 System.out.println(primitiveDouble);
