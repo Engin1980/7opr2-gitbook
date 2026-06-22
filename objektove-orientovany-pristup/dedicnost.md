@@ -2,7 +2,7 @@
 
 Dědičnost je jeden ze základních principů objektově orientovaného paradigmatu. Vychází z předpokladu, že mezi objekty neexistují jen klasické relace reprezentující využívání jednoho objektu druhým (auto má motor, předmět má studenty), ale umožňuje také relace vycházející ze generalizace a specializace objektů - tzv. gen-spec vztah. Obecně lze pro skupinu objektů nalézt obecného předka (také se používá termín _nadtřída_, nebo _superclass_), který určitým způsobem zastřešuje chování svých potomků (zobecnění, generalizace); nebo naopak, pro určitou třídu nalézt skupinu potomků (_podtřída_, _subclass_), které blíže specifikují a rozvíjejí chování předka (specifikace). Příkladem může být například níže uvedená hierarchie.
 
-![Hierarchie dědičnosti](../imgs/inheritance-hierarchy.svg)
+![Hierarchie dědičnosti](../.gitbook/assets/inheritance-hierarchy.svg)
 
 Je vidět, že dopravní prostředek jako obecný pojem zastřešuje všechno, co se hýbe a umí něco dopravovat. Déle jsou prostředky rozlišeny podle prostředí, ve kterém se pohybují; a hierarchie pokračuje dále, až u silničních prostředků jsou uvedeny konkrétní typy. Při tvorbě hierarchie je třeba si uvědomit několik bodů:
 
@@ -13,12 +13,13 @@ Je vidět, že dopravní prostředek jako obecný pojem zastřešuje všechno, c
 
 Podívejme se ještě jednou na stejný, mírně upravený obrázek:
 
-![Hierarchie dědičnosti s proměnnými](../imgs/inheritance-hierarchy-extended.svg)
+![Hierarchie dědičnosti s proměnnými](../.gitbook/assets/inheritance-hierarchy-extended.svg)
 
 Je vidět, že při průchodu stromem k listům jdeme k více specifickým třídám a tedy máme více specifické vlastnost - například `Auto` má počet kol, ale `Pozemní` vozidlo ještě ne, protože může být pásové. Oproti tomu ale `Auto` má i `rychlost` získanou od `Dopravni prostredek` pomocí dědičnosti, protože při průchodu ke specifičtějším typům se generičtější definice neztrácejí.
 
-{% hint style="info" %}  Povšimněte si, že ale některé vlastosti definované u určitých tříd lze přenést na jiné třídy - například maximální náklad může mít `Auto` i `Letadlo`. Znamenalo by to, že `Auto` má být potomek letadla?
-Nikoliv. Je třeba vztahy konstruovat opravdu pečlivě a nehledat ve společných atributech automaticky dědičnost. Pokud bychom opravdu potřebovali říci, že oba tyto typy mají `max_náklad_kg` ve stejném významu, mohli bychom například využít rozhraní `Nákladní`, které bychom k daným třídám přiřadili. {% endhint %} 
+{% hint style="info" %}
+Povšimněte si, že ale některé vlastosti definované u určitých tříd lze přenést na jiné třídy - například maximální náklad může mít \`Auto\` i \`Letadlo\`. Znamenalo by to, že \`Auto\` má být potomek letadla? Nikoliv. Je třeba vztahy konstruovat opravdu pečlivě a nehledat ve společných atributech automaticky dědičnost. Pokud bychom opravdu potřebovali říci, že oba tyto typy mají \`max\_náklad\_kg\` ve stejném významu, mohli bychom například využít rozhraní \`Nákladní\`, které bychom k daným třídám přiřadili.
+{% endhint %}
 
 Různé programovací jazyky se k implementaci dědičnosti mohou stavět trochu odlišným způsobem. V jazyce Java je implementována tzv. jednoduchá dědičnost tříd. To znamená, že dědičnost zahrnuje pouze třídy a platí, že každá třída má maximálně jednoho předka. Navíc, v Javě existuje předek, který je nejvyšší třídou a obecným předkem všech ostatních tříd - i pokud své třídě nespecifikujete žádného předka, bude vaše třída dědit automaticky z této třídy. Tato třída se nazývá `Object` (plným názvem `java.lang.Object`). Všechny ostatní třídy jsou tedy přímými nebo nepřímými potomky tohoto typu.
 
@@ -359,9 +360,19 @@ Jak je vidět, chceme-li zavolat implementaci předka v potomkovi, musíme tak u
 
 Vidíme, že v předchozím příkladu se soubory máme jako nejvyšší typ „nějaký soubor", který řeší obecně to, že data do souboru půjdou nějak ukládat a načítat. Tento samotný typ vlastně nemusí vůbec vědět, jakým způsobem budou tyto operace prováděny, dokonce pro obecný soubor **tyto operace nelze vůbec specifikovat**.
 
-Stejně jako v našem příkladu s třídami `Vehicle` a `Car`. U auta můžeme[\[8\]](https://word2md.com/#footnote-8) alespoň zhruba specifikovat hodnotu akcelerace, u třídy `Vehicle` je to nemožné. Přesto ale pořád třída `Vehicle` může poskytovat smysluplně metody `setSpeed()` a `getSpeed()`, a případně i nějaké další. Lze si tedy všimnout, že třída samotná instance od třídy `Vehicle` existovat nemůže (neví, jak by akcelerovala), ale třída může definovat funkcionalitu, kterou potom mohou využívat potomci (již zmiňované metody `getSpeed()` a `setSpeed()`). Dokonce může definovat, že potomci budou nabízet nějakou funkcionalitu, ví, jak bude moci vypadat volání, ale netuší, jak bude takováto funkcionalita realizována (metoda `accelerated()`). Takto nějak lze popsat abstraktní třídu.
+Stejně jako v našem příkladu s třídami `Vehicle` a `Car`. U auta můžeme (alespoň zhruba) specifikovat hodnotu akcelerace, u třídy `Vehicle` je to nemožné. Přesto ale pořád třída `Vehicle` může poskytovat smysluplně metody `setSpeed()` a `getSpeed()`, a případně i nějaké další. Lze si tedy všimnout, že třída samotná instance od třídy `Vehicle` existovat nemůže (neví, jak by akcelerovala), ale třída může definovat funkcionalitu, kterou potom mohou využívat potomci (již zmiňované metody `getSpeed()` a `setSpeed()`). Dokonce může definovat, že potomci budou nabízet nějakou funkcionalitu, ví, jak bude moci vypadat volání, ale netuší, jak bude takováto funkcionalita realizována (metoda `accelerated()`). Takto nějak lze popsat abstraktní třídu.
 
 Abstraktní třída je běžná třída, která definuje běžnou funkcionalitu. Navíc ale může definovat metody, které ona sama neimplementuje, ale ví, že potomci tyto metody budou muset implementovat. Těmto metodám se říká _abstraktní_ metody, protože nemají tělo, pouze signaturu.
+
+{% hint style="info" %}
+V dobře postaveném modelu dědičnosti abstraktní třídu často poznáte tak, že u ní _nemá smysl vytvářet instanci_, protože by tato instance automaticky spadala do některého z potomků. Naopak, pokud se to stane (že je vhodné/třeba vytvořit instanci předka), je chvíle se zamyslet, zda je hierarchie dědičnosti navržena správně.
+
+Třeba v našem příkladu na začátku kapitoly nemá smysl dělat instanci od třídy `Dopravní prostředek`, protože jakákoliv jeho instance bude automaticky nějakým jeho potomkem. Naopak například od třídy `Pozemní` instanci chtít vytvořit můžeme, protože potřebujeme udělat například tank.
+{% endhint %}
+
+{% hint style="info" %}
+A pokud s předchozím tvrzením po zamyšlení nesouhlasíte, je to taky správně. Navržení hierarchie dědičnosti (a obecně tříd a vazeb mezi nim) je velmi závislé na modelu - na realitě, kterou chcete zachytit. Například pokud vím, že budu ve svém modelu potřebovat tanky, nebudu kvůli nim dělat instance třídy `Pozemní`, ale prostě na vhodné místo v hierarchii udělám novou třídu `Tank`.
+{% endhint %}
 
 Abstraktní metodu definujete pomocí klíčového slova `abstract` uvedeným před návratovým typem metody. Navíc - protože abstraktní metoda nedefinuje, jak se bude provádět, nemá tělo - za parametry metody nenásleduje blok kódu {}, ale pouze středník. Další vlastností je, že abstraktní metody **musí** implementovat potomek, proto abstraktní metody nemohou být soukromé (s modifikátorem `private`).
 
