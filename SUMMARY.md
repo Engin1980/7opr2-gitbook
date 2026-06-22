@@ -5,6 +5,7 @@
 ## Objektově orientovaný přístup
 
 * [TODO Třída, Objekt](<README (1).md>)
+* [Základní pojmy](objektove-orientovany-pristup/zakladni-pojmy.md)
 * [Dědičnost](objektove-orientovany-pristup/dedicnost.md)
 
 ## Základní datové typy
