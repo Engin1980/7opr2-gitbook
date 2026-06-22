@@ -1,4 +1,4 @@
-# TODO String, StringBuilder
+# String, StringBuilder
 
 #### Datový typ String
 
@@ -6,7 +6,7 @@ Základním datovým typem realizujícím práci s řetězcem je typ `String`. J
 
 Vytvoření proměnné obsahující řetězec je velmi jednoduché. Řetězce se v jazyce Java uzavírají do klasických (anglických) uvozovek.!**!**
 
-```
+```java
 String a = "první";
 String b = "b"; // uvozovky značí řetězec
 char c = 'b'; // apostrofy značí znak, nikoliv řetězec
@@ -25,29 +25,29 @@ Spojení dvou řetězců provedeme pomocí operátoru „+".
 
 Třída `String` dále obsahuje velké množství metod, které umožňují základní operace s řetězci. Nejběžnější funkce, které lze využít, ukazuje následující tabulka. Některé funkce pracují s indexy - `String` je chápán jako pole znaků (pozor ale, že nelze jej přímo přetypovat na pole znaků) a indexování se používá stejně, jako u polí - tedy první index má hodnotu 0, poslední index má hodnotu o jedna menší, než je délka řetězce.
 
-| Signatura funkce                                 | Popis                                                                                                                                             |
-| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| int length()                                     | Vrací délku řetězece.                                                                                                                             |
-| boolean isEmpty()                                | Vrací TRUE, pokud je řetězec prázdný (obsahuje hodnotu ""). Pozor - nelze volat u proměnných, které obsahují hodnotu null.                        |
-| String trim()                                    | Ořeže řetězec z obou stran o „bílé" znaky - mezery, tabulátory apod.                                                                              |
-| char charAt(int index)                           | Vrací znak na zadaném indexu.                                                                                                                     |
-| boolean startsWith(String prefix)                | Vrací true, pokud řetězec začíná na zadaný podřetězec.                                                                                            |
-| boolean endsWith(String sufix)                   | Vrací true, pokud řetězec končí na zadaný podřetězec.                                                                                             |
-| int indexOf(char znak)                           | Vrací index, na kterém je nalezen daný znak. Vyhledávání postupuje zleva doprava. Obsahuje přetížení, mj. i pro vyhledání podřetězce v řetězci.   |
-| Int lastIndexOf(char znak)                       | Vrací index, na kterém je nalezen daný znak. Vyhledávání postupuje zprava doleva. Obsahuje přetížení, mj. i pro vyhledávání podřetězce v řetězci. |
-| String substring(  int beginIndex, int endIndex) | Vrací podřetězec z řetězce mezi zadanými indexy.                                                                                                  |
-| String \[] split(String regex)                   | Rozdělí řetězec podle zadaného výrazu a vrací pole rozdělených řetězců.                                                                           |
-| String replace(  char oldChar, char newChar)     | Nahradí znak původního řetězce novým znakem.                                                                                                      |
+| Signatura funkce                                | Popis                                                                                                                                             |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| int length()                                    | Vrací délku řetězece.                                                                                                                             |
+| boolean isEmpty()                               | Vrací TRUE, pokud je řetězec prázdný (obsahuje hodnotu ""). Pozor - nelze volat u proměnných, které obsahují hodnotu null.                        |
+| String trim()                                   | Ořeže řetězec z obou stran o „bílé" znaky - mezery, tabulátory apod.                                                                              |
+| char charAt(int index)                          | Vrací znak na zadaném indexu.                                                                                                                     |
+| boolean startsWith(String prefix)               | Vrací true, pokud řetězec začíná na zadaný podřetězec.                                                                                            |
+| boolean endsWith(String sufix)                  | Vrací true, pokud řetězec končí na zadaný podřetězec.                                                                                             |
+| int indexOf(char znak)                          | Vrací index, na kterém je nalezen daný znak. Vyhledávání postupuje zleva doprava. Obsahuje přetížení, mj. i pro vyhledání podřetězce v řetězci.   |
+| Int lastIndexOf(char znak)                      | Vrací index, na kterém je nalezen daný znak. Vyhledávání postupuje zprava doleva. Obsahuje přetížení, mj. i pro vyhledávání podřetězce v řetězci. |
+| String substring( int beginIndex, int endIndex) | Vrací podřetězec z řetězce mezi zadanými indexy.                                                                                                  |
+| String \[] split(String regex)                  | Rozdělí řetězec podle zadaného výrazu a vrací pole rozdělených řetězců.                                                                           |
+| String replace( char oldChar, char newChar)     | Nahradí znak původního řetězce novým znakem.                                                                                                      |
 
 Povšimněte si, že u všech funkcí, které pracují se instancí řetězce, se vždy výsledek vrací jako nová hodnota funkce. Volání funkce proto nikdy nemění původní instanci (viz **string je neměnný** výše), ale vždy vytvoří novou, upravenou instanci. Proto nikdy nelze zavolat například:
 
-```
+```java
 a.replace('a', 'b');
 ```
 
-, protože výsledná hodnota se v původní proměnné **nezmění**. Následující kód ukazuje příklady volání funkcí na proměnnou typu `String`.
+protože výsledná hodnota se v původní proměnné **nezmění**. Následující kód ukazuje příklady volání funkcí na proměnnou typu `String`.
 
-```
+```java
 String a = "Seven";
 boolean jeNull = a == null; // pozor, test na null provádíme takto
 boolean jePrazdny = a.isEmpty(); // prázdný řetězec nemusí být null!
@@ -78,23 +78,14 @@ Výše uvedený kód dá následující výstup:
 
 ```
 S
-
 e
-
 v
-
 e
-
 n
-
 Ořezané: eve
-
 Nahrazené: Se7en
-
 Toto
-
 je
-
 věta.
 ```
 
@@ -102,13 +93,13 @@ Povšimněte si volání řádku s funkcí `replace()`. Opravdu, i když chceme 
 
 Je vhodné si také uvědomit, že samotný řetězec je chápán jako instance třídy `String`, proto i přímo nad řetězcem můžeme volat metody, například:
 
-```
+```java
 int delkaVety = "Toto je poměrně dlouhá věta".length();
 ```
 
 K funkcím třídy `String` ještě jedna velmi důležitá poznámka. Je třeba se věnovat pojmenovávání parametrů funkcí třídy `String` - některé funkce využívají parametry pojmenované jako `regex` (například funkce `split()`). Tyto funkce využívají jako parametry tzv. regulární výrazy - což je (zjednodušeně řečeno) pseudojazyk určeny pro definici obecného vzhledu řetězce. V této kapitole regulární výrazy vysvětleny nebudou, je však mít na paměti minimum - že určité znaky v regulárních výrazech mají speciální význam a nebudou běžně fungovat. Následuje velmi krátký příklad.
 
-```
+```java
 String data =
 "Ano. Takto jsem to řekl. Řekl jsem to jasně. Tak už to víte.";
 // korektně rozdělí sadu vět na slova
@@ -142,7 +133,7 @@ Pokud chceme jednoduše porovnat hodnoty proměnných na shodnost řetězců, vy
 
 Již byla zmíněna problematika neměnnosti řetězců. Její negativní dopad se velmi projeví při hromadném skládání řetězců. Kolik instancí proměnné `String` vytvoří následující příklad na řádku, kde se vytváří hodnota pro proměnnou `dohromady`?
 
-```
+```java
 String a = "Toto";
 String b = "je";
 String c = "sestavená";
@@ -154,8 +145,6 @@ System.out.println(dohromady);
 
 Celkem se vytvoří následující instance: „Toto „, „Toto je", „Toto je „, „Toto je sestavená", „Toto je sestavená „, „Toto je sestavená věta" a nakonec „Toto je sestavená věta." - a pouze tato poslední instance se předá do proměnné `dohromady`, ostatní proměnné (celkem 6) se předají garbage collectoru téměř ihned po vytvoření. Toto má samozřejmě značný negativní výkonnostní dopad.
 
-
-
 #### Datový typ StringBuilder
 
 Právě kvůli výše uvedené problematice existuje typ StringBuilder. Třída je, stejně jako `String`, v balíčku `java.lang`.
@@ -164,7 +153,7 @@ Oproti `String`u nenabízí takový komfort jako instance klasického řetězce 
 
 Vytvoření nové prázdné instance, stejně jako převedení existujícího řetězce do proměnné `StringBuilder` a převedení zpět, z instance `StringBuilder` na řetězec, je, s využitím konstruktoru a metody `toString()` velmi jednoduché.
 
-```
+```java
 StringBuilder a = new StringBuilder();
 // převod řetězce na StringBuilder
 StringBuilder b = new StringBuilder("první");
@@ -174,7 +163,9 @@ String s = b.toString();
 
 Je třeba si však vždy uvědomit, že `StringBuilder` a `String` jsou vzájemně nekompatibilní typy, takže je nelze například řetězit dohromady pomocí operátoru „+".
 
-**Poznámka**. V prostředí jazyka Java ještě existuje velmi podobná třída, nazvaná StringBuffer. Tato třída nabízí stejné metody jako StringBuilder, oproti němu je však bezpečná při použití vícevláknových operací, v důsledku je však o trochu pomalejší. My se problematice vícevláknových operací věnovat nebudeme, proto tato třída nebude dále vysvětlena.
+{% hint style="info" %}
+V prostředí jazyka Java ještě existuje velmi podobná třída, nazvaná `StringBuffer`. Tato třída nabízí stejné metody jako `StringBuilder`, oproti němu je však bezpečná při použití vícevláknových operací, v důsledku je však o trochu pomalejší. My se problematice vícevláknových operací věnovat nebudeme, proto tato třída nebude dále vysvětlena.
+{% endhint %}
 
 **Operace typu StringBuilder**
 
@@ -188,13 +179,13 @@ Třída `StringBuilder` také nabízí množství metod, většinu z nich orient
 | StringBuilder reverse()                             | Otočí pořadí znaků v řetězci.                                                                                                                                                                     |
 | StringBuilder replace(int start, int end, String s) | Vyjme řetězec mezi indexy _start_ (včetně) a _end_ (nevčetně) a vloží místo vyjmutého obsahu zadaný řetězec _s_.                                                                                  |
 
-Pozor na funkci _replace()_ - má stejný název, jako funkce u typu `String`, ale provádí zcela odlišnou operaci!
+Pozor na funkci `replace()` - má stejný název, jako funkce u typu `String`, ale provádí zcela odlišnou operaci!
 
 Všimněte si také, že všechny funkce vrací instanci `StringBuilder` - zde je to bohužel trochu matoucí. Všechny vrácené hodnoty jsou **instance stejné proměnné, která funkci vyvolala**. Hodnota se mění tedy přímo v proměnné, nad kterou se hodnota volá, a hodnot vrácených z těchto funkcí **si vůbec nemusíme všímat**.
 
-Nejčastější metodou je metoda _append_, která slouží pro sestavení řetězce. Výše uvedený problémový případ použití řetězce `String` lze přepsat pomocí třídy `StringBuilder`.
+Nejčastější metodou je metoda `append()`, která slouží pro sestavení řetězce. Výše uvedený problémový případ použití řetězce `String` lze přepsat pomocí třídy `StringBuilder`.
 
-```
+```java
 String a = "Toto";
 String b = "je";
 String c = "sestavená";
