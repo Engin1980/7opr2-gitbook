@@ -403,10 +403,32 @@ Nezapomeňte - od této třídy již nemůžete vytvořit instanci - nelze zavol
 
 Abstraktní třída je speciálním typem třídy, ale pořád se jedná o třídu - tedy v rámci dědičnosti můžete definovat pouze jednoho předka. Někdy ale nastane situace, kdy je vhodné mít předků více - například právě proto, že existuje skupina různých funkcionalit, které by měli implementovat (například datum by se mělo umět porovnat - fiktivní třída `Comparable`, mělo by se umět duplikovat - fiktivní třída `Cloneable` a ještě vypsat do řetězce - nějaká fiktivní třída definující operaci `toString()`). I kdyby byly tyto bloky realizovány jako samostatné třídy, stejně by je nebylo možno podědit do jednoho potomka. Proto existuje pojem rozhraní - _interface_.
 
-Rozhraní je v mnohém podobné jako abstraktní třída - může definovat proměnné a abstraktní metody, u metod však, stejně jako abstraktní třída, nemůže definovat tělo - pouze signaturu. Rozhraní však funguje tak, jak říká český význam tohoto slova - pouze říká „co bude možno volat a jak", ale už nemůže říkat „jak se bude daná operace provádět". Rozhraní již proto nemůže definovat (neabstraktní) metody, které obsahují kód k vykonání (tím se liší od abstraktních tříd). Protože v rozhraní nemůže žádná metoda obsahovat definovaný kód, neříká se metodám, že jsou abstraktní. Rozhraní tedy může definovat pouze:
+Rozhraní je v mnohém podobné jako abstraktní třída - může definovat proměnné (velmi omezeným  způsobem) a abstraktní metody; u metod však, stejně jako abstraktní třída, nemůže definovat tělo - pouze signaturu. Rozhraní však funguje tak, jak říká český význam tohoto slova - pouze říká „co bude možno volat a jak", ale už nemůže říkat „jak se bude daná operace provádět". Rozhraní již proto nemůže definovat (neabstraktní) metody, které obsahují kód k vykonání (tím se liší od abstraktních tříd). Protože v rozhraní nemůže žádná metoda obsahovat definovaný kód, neříká se metodám, že jsou abstraktní. Rozhraní tedy může definovat pouze:
 
-* Proměnné, které ale navíc musí mít explicitně definovanou výchozí hodnotu;
+* Proměnné, které ale navíc musí mít explicitně definovanou výchozí hodnotu, jedná se tedy vlastně interně o konstantní hodnoty;
 * Metody, které nesmí obsahovat vykonávané tělo - po parametrech se stejně jako abstraktní metody ukončují přímo středníkem.
+
+{% hint style="info" %}
+Od Java 8 může mít rozhraní i metodu, která má tělo - tzv "default" metodu. Od té chvíle všechny třídy implementující toto rozhraní metodu i její tělo přebírají a mohou vykonávat. Samozřejmě, pokud si třída udělá překrývající vlastní implementaci, chování "default" metody je skryto.<br>
+
+Default metoda může využívat pouze obecné členy tříd (tzn. to, co je definováno v typu `Object` (viz dále)) a členy, které definuje rozhraní samo.
+
+```java
+public interface WithKphSpeed {
+    /**
+     * Vrátí rychlost v km/h. Implementace je neznámá.
+     */
+    double getSpeedInKPH();
+
+    /**
+     * Vrátí rychlost v mph. Default metoda s tělem.
+     */
+    default double getSpeedInMPH() {
+        return getSpeedInKPH() * 0.621371;
+    }
+}
+```
+{% endhint %}
 
 Navíc - protože rozhraní definuje „jaká bude nabízená funkcionalita", tedy co bude možno volat, musí být členové deklarovaní v rámci rozhraní uvedeni s modifikátorem _package-private_ nebo `public`. Kdyby měli soukromého nebo chráněného člena, stejně by ho nikdo mimo implementující třídu nemohl volat. Na to pozor u definice proměnných uvnitř rozhraní - tyto proměnné jsou vždy viditelné v rámci balíčku (_package-private_) nebo všem (`public`) a nedodržují tak pravidlo, že třídní proměnné mají být soukromé a přistupovat se na ně má pomocí metod get/set.
 
@@ -449,9 +471,13 @@ public abstract class Vehicle implements Moveable {
 
 Výsek z výše uvedeného kódu ukazuje, jakým způsobem byla rozšířena deklarace třídy o implementaci rozhraní. Protože rozhraní specifikuje, že ve třídě také musí existovat implementace metody `isMoving()`, musíme do třídy tuto metodu s jejím kódem doplnit, aby šel zdrojový kód přeložit.
 
-**Poznámka:** Všimněte si odlišného použití slov - třída dědí třídu (klíčové slovo extends), ale třída implementuje rozhraní (klíčové slovo implements). Podle klíčových slov poznáte, zda je za ním uvedena třída, nebo rozhraní.
+{% hint style="info" %}
+Všimněte si odlišného použití slov - třída dědí třídu (klíčové slovo `extends`), ale třída implementuje rozhraní (klíčové slovo `implements`). Podle klíčových slov poznáte, zda je za ním uvedena třída, nebo rozhraní.
+{% endhint %}
 
-**Poznámka:** Implementace rozhraní se samozřejmě přenáší i v rámci dědičnosti. I potomci výše uvedené třídy Vehicle tak budou implementovat rozhraní Moveable.
+{% hint style="info" %}
+Implementace rozhraní se samozřejmě přenáší i v rámci dědičnosti. I potomci výše uvedené třídy Vehicle tak budou implementovat rozhraní Moveable.
+{% endhint %}
 
 Instanci třídy implementující rozhraní lze samozřejmě využít i v rámci gen-spec vztahu a proměnných. Můžeme tedy vytvořit proměnnou, jejímž typem bude právě _rozhraní_ a vložit do ní instanci třídy implementující rozhraní; a následně lze samozřejmě volat metody implementované daným rozhraním.
 
@@ -467,6 +493,8 @@ else
 {% endcode %}
 
 Ve výše uvedeném příkladu nemůžeme vytvořit instanci třídy `Vehicle` (třída `Vehicle` byla přeměněna na třídu abstraktní), takže vytvoříme instanci některého z jejich potomků, například instanci třídy `Car`. V rámci gen-spec vztahu můžeme uložit instanci třídy `Car` do proměnných typu `Vehicle` i rozhraní `Moveable`. Můžeme také vyvolat odpovídající metodu rozhraní.
+
+Na závěr k dědičnosti: Rozhraní může dědit od jiného rozhraní stejným způsobem, jako od sebe dědí třídy. Protože členové rozhraní nejsou `private`, dědí se vše. Protože rozhraní **dědí** od jiného rozhraní, používá se klíčové slovo `extends`. Rozhraní nemůže dědit od třídy.
 
 ## Finální členové tříd
 
