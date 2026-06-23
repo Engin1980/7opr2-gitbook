@@ -73,6 +73,10 @@ Vedle číselných primitivních datových typů existují ještě typy pro prá
 
 Pozor ale, že primitivní datové typy nejsou třídami, nechovají se jako klasické třídy; navíc, jejich názvy jsou klíčovými slovy jazyka Java. A ještě jedno omezení je v jazyce Java pro programátory - programátor si nemůže vytvořit vlastní primitivní datový typ, může pouze využívat ty již existující.
 
+### Rekord
+
+V javě se vyskytuje (od verze 16) ještě speciální typ _rekord_ - záznam. Představen bude až na konci kapitoly, protože pro odlišení třídy od záznamu potřebujeme znát informace o chování tříd a členech tříd.
+
 ## Členové datových typů
 
 Jak již je z výše uvedeného zřejmé, programátor si v jazyce Java může vytvářet vlastní třídy. Třída definuje vlastnosti a chování dané skupiny objektů, pro kterou je navržena - programátor tedy musí i specifikovat jaké vlastnosti a chování bude daná třída podporovat. Obecně se definicím uvnitř datových typů říká _členové datových typů_, nebo v Javě stačí _členové tříd_. V jazyce Java může mít třída pouze dva typy členů:
@@ -373,3 +377,75 @@ Výše uvedený zdrojový kód definuje třídu `Opora` v balíčku `eng`. Naví
 **Poznámka.** Pouze zajímavost. Příkaz import má ještě jednu syntaxi. Pomocí sekvence `import static` plný\_název\_třídy\_a\_statické\_metody lze připojit přímo statickou metodu pro volání bez tečkové notace a prefixu názvu třídy. Lze navíc využít opět i hvězdičky namísto názvu metody. Tehdy se připojí všechny veřejné statické metody třídy. Například pro kód v kapitole 2.5 lze vložit kód „`import static eng.opora.Demo.*;`". Potom lze kdekoliv v takové třídě volat „`convertMPStoKPH()`" a kód bude fungovat a vyvolá statickou metodu třídy `eng.opora.Demo`.
 
 Na závěr je třeba zmínit, že určité třídy jsou dostupné programátorovi ihned, aniž by musel používat `import`. Kompilátor totiž každé třídě automaticky připojí import balíčku `java.lang`.
+
+## Rekord
+
+Vedle běžných tříd nabízí Java od novějších verzí (Java 16+) i speciální konstrukci nazývanou `record`. Na první pohled vypadá podobně jako třída, ale její účel je užší a zaměřený na konkrétní typ použití.
+
+Record slouží k reprezentaci **neměnných datových struktur**, tedy objektů, které pouze nesou data a nemají složitou logiku. Typicky jde o tzv. „datové objekty“, kde nás zajímá obsah, nikoli chování.
+
+Základní definice recordu je velmi stručná:
+
+```java
+public record Osoba(String jmeno, int vek) { }
+```
+
+Tímto zápisem vznikne plnohodnotný typ, který obsahuje:
+
+* privátní finální pole,
+* konstruktor,
+* gettery (nazývané podle polí, např. `jmeno()`),
+* metody `equals`, `hashCode` a `toString`.
+
+To znamená, že všechen běžný boilerplate, který bychom museli psát u klasické třídy, se generuje automaticky.
+
+Pro porovnání, klasická třída by vypadala výrazně delší:
+
+```java
+public class Osoba {
+    private final String jmeno;
+    private final int vek;
+
+    public Osoba(String jmeno, int vek) {
+        this.jmeno = jmeno;
+        this.vek = vek;
+    }
+
+    public String getJmeno() {
+        return jmeno;
+    }
+
+    public int getVek() {
+        return vek;
+    }
+
+    // equals, hashCode, toString ...
+}
+```
+
+Record tedy vznikl především proto, aby zjednodušil zápis těchto „nudných“ tříd, které slouží jen jako nosiče dat.
+
+Zásadní vlastností recordu je **neměnnost (immutability)**. To znamená, že hodnoty polí záznamu se musí zadat při vytvoření a později je nelze změnit.
+
+{% hint style="info" %}
+Více technicky s ohledem na pojmy, se kterými se seznámíte později: Všechny atributy jsou implicitně `final` a nelze je po vytvoření změnit. Díky tomu jsou recordy bezpečnější, lépe se používají v paralelním prostředí a hodí se například pro přenos dat mezi vrstvami aplikace.
+{% endhint %}
+
+Použití recordu je zcela přirozené:
+
+```java
+Osoba o = new Osoba("Jan", 25);
+
+System.out.println(o.jmeno());
+System.out.println(o.vek());
+```
+
+Je vidět, že místo klasických getterů (`getJmeno()`) používáme metody pojmenované podle atributů.
+
+Record ale není plnohodnotná náhrada tříd. Má určitá omezení. Nemůžeme měnit jeho stav, nelze dědit (bude vysvětleno později) z jiného recordu (dědí implicitně z `java.lang.Record`) a jeho použití dává smysl hlavně tam, kde **objekt reprezentuje hodnotu**, ne chování.
+
+{% hint style="warning" %}
+I když record umožňuje definovat vlastní metody, měl by zůstat konceptuálně jednoduchý. Není určen pro složitou logiku, ale pro přehledné a bezpečné zapouzdření dat.
+{% endhint %}
+
+Shrnuto: record je zjednodušený způsob, jak definovat třídu, která reprezentuje data. Vznikl proto, aby odstranil zbytečný boilerplate kód, zvýšil čitelnost a podporoval neměnné objekty. Nejlépe se hodí pro situace, kde potřebujeme jednoduchý a bezpečný nosič dat bez složité logiky.
