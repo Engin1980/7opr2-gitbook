@@ -20,7 +20,7 @@
 
 ## Pole, Kolekce
 
-* [TODO Pole](pole-kolekce/todo-pole.md)
+* [Pole](pole-kolekce/todo-pole.md)
 * [TODO Java Collection Framework](pole-kolekce/todo-java-collection-framework.md)
 * [TODO Seznamy II](pole-kolekce/todo-seznamy-ii.md)
 * [TODO Mapy](pole-kolekce/todo-mapy.md)

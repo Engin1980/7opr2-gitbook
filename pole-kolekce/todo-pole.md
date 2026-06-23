@@ -1,4 +1,4 @@
-# TODO Pole
+# Pole
 
 Pole (anglicky _array_) je v jazyce Java základní mechanismus umožňující udržovat několik položek stejného datového typu pohromadě bez nutnosti vytvářet pro každou instanci novou proměnnou. Namísto složitého, nepraktického a pro hromadné operace nepoužitelného výpisu:
 
@@ -23,7 +23,7 @@ data[4] = 9;
 
 Práce s polem má oproti prvnímu způsobu má mnoho výhod - mezi nejdůležitější je částečná nezávislost na výsledném počtu prvků a snazší hromadné operace nad všemi prvky.
 
-#### Vytvoření pole
+## Vytvoření pole
 
 Proměnnou pro pole deklarujeme přidáním hranatých závorek mezi datový typ a název proměnné - **u deklarace proměnné se neuvádí velikost pole**. Velikost pole specifikujeme až při vytvoření nové instance zadáním počtu prvků do lomených závorek.
 
@@ -54,7 +54,7 @@ ownSizeArray[2] = new int[500];
 
 Tento příklad vytvořil matici 3x5 prvků a druhé pole, které má 4 řádky; první řádek druhého pole má 5 prvků, druhý řádek 50 prvků a třetí řádek 500 prvků. Čtvrtému řádku jsme inicializaci neprovedli, proto jeho hodnotou bude hodnota `null`.
 
-#### Přístup k prvkům pole
+## Přístup k prvkům pole
 
 Na jednotlivé položky pole se přistupuje pomocí indexů - číselných hodnot od 0 do „počtu prvků pole - 1". Pokud tedy vytvoříme pětiprvkové pole (viz předchozí příklady), budou pro přístup k jednotlivým prvkům použity indexy 0, 1, 2, 3 a 4. Minimální index je tedy vždy nula, maximální index je o jedna menší než je počet prvků pole.
 
@@ -93,7 +93,9 @@ for (datový_typ_jednoho_prvku proměnná_pro_jeden_prvek : zdrojové_pole ){
 }
 ```
 
-TODO iterátory
+{% hint style="info" %}
+Pokud vás více zajímá rozdíl mezi _for_ a _foreach_, hledejte problematiku iterátorů v Javě.
+{% endhint %}
 
 Všimněte si způsobu, jakým se změnila práce s proměnnou _hodnota_ v následujícím příkladu oproti příkladu předchozímu.
 
@@ -123,7 +125,7 @@ for(int [] upper : data)
     System.out.println(lower);
 ```
 
-#### Operace s polem, třída _Arrays_
+## Operace s polem, třída _Arrays_
 
 Výše byly představeny základní operace - vytvoření pole, procházení pole a přístup na jednotlivé prvky. S poli lze samozřejmě dělat velké množství operací a většinu z nich hromadně. Samotná proměnná typu pole však téměř žádnou funkcionalitu nenabízí - představena byla pouze proměnná obsahující počet prvků.
 
