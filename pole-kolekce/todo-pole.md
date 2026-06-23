@@ -32,7 +32,7 @@ int[] data = null;
 data = new int[5];
 ```
 
-Při tomto způsobu se jednotlivým prvkům pole přiřadí výchozí hodnoty daného typu - tedy položky pole typu _boolean\[]_ se naplní hodnotami false, číselné typy se naplní nulami, pole nějaké třídy se naplní položkami s hodnotou _null_.
+Při tomto způsobu se jednotlivým prvkům pole přiřadí výchozí hodnoty daného typu - tedy položky pole typu `boolean[]` se naplní hodnotami false, číselné typy se naplní nulami, pole nějaké třídy se naplní položkami s hodnotou `null`.
 
 Alternativním zápisem lze vytvořit pole přímo pro zadaný počet hodnot - tehdy se jednotlivé hodnoty uvedou jako položky ve složených závorkách. Vytvořené pole se naplní hodnotami uvedenými ve složených závorkách.
 
@@ -52,7 +52,7 @@ ownSizeArray[1] = new int[50];
 ownSizeArray[2] = new int[500];
 ```
 
-Tento příklad vytvořil matici 3x5 prvků a druhé pole, které má 4 řádky; první řádek druhého pole má 5 prvků, druhý řádek 50 prvků a třetí řádek 500 prvků. Čtvrtému řádku jsme inicializaci neprovedli, proto jeho hodnotou bude hodnota _null_.
+Tento příklad vytvořil matici 3x5 prvků a druhé pole, které má 4 řádky; první řádek druhého pole má 5 prvků, druhý řádek 50 prvků a třetí řádek 500 prvků. Čtvrtému řádku jsme inicializaci neprovedli, proto jeho hodnotou bude hodnota `null`.
 
 #### Přístup k prvkům pole
 
@@ -68,14 +68,14 @@ data[1] = 7;
 int hodnota = data[4];
 ```
 
-Pro procházení jednotlivých prvků lze samozřejmě použít známých technik, zejména cyklů. Potřebujeme však znát počet prvků. Deklarace pole (např. _int\[]_) představuje samo o sobě opět třídu - proměnná tohoto typu tedy bude nabízet určité metody a instanční proměnné. Pro získání počtu prvků můžeme využít proměnnou _length_, kterou má každé pole. Nemusíme si tedy pamatovat počet prvků sami, instance pole nám vrátí informaci o počtu prvků na požádání.
+Pro procházení jednotlivých prvků lze samozřejmě použít známých technik, zejména cyklů. Potřebujeme však znát počet prvků. Deklarace pole (např. `int[]`) představuje samo o sobě opět třídu - proměnná tohoto typu tedy bude nabízet určité metody a instanční proměnné. Pro získání počtu prvků můžeme využít proměnnou `length`, kterou má každé pole. Nemusíme si tedy pamatovat počet prvků sami, instance pole nám vrátí informaci o počtu prvků na požádání.
 
 ```java
 int [] data = new int[5];
 int pocetPrvku = data.length;
 ```
 
-Pro procházení přes všechny prvky pole lze použít typicky cyklus _for_.
+Pro procházení přes všechny prvky pole lze použít typicky cyklus `for`.
 
 ```java
 int[] data = new int[5];
@@ -85,13 +85,15 @@ hodnota = data[i];
 System.out.println(hodnota);
 ```
 
-Druhou běžnou alternativou je přístup, který je nazýván cyklus _for-each_ (nebo _foreach)_. Jeho syntax je trochu odlišná od klasického cyklu _for_, v cyklu chybí řídící proměnná (nemáme tedy povědomí o indexu aktuálně procházeného prvku) a uvnitř cyklus _foreach_ pracuje zcela odlišným způsobem, než cyklus _for_[_\[21\]_](https://word2md.com/#footnote-21). Výstup však bude u obou cyklů stejný. Syntax příkazu _for-each_ je
+Druhou běžnou alternativou je přístup, který je nazýván cyklus _for-each_ (nebo _foreach_). Jeho syntax je trochu odlišná od klasického cyklu _for_, v cyklu chybí řídící proměnná (nemáme tedy povědomí o indexu aktuálně procházeného prvku) a uvnitř cyklus `foreach` pracuje zcela odlišným způsobem, než cyklus `for`. Výstup však bude u obou cyklů stejný. Syntax příkazu _for-each_ je
 
 ```java
 for (datový_typ_jednoho_prvku proměnná_pro_jeden_prvek : zdrojové_pole ){
   /* příkazy */ 
 }
 ```
+
+TODO iterátory
 
 Všimněte si způsobu, jakým se změnila práce s proměnnou _hodnota_ v následujícím příkladu oproti příkladu předchozímu.
 
@@ -125,16 +127,16 @@ for(int [] upper : data)
 
 Výše byly představeny základní operace - vytvoření pole, procházení pole a přístup na jednotlivé prvky. S poli lze samozřejmě dělat velké množství operací a většinu z nich hromadně. Samotná proměnná typu pole však téměř žádnou funkcionalitu nenabízí - představena byla pouze proměnná obsahující počet prvků.
 
-Valnou většinu funkcionality pro práci s poli naleznete ve statických metodách třídy _java.util.Array**s**_. Tato třída nabízí spoustu metod pro práci s polem, zejména:
+Valnou většinu funkcionality pro práci s poli naleznete ve statických metodách třídy `java.util.Arrays` (všimněte si množného čísla na konci). Tato třída nabízí spoustu metod pro práci s polem, zejména:
 
-* copyOf() - metoda pro kopírování položek jednoho pole do druhého;
-* fill() - metoda pro vyplnění prvků pole určitou hodnotou;
-* sort() - metoda pro seřazení prvků pole;
-* equals() - důležitá metoda pro porovnávání polí. **Pole, stejně jako řetězce, nelze porovnávat pomocí operátoru „==", protože by se porovnaly pouze reference** - tedy zda proměnné odkazují na stejné místo paměti. Při porovnávání polí však typicky chceme porovnávat, zda jsou shodné prvky polí na odpovídajících indexech. Pro toto porovnání tedy musíme využít tuto metodu _equals()_.
-* binarySearch() - metoda pro vyhledání prvku v poli. Metoda pracuje na principu půlení intervalů. Z toho důvodu vyžaduje, aby prohledávané pole bylo před voláním této metody seřazeno (pomocí metody _sort()_). Metoda vrací index prvku jako nezápornou hodnotu v případě úspěšného nalezení odpovídajícího prvku, zápornou hodnotu v opačném případě.
-* toString() - metoda vypíše přehledně všechny prvky pole. Opět, samotná metoda _toString()_ od proměnné typované na pole nevrací smysluplný obsah. Pokud chceme přehledně vypsat všechny prvky pole, využijeme této metody.
+* `copyOf()` - metoda pro kopírování položek jednoho pole do druhého;
+* `fill()` - metoda pro vyplnění prvků pole určitou hodnotou;
+* `sort()` - metoda pro seřazení prvků pole;
+* `equals()` - důležitá metoda pro porovnávání polí. **U polí musíme být opatrní při porovnávání pomocí operátoru `==`, protože by se porovnaly pouze reference** - tedy zda proměnné odkazují na stejné místo paměti. Při porovnávání polí však typicky chceme porovnávat, zda jsou shodné prvky polí na odpovídajících indexech. Pro toto porovnání tedy musíme využít tuto metodu `Arrays.equals()`.
+* `binarySearch()` - metoda pro vyhledání prvku v poli. Metoda pracuje na principu půlení intervalů. Z toho důvodu vyžaduje, aby prohledávané pole bylo před voláním této metody seřazeno (pomocí metody `sort()`). Metoda vrací index prvku jako nezápornou hodnotu v případě úspěšného nalezení odpovídajícího prvku, zápornou hodnotu v opačném případě.
+* `toString()` - metoda vypíše přehledně všechny prvky pole. Opět, samotná metoda `toString()` od proměnné typované na pole nevrací smysluplný obsah. Pokud chceme přehledně vypsat všechny prvky pole, využijeme této metody.
 
-Následující příklad představí výtah z výše představených operací. Algoritmus vytvoří dvě pole o stejném počtu prvků. První pole naplní náhodnými hodnotami (z intervalu 0-10), druhé konstantní hodnotou „k". Dále vytvoří třetí pole, do kterého dá pouze ty prvky prvního pole, které jsou větší nebo rovny prvku druhého pole na odpovídajícím indexu. Finálně zjistí hodnotu maximálního a minimálního prvku a zda je konstantní hodnota „k" obsažena ve výsledném poli.
+Následující příklad představí výtah z výše představených operací. Algoritmus vytvoří dvě pole o stejném počtu prvků. První pole naplní náhodnými hodnotami (z intervalu 0-10), druhé konstantní hodnotou `k`. Dále vytvoří třetí pole, do kterého dá pouze ty prvky prvního pole, které jsou větší nebo rovny prvku druhého pole na odpovídajícím indexu. Finálně zjistí hodnotu maximálního a minimálního prvku a zda je konstantní hodnota `k` obsažena ve výsledném poli.
 
 ```java
 // inicializace
