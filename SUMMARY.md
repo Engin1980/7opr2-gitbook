@@ -40,7 +40,7 @@
 ***
 
 * [TODO Výjimky](todo-vyjimky.md)
-* [TODO Generické datové typy](todo-genericke-datove-typy.md)
+* [Generické datové typy](todo-genericke-datove-typy.md)
 
 ## Soubory
 

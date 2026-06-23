@@ -1,4 +1,4 @@
-# TODO Generické datové typy
+# Generické datové typy
 
 Generické datové typy, tzv. generika, je jednou z důležitých vlastností moderních objektově orientovaných programovacích jazyků. V jazyce Java byla generika zavedena v roce 2004 jakou součást verze Java 1.5. Oč tedy jde?
 
@@ -191,7 +191,11 @@ class SortedList<T extends Comparable<T>>{
 
 Omezení se tedy zapisuje jako klasická dědičnost/implementace rozhraní do lomených závorek k omezovanému typu. Výše uvedený zápis tedy znamená, že při vytváření instance může programátor generický parametr nahradit libovolným typem, ale pouze takovým, který implementuje generické rozhraní `Comparable` pro daný typ.
 
-Od této chvíle programátor, který bude chtít definovat proměnnou typu `SortedList`, musí do lomených závorek uvést typ, který implementuje toto rozhraní; v opačném případě program nepůjde přeložit[\[31\]](https://word2md.com/#footnote-31).
+Od této chvíle programátor, který bude chtít definovat proměnnou typu `SortedList`, musí do lomených závorek uvést typ, který implementuje toto rozhraní; v opačném případě program nepůjde přeložit.
+
+{% hint style="info" %}
+Lze zkusit vytvořit seřazený seznam pro čísla i pro řetězec – např.: `SortedList<String> x = …` nebo `SortedList<Integer> s = …`. Protože tyto příkazy zkompilovat jde, lze odvodit, že jak typ `String` tak typ `Integer` implementuje rozhraní `Comparable`.
+{% endhint %}
 
 Před vysvětlením, jak je schopen kompilátor vlastně takové chování vyžádat, bude představena ještě jedna důležitá problematika - tzv. `widlcards`.
 
@@ -213,7 +217,11 @@ interface GenericMap<K, T> extends Map<K, T> {}
 
 Vytvořený potomek dědí z předka, který je generický a má dva generické parametry. Pro oba parametry musíme tedy určit buď konkrétní typ, nebo udělat generickou i naši třídu a předat jako generický parametr předkovi generický parametr potomka. Potud je tedy problematika celkem jasně čitelná a srozumitelná.
 
-V určitých případech zejména začínající programátoři narazí na problém kombinace dědičnosti a generických typů, zejména v případě kolekcí. Uvažujme následující příklad[\[32\]](https://word2md.com/#footnote-32):
+V určitých případech zejména začínající programátoři narazí na problém kombinace dědičnosti a generických typů, zejména v případě kolekcí. Uvažujme následující příklad:
+
+{% hint style="info" %}
+Příklad byl volně přebrán z [http://docs.oracle.com/javase/tutorial/java/generics/wildcards.html](http://docs.oracle.com/javase/tutorial/java/generics/wildcards.html)
+{% endhint %}
 
 Zoo potřebuje realizovat klece pro zvířata. Uvažujme lvy a motýly. Lze si představit obecného předka - _zvíře_ s odpovídající třídou, stejně jako samostatné třídy reprezentující lvy a motýly. Lev i motýl je samozřejmě druhem zvířete a proto i třídy jsou potomky odpovídajícího předka.
 
@@ -279,13 +287,17 @@ private void feedAnimalsInCage (Cage<? extends Animal> cage){
 }
 ```
 
-Zvláštností je použití znaku „?", který je právě chápán jako wildcard (žolík, divoký znak) reprezentující nějaký typ, který kompilátor nezná. Ví o něm ale, že tento typ bude potomkem (`extends`) třídy „Animal". Kompilátor nyní bude schopen zkontrolovat, že při volání funkce `feedAnimalsInCage()` programátor předá jako proměnnou takový typ, který bude obsahovat instanci `Cage<T>`, kde pro `T` platí, že je potomkem třídy `Animal`.
+Zvláštností je použití znaku „?", který je právě chápán jako wildcard (žolík, divoký znak) reprezentující nějaký typ, který kompilátor nezná. Ví o něm ale, že tento typ bude potomkem (`extends`) třídy `Animal`. Kompilátor nyní bude schopen zkontrolovat, že při volání funkce `feedAnimalsInCage()` programátor předá jako proměnnou takový typ, který bude obsahovat instanci `Cage<T>`, kde pro `T` platí, že je potomkem třídy `Animal`.
 
 Důvod použití je opět možnost práce s běžnými metodami třídy `Animal` uvnitř metody `feedAnimalsInCage()`. Díky tomu, že jsme specifikovali, že v kleci bude „něco, co je zvíře", můžeme udělat obecný for-each cyklus nad prvky klece a specifikovat, že jeden prvek klece je zvíře (Animal) a volat nad proměnnou `a` odpovídající metody.
 
 **Poznámka.** Toto je způsob, jakým kompilátor zjistil, že ve výše uvedeném příkladu v kapitole 8.1 nemůže zavolat metodu sort() a zahlásil podivnou chybu. Metoda sort() totiž vyžaduje, aby byla volána pouze s parametrem takového typu, který implementuje nativní řazení.
 
-**Poznámka.** Někdy se může hodit situace opačná - kdy potřebujeme specifikovat, že jako parametr do funkce vstupuje generický typ, jehož generický parametr je **předkem** svého obsahu - typicky v případech, kdy do funkce předáváme jako parametr kolekci, do které chceme prvky přidávat. Tehdy se použije klíčové slovíčko opačné - tedy „super"[\[33\]](https://word2md.com/#footnote-33).
+**Poznámka.** Někdy se může hodit situace opačná - kdy potřebujeme specifikovat, že jako parametr do funkce vstupuje generický typ, jehož generický parametr je **předkem** svého obsahu - typicky v případech, kdy do funkce předáváme jako parametr kolekci, do které chceme prvky přidávat. Tehdy se použije klíčové slovíčko opačné - tedy `super`.
+
+{% hint style="info" %}
+Pro bližší představené této problematiky odkážeme např. na [http://docs.oracle.com/javase/tutorial/extra/generics/morefun.html](http://docs.oracle.com/javase/tutorial/extra/generics/morefun.html) .
+{% endhint %}
 
 ### Generické metody
 
