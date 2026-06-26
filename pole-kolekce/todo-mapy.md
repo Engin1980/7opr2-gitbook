@@ -6,12 +6,12 @@ V takovém případě se dostaneme do situace, kdy potřebujeme nějakou třídu
 
 Z popisu je zřejmé, že nelze očekávat, že bude existovat více položek se stejným klíčem (takové položky jsou považovány za shodné). Proto je vhodné si ihned uvědomit, že chování klíčů je velmi podobné chování, které nabízejí množiny [#mnoziny](todo-java-collection-framework.md#mnoziny "mention"). Podle implementace (analogicky k množinám) lze použít v Javě dvě základní třídy pro reprezentaci map:
 
-* **HashMap** - kde se pro přístup a vyhledávání přes klíče používá hashe (srovnej s `HashSet`, včetně výhod z toho vyplývajících); používá se tedy v případech, kdy do mapy potřebujeme rychle přidávat či editovat hodnoty, nebo rychle v mapě vyhledávat podle klíče;
-* **TreeMap** - kde jsou klíče vždy seřazeny podle přirozeného řazení (srovnej s `TreeSet`, včetně výhod z toho vyplývajících); používá se v případech, kdy potřebujeme, aby byly klíče v mapě seřazeny podle nativního řazení.
+* `HashMap` - kde se pro přístup a vyhledávání přes klíče používá hashe (srovnej s `HashSet`, včetně výhod z toho vyplývajících); používá se tedy v případech, kdy do mapy potřebujeme rychle přidávat či editovat hodnoty, nebo rychle v mapě vyhledávat podle klíče;
+* `TreeMap` - kde jsou klíče vždy seřazeny podle přirozeného řazení (srovnej s `TreeSet`, včetně výhod z toho vyplývajících); používá se v případech, kdy potřebujeme, aby byly klíče v mapě seřazeny podle nativního řazení.
 
 Společným předkem obou tříd je obecné rozhraní `java.util.Map`.
 
-TODO IMG
+![Hierarchie map](../imgs/jcf-maps-simplified.svg)
 
 {% hint style="info" %}
 Obrázek je opět zjednodušen pro potřeby této studijní opory. Skutečná hierarchie tříd je drobně složitější.
@@ -19,13 +19,13 @@ Obrázek je opět zjednodušen pro potřeby této studijní opory. Skutečná hi
 
 Při práci s mapami se typicky využívají základní metody:
 
-* **put**() - pro vložení páru; funkce má jako argumenty dvě hodnoty - klíč a hodnotu. Pokud klíč neexistuje, bude do mapy vložen s hodnotou. Pokud již klíč v mapě existuje, původní hodnota klíče se nahradí hodnotou novou;
-* **get()** - pro získání hodnoty odpovídajícího klíče. Funkce má jako argument hodnotu klíče. Pokud klíč neexistuje, vyhodí běhové prostředí chybu;
-* **size()** - pro získání počtu vložených párů do mapy;
-* **clear()** - pro smazání obsahu mapy;
-* **keySet()** - pro získání všech klíčů ve formě množiny.
+* `put()` - pro vložení páru; funkce má jako argumenty dvě hodnoty - klíč a hodnotu. Pokud klíč neexistuje, bude do mapy vložen s hodnotou. Pokud již klíč v mapě existuje, původní hodnota klíče se nahradí hodnotou novou;
+* `get()` - pro získání hodnoty odpovídajícího klíče. Funkce má jako argument hodnotu klíče. Pokud klíč neexistuje, vyhodí běhové prostředí chybu;
+* `size()` - pro získání počtu vložených párů do mapy;
+* `clear()` - pro smazání obsahu mapy;
+* `keySet()` - pro získání všech klíčů ve formě množiny.
 
-Před uvedením příkladu je ještě třeba zmínit poznámku k definici, s jakými typy bude Mapa pracovat. U seznamů a množin bylo uvedeno, že v deklaraci lze explicitně zmínit, pro jaký typ bude daný/á seznam/množina určen/a, a to uvedením typu v lomených závorkách. U map bude použití stejné, ale hodnoty v závorkách budou dvě - první hodnota reprezentuje datový typ klíče, druhá hodnota reprezentuje datový typ hodnoty. Opět, nelze použití primitivní typy a je nutno povinně použít typy wrapovací (kapitola 5.2).
+Před uvedením příkladu je ještě třeba zmínit poznámku k definici, s jakými typy bude Mapa pracovat. U seznamů a množin bylo uvedeno, že v deklaraci lze explicitně zmínit, pro jaký typ bude daný/á seznam/množina určen/a, a to uvedením typu v lomených závorkách. U map bude použití stejné, ale hodnoty v závorkách budou dvě - první hodnota reprezentuje datový typ klíče, druhá hodnota reprezentuje datový typ hodnoty. Opět, nelze použití primitivní typy a je nutno povinně použít typy wrapovací.
 
 ```java
 java.util.Map<String, Double> prices = new java.util.HashMap();
