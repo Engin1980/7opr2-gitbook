@@ -1,22 +1,22 @@
 # Comparator
 
-Při vytváření předchozího příkladu si lze povšimnout, že můžeme definovat, zda se třída _Person_ bude porovnávat podle věku, nebo podle jména, ale **nelze definovat obojí**, protože funkce _compareTo()_ může být v třídě _Person_ pouze jedna.
+Při vytváření předchozího příkladu si lze povšimnout, že můžeme definovat, zda se třída `Person` bude porovnávat podle věku, nebo podle jména, ale **nelze definovat obojí**, protože funkce `compareTo()` může být v třídě `Person` pouze jedna.
 
-Pokud budeme tedy mít dva seznamy stejných osob a oba setřídíme pomocí volání metody _sort()_, bude pořadí jejich prvků shodné. Co ale, pokud chceme jeden seznam řadit podle věku a druhý podle příjmení?
+Pokud budeme tedy mít dva seznamy stejných osob a oba setřídíme pomocí volání metody `sort()`, bude pořadí jejich prvků shodné. Co ale, pokud chceme jeden seznam řadit podle věku a druhý podle příjmení?
 
-Pokud tedy chceme instance určité třídy porovnávat více způsoby, musíme použít jiný přístup, který je založen na implementaci rozhraní s podobným názvem, ale odlišnou funkcionalitou - _java.lang.Comparator_.&#x20;
+Pokud tedy chceme instance určité třídy porovnávat více způsoby, musíme použít jiný přístup, který je založen na implementaci rozhraní s podobným názvem, ale odlišnou funkcionalitou - `java.lang.Comparator`.&#x20;
 
 {% hint style="warning" %}
-Nezaměňujte názvy těchto rozhraní (_Comparable_ vs. _Comparator_)!
+Nezaměňujte názvy těchto rozhraní (`Comparable` vs. `Comparator`)!
 {% endhint %}
 
 ## Rozhraní Comparator
 
-Pro každý způsob řazení, který chceme realizovat (samozřejmě vyjma již případně realizovaného nativního řazení pomocí rozhraní _Comparable_), nejdříve vytvoříme samostatnou třídu, která bude implementovat rozhraní _Comparator_.
+Pro každý způsob řazení, který chceme realizovat (samozřejmě vyjma již případně realizovaného nativního řazení pomocí rozhraní `Comparable`), nejdříve vytvoříme samostatnou třídu, která bude implementovat rozhraní `Comparator`.
 
-Uvažujme opět příklad s třídou _Person_, kdy jsme realizovali nativní řazení pomocí porovnávání hodnot jména (poslední výpis).
+Uvažujme opět příklad s třídou `Person`, kdy jsme realizovali nativní řazení pomocí porovnávání hodnot jména (poslední výpis).
 
-Pokud budeme také chtít řadit osoby podle věku, musíme vytvořit novou, samostatnou třídu, která bude implementovat požadované rozhraní _Comparator_.
+Pokud budeme také chtít řadit osoby podle věku, musíme vytvořit novou, samostatnou třídu, která bude implementovat požadované rozhraní `Comparator`.
 
 ```java
 class PersonByAgeComparator implements java.util.Comparator<Person>{
@@ -27,7 +27,7 @@ class PersonByAgeComparator implements java.util.Comparator<Person>{
 }
 ```
 
-Toto rozhraní po nás vyžaduje implementaci metody (opět s podobným názvem) _compare()_, která ale přijímá dva parametry - oba objekty, které se mají porovnávat mezi sebou[\[30\]](https://word2md.com/#footnote-30). Funkce opět vrací celočíselnou hodnotu, jejíž význam je stejný jako u metody _compareTo()_:
+Toto rozhraní po nás vyžaduje implementaci metody (opět s podobným názvem) `compare()`, která ale přijímá dva parametry - oba objekty, které se mají porovnávat mezi sebou[\[30\]](https://word2md.com/#footnote-30). Funkce opět vrací celočíselnou hodnotu, jejíž význam je stejný jako u metody `compareTo()`:
 
 * Hodnotu menší než 0 - pokud je první objekt menší než druhý objekt;
 * Hodnotu rovnu 0 - pokud jsou oba objekty shodné;
@@ -50,7 +50,7 @@ class PersonByAgeComparator implements java.util.Comparator<Person> {
 }
 ```
 
-Povšimněte si, že protože již nepíšeme kód do třídy _Person_, ale do nové třídy, nedostaneme se na soukromý člen třídy _age_ a musíme do třídy _Person_ doplnit a následně využít volání getteru _getAge()_.
+Povšimněte si, že protože již nepíšeme kód do třídy `Person`, ale do nové třídy, nedostaneme se na soukromý člen třídy `age` a musíme do třídy `Person` doplnit a následně využít volání getteru `getAge()`.
 
 Zbývá ukázka, jak takovéto porovnání použít.
 
@@ -83,7 +83,7 @@ for(Person it : byAge)
 }
 ```
 
-Opět jsme doplnili do třídy _Person_ getter pro hodnotu jména _getName()_. Tučné řádky ukazují způsob seřazení kolekce - v prvním případě s využitím nativního řazení a metody _compareTo()_ přes rozhraní _Comparable_, druhý případ ukazuje řazení s využitím instance vlastního komparátoru.
+Opět jsme doplnili do třídy `Person` getter pro hodnotu jména `getName()`. Tučné řádky ukazují způsob seřazení kolekce - v prvním případě s využitím nativního řazení a metody `compareTo()` přes rozhraní `Comparable`, druhý případ ukazuje řazení s využitím instance vlastního komparátoru.
 
 ```
 run:
