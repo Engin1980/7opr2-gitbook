@@ -25,7 +25,7 @@
 * [TODO Seznamy II](pole-kolekce/todo-seznamy-ii.md)
 * [TODO Mapy](pole-kolekce/todo-mapy.md)
 * [TODO Comparable](pole-kolekce/todo-comparable.md)
-* [TODO Comparator](pole-kolekce/todo-comparator.md)
+* [Comparator](pole-kolekce/todo-comparator.md)
 
 ## Java Stream API
 
