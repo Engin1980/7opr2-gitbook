@@ -11,7 +11,7 @@ Z popisu je zřejmé, že nelze očekávat, že bude existovat více položek se
 
 Společným předkem obou tříd je obecné rozhraní `java.util.Map`.
 
-![Hierarchie map](../imgs/jcf-maps-simplified.svg)
+![Hierarchie map](../.gitbook/assets/jcf-maps-simplified.svg)
 
 {% hint style="info" %}
 Obrázek je opět zjednodušen pro potřeby této studijní opory. Skutečná hierarchie tříd je drobně složitější.

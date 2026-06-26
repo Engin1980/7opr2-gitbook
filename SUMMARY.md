@@ -21,7 +21,7 @@
 ## Pole, Kolekce
 
 * [Pole](pole-kolekce/todo-pole.md)
-* [TODO Java Collection Framework](pole-kolekce/todo-java-collection-framework.md)
+* [Java Collection Framework](pole-kolekce/todo-java-collection-framework.md)
 * [Mapy](pole-kolekce/todo-mapy.md)
 * [Comparable](pole-kolekce/todo-comparable.md)
 * [Comparator](pole-kolekce/todo-comparator.md)

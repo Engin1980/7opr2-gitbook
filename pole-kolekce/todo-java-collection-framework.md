@@ -39,7 +39,7 @@ for (int i = 0; i < seznam.size(); i++){
 }
 ```
 
-Problematickou situaci způsobí přidání čtvrtého prvku, který není řetězcem, ale jedná se o instanci třídy `Date`. Tím, že kolekce pracuje s jakoukoliv třídou (protože všechny třídy jsou potomci třídy `Object`), můžeme do ní vložit libovolný objekt, aniž by vznikla jakákoliv chyba. Toto velmi často není žádoucí - typicky dáváme do kolekce instance určitého konkrétního datového typu.&#x20;
+Problematickou situaci způsobí přidání čtvrtého prvku, který není řetězcem, ale jedná se o instanci třídy `Date`. Tím, že kolekce pracuje s jakoukoliv třídou (protože všechny třídy jsou potomci třídy `Object`), můžeme do ní vložit libovolný objekt, aniž by vznikla jakákoliv chyba. Toto velmi často není žádoucí - typicky dáváme do kolekce instance určitého konkrétního datového typu.
 
 Za běhu programu se potom při procházení všech položek pokoušíme při vybírání prvků všechny přetypovat na řetězec (viz komentář v kódu). U čtvrtého prvku však operace selže, protože `Date` nelze přetypovat na `String` a program způsobí chybu neočekávanou za běhu. Tyto chyby se velmi špatně hledají, protože obecně se nemusí projevit vždy, ale pouze v určitých případech, kdy někdo (typicky finální uživatel aplikace) přidá do seznamu nějakou nečekanou hodnotu. Tomuto chování, kdy třídy v _Java Collection Frameworku_ pracují s obecnými objekty, se říká _**netypové kolekce**._
 
@@ -88,7 +88,7 @@ Drtivá většina datových typů (tříd, ale i rozhraní) z _Java Collection F
 Při práci s typovými kolekcemi v Javě narazíme na jedno zásadní omezení, které pramení z toho, jak Java s generickými typy pod kapotou pracuje. Do generických kolekcí totiž nelze ukládat primitivní datové typy jako `int`, `double`, `char` nebo `boolean`.
 
 {% hint style="info" %}
-Důvodem je mechanismus zvaný _Type Erasure_ (vymazání typů), které se provádí při kompilaci. Java zavedla generické typy kvůli zpětné kompatibilitě tak, že je po kompilaci v podstatě nahradí obecným typem `Object`. Protože primitivní typy v Javě nedědí od třídy `Object` a nejsou to objekty v pravém slova smyslu, nelze je nahradit za `Object` a generické kolekce s nimi neumí přímo pracovat.&#x20;
+Důvodem je mechanismus zvaný _Type Erasure_ (vymazání typů), které se provádí při kompilaci. Java zavedla generické typy kvůli zpětné kompatibilitě tak, že je po kompilaci v podstatě nahradí obecným typem `Object`. Protože primitivní typy v Javě nedědí od třídy `Object` a nejsou to objekty v pravém slova smyslu, nelze je nahradit za `Object` a generické kolekce s nimi neumí přímo pracovat.
 {% endhint %}
 
 Pokud se pokusíte vytvořit kolekci přímo s primitivním typem, kompilátor vás nepustí dál.
@@ -98,7 +98,7 @@ Pokud se pokusíte vytvořit kolekci přímo s primitivním typem, kompilátor v
 ArrayList<int> cisla = new ArrayList<int>(); 
 ```
 
-Jak z toho ven? Využijeme prapovací typy pro primitivní typy představené v [todo-primitivni-datove-typy.md](../zakladni-datove-typy/todo-primitivni-datove-typy.md "mention").  Každý primitivní typ má svůj objektový protějšek, který je třídou (například `Integer` pro `int`, `Double` pro `double` nebo `Character` pro `char`). Kolekce pak definujeme právě pomocí těchto obalových tříd. Díky funkci _autoboxingu_ navíc Java umí primitivní hodnoty na objekty a zpět převádět automaticky, takže v běžném kódu rozdíl při vkládání prvků téměř nepoznáte.
+Jak z toho ven? Využijeme prapovací typy pro primitivní typy představené v [todo-primitivni-datove-typy.md](../zakladni-datove-typy/todo-primitivni-datove-typy.md "mention"). Každý primitivní typ má svůj objektový protějšek, který je třídou (například `Integer` pro `int`, `Double` pro `double` nebo `Character` pro `char`). Kolekce pak definujeme právě pomocí těchto obalových tříd. Díky funkci _autoboxingu_ navíc Java umí primitivní hodnoty na objekty a zpět převádět automaticky, takže v běžném kódu rozdíl při vkládání prvků téměř nepoznáte.
 
 ```java
 // SPRÁVNÉ ŘEŠENÍ s využitím obalové třídy Integer:
@@ -115,11 +115,11 @@ int prvniCislo = cisla.get(0);
 
 ## Kolekce
 
-Kolekce jsou první skupinou typů v _Java Collection Framework_. Reprezentují je třídy, které jsou určeny k uchovávání více instancí v jené proměnné.&#x20;
+Kolekce jsou první skupinou typů v _Java Collection Framework_. Reprezentují je třídy, které jsou určeny k uchovávání více instancí v jené proměnné.
 
 Následující obrázek ukazuje rozdělení základních představených typů v JCF.
 
-![Hierarchie kolekcí](../imgs/jcf-collections-simplified.svg)
+![Hierarchie kolekcí](../.gitbook/assets/jcf-collections-simplified.svg)
 
 {% hint style="info" %}
 Samotná knihovna _Java Collection Framework_ je rozsáhlejší a obsahuje více typů. My budeme představovat pouze základní z nich, se kterými se při programování běžně setkáte. Na výše uvedeném obrázku se navíc soutředíme pouze na kolekce. Pro úplný list například viz [https://miro.medium.com/v2/resize:fit:720/format:webp/1\*vGt4ZxCjUhiyeEHFFwkujw.png](https://miro.medium.com/v2/resize:fit:720/format:webp/1*vGt4ZxCjUhiyeEHFFwkujw.png).
@@ -210,7 +210,7 @@ Přestože jsme tedy do množiny přidali 6 prvků, duplicitní vložení se nep
 Druhým (běžným) typem množiny je stromová množina - `TreeSet`. V této množině oproti `HashSet` platí, že:
 
 * jednotlivé vložené prvky jsou vždy seřazeny vzestupně **podle jejího nativního řazení**,
-* nelze do nich vložit prvek s hodnotou `null`.&#x20;
+* nelze do nich vložit prvek s hodnotou `null`.
 
 {% hint style="info" %}
 Problematika nativního řazení bude představena v [todo-comparable.md](todo-comparable.md "mention"). Aktuálně si ale prostě představte, že se prvky nějak umí seřadit - například čísla podle velikosti a řetězce podle abecedy.
@@ -275,7 +275,7 @@ Exception (…): eng.demos.collectionFramework.Person cannot be cast to java.lan
 BUILD SUCCESSFUL (total time: 2 seconds)
 ```
 
-Řekli jsme totiž, že `TreeSet` seřazuje do něj vložené objekty podle nativního řazení, ale prostředí jazyka Java netuší, jakým způsobem má porovnávat instance naší třídy `Person`. Pro další práci s typem `TreeSet` je tedy třeba se seznámit s mechanismem, který definuje, jakým způsobem lze mezi sebou porovnávat instance vlastní třídy.&#x20;
+Řekli jsme totiž, že `TreeSet` seřazuje do něj vložené objekty podle nativního řazení, ale prostředí jazyka Java netuší, jakým způsobem má porovnávat instance naší třídy `Person`. Pro další práci s typem `TreeSet` je tedy třeba se seznámit s mechanismem, který definuje, jakým způsobem lze mezi sebou porovnávat instance vlastní třídy.
 
 Tento přístup bude představen za chvilku.
 
