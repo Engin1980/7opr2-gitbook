@@ -4,7 +4,7 @@ Dalším typem tříd definovaných v Java Collection Framework, jsou mapy. Cíl
 
 V takovém případě se dostaneme do situace, kdy potřebujeme nějakou třídu, která bude tyto hodnoty uchovávat a navíc **v nich bude schopna rychle vyhledávat** prvky **podle klíče**.
 
-Z popisu je zřejmé, že nelze očekávat, že bude existovat více položek se stejným klíčem (takové položky jsou považovány za shodné). Proto je vhodné si ihned uvědomit, že chování klíčů je velmi podobné chování, které nabízejí množiny /m . Podle implementace (analogicky k množinám) lze použít v Javě dvě základní třídy pro reprezentaci map:
+Z popisu je zřejmé, že nelze očekávat, že bude existovat více položek se stejným klíčem (takové položky jsou považovány za shodné). Proto je vhodné si ihned uvědomit, že chování klíčů je velmi podobné chování, které nabízejí množiny [#mnoziny](kolekce.md#mnoziny "mention") . Podle implementace (analogicky k množinám) lze použít v Javě dvě základní třídy pro reprezentaci map:
 
 * `HashMap` - kde se pro přístup a vyhledávání přes klíče používá hashe (srovnej s `HashSet`, včetně výhod z toho vyplývajících); používá se tedy v případech, kdy do mapy potřebujeme rychle přidávat či editovat hodnoty, nebo rychle v mapě vyhledávat podle klíče;
 * `TreeMap` - kde jsou klíče vždy seřazeny podle přirozeného řazení (srovnej s `TreeSet`, včetně výhod z toho vyplývajících); používá se v případech, kdy potřebujeme, aby byly klíče v mapě seřazeny podle nativního řazení.
