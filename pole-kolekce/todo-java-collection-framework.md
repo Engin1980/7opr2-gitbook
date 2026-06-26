@@ -119,16 +119,23 @@ Kolekce jsou první skupinou typů v _Java Collection Framework_. Reprezentují 
 
 Následující obrázek ukazuje rozdělení základních představených typů v JCF.
 
+TODO IMG
+
 {% hint style="info" %}
-Samotná knihovna _Java Collection Framework_ je rozsáhlejší a obsahuje více typů. My budeme představovat pouze základní z nich, se kterými se při programování běžně setkáte. Pro úplný list například viz [https://miro.medium.com/v2/resize:fit:720/format:webp/1\*vGt4ZxCjUhiyeEHFFwkujw.png](https://miro.medium.com/v2/resize:fit:720/format:webp/1*vGt4ZxCjUhiyeEHFFwkujw.png).
+Samotná knihovna _Java Collection Framework_ je rozsáhlejší a obsahuje více typů. My budeme představovat pouze základní z nich, se kterými se při programování běžně setkáte. Na výše uvedeném obrázku se navíc soutředíme pouze na kolekce. Pro úplný list například viz [https://miro.medium.com/v2/resize:fit:720/format:webp/1\*vGt4ZxCjUhiyeEHFFwkujw.png](https://miro.medium.com/v2/resize:fit:720/format:webp/1*vGt4ZxCjUhiyeEHFFwkujw.png).
 {% endhint %}
 
 Lze si povšimnout, že kolekce lze rozdělit do dvou základních skupin podle nadřazeného rozhraní:
 
 * Potomci/implementace třídy **Set** - reprezentují _množiny_;
 * Potomci/implementace třídy **List** - reprezentují _seznamy_.
+* Potomci/implementace třídy `Queue` - reprezentují fronty.
 
-Následně budou obě skupiny podrobně vysvětleny.
+Následně budou skupiny (vyjma front) podrobně vysvětleny.
+
+{% hint style="info" %}
+Fronty přeskočíme, protože jejich problematika je složitější a pro jejich pochopení je nejdříve třeba se seznámit s množinami a listy.
+{% endhint %}
 
 ### Množiny
 
