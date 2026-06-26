@@ -4,7 +4,7 @@ Při vytváření předchozího příkladu si lze povšimnout, že můžeme defi
 
 Pokud budeme tedy mít dva seznamy stejných osob a oba setřídíme pomocí volání metody `sort()`, bude pořadí jejich prvků shodné. Co ale, pokud chceme jeden seznam řadit podle věku a druhý podle příjmení?
 
-Pokud tedy chceme instance určité třídy porovnávat více způsoby, musíme použít jiný přístup, který je založen na implementaci rozhraní s podobným názvem, ale odlišnou funkcionalitou - `java.lang.Comparator`.&#x20;
+Pokud tedy chceme instance určité třídy porovnávat více způsoby, musíme použít jiný přístup, který je založen na implementaci rozhraní s podobným názvem, ale odlišnou funkcionalitou - `java.lang.Comparator`.
 
 {% hint style="warning" %}
 Nezaměňujte názvy těchto rozhraní (`Comparable` vs. `Comparator`)!
@@ -27,11 +27,19 @@ class PersonByAgeComparator implements java.util.Comparator<Person>{
 }
 ```
 
-Toto rozhraní po nás vyžaduje implementaci metody (opět s podobným názvem) `compare()`, která ale přijímá dva parametry - oba objekty, které se mají porovnávat mezi sebou[\[30\]](https://word2md.com/#footnote-30). Funkce opět vrací celočíselnou hodnotu, jejíž význam je stejný jako u metody `compareTo()`:
+Toto rozhraní po nás vyžaduje implementaci metody (opět s podobným názvem) `compare()`, která ale přijímá dva parametry - oba objekty, které se mají porovnávat mezi sebou.
+
+Funkce opět vrací celočíselnou hodnotu, jejíž význam je stejný jako u metody `compareTo()`:
 
 * Hodnotu menší než 0 - pokud je první objekt menší než druhý objekt;
 * Hodnotu rovnu 0 - pokud jsou oba objekty shodné;
 * Hodnotu větší než 0 - pokud je první objekt větší druhý objekt.
+
+{% hint style="info" %}
+Všimněte si srovnání mezi `Comparable` a  `Comparator`. Obě používají jednu funkci (`compareTo()` vs `compare()`, která má stejné chování výstupu (menší než 0 / 0 / větší než 0), ale jiné chování vstupů, viz tabulka:
+{% endhint %}
+
+<table><thead><tr><th width="218">Rozhraní</th><th width="354">Porovnání</th></tr></thead><tbody><tr><td>Comparable</td><td><code>a.compareTo(b)</code></td></tr><tr><td>Comparator</td><td><code>ClassName.compare(a, b)</code></td></tr></tbody></table>
 
 Implementaci již známe z předchozí kapitoly, pouze ji upravíme o správné objekty.
 
@@ -58,6 +66,7 @@ Zbývá ukázka, jak takovéto porovnání použít.
 java.util.List<Person> byName = new java.util.ArrayList();
 java.util.List<Person> byAge = new java.util.ArrayList();
 Person p;
+
 // naplnění obou kolekcí stejnými objekty
 p = new Person("Petra", 20);
 byName.add(p);
@@ -68,14 +77,18 @@ byAge.add(p);
 p = new Person("Brad", 45);
 byName.add(p);
 byAge.add(p);
+
 // nativní řazení
 Collections.sort(byName);
+
 // řazení pomocí vlastního komparátoru
 Collections.sort(byAge, new PersonByAgeComparator());
+
 // výpis řazený podle jména
 System.out.println("By name:");
 for(Person it : byName)
     System.out.println(it.getName());
+    
 // výpis řazený podle věku
 System.out.println("By age:");
 for(Person it : byAge)
@@ -102,7 +115,7 @@ Je zřejmé, že takovýchto tříd - komparátorů - si můžeme do projektu do
 
 ## Více komparátorů třídy
 
-V dnešní době lambda výrazů a Java Stream API se již vlastní komparátory moc nepoužívají, ale pokud byste je z nějakého důvodu potřebovali, zjistíte, že v projektu najednou děláte spoustu nových tříd. \
+V dnešní době lambda výrazů a Java Stream API se již vlastní komparátory moc nepoužívají, ale pokud byste je z nějakého důvodu potřebovali, zjistíte, že v projektu najednou děláte spoustu nových tříd.\
 Proto je vhodné jim dát nějaký systém. Za mne je dávám jako vnitřní třídy původní třídy, takže pokud pak hledám nějaký konkrétní komparátor, začnu vždy názvem třídy + tečka + `by...` podle hledané vlastnosti. Nástřel třídy vypadá takto:
 
 ```java
