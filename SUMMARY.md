@@ -24,7 +24,7 @@
 * [TODO Java Collection Framework](pole-kolekce/todo-java-collection-framework.md)
 * [TODO Seznamy II](pole-kolekce/todo-seznamy-ii.md)
 * [TODO Mapy](pole-kolekce/todo-mapy.md)
-* [TODO Comparable](pole-kolekce/todo-comparable.md)
+* [Comparable](pole-kolekce/todo-comparable.md)
 * [Comparator](pole-kolekce/todo-comparator.md)
 
 ## Java Stream API

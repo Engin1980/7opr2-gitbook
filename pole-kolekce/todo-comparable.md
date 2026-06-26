@@ -1,6 +1,6 @@
 # Comparable
 
-Výše uvedený výpis uvádí chybu, která se zmiňuje o faktu, že instance třídy `Person` nelze přetypovat na rozhraní `java.lang.Comparable`. Kompilátoru totiž u pro něj neznámých tříd musíme říct, na základě čeho má porovnávat mezi sebou instance naší třídy.&#x20;
+Výše uvedený výpis uvádí chybu, která se zmiňuje o faktu, že instance třídy `Person` nelze přetypovat na rozhraní `java.lang.Comparable`. Kompilátoru totiž u pro něj neznámých tříd musíme říct, na základě čeho má porovnávat mezi sebou instance naší třídy.
 
 {% hint style="info" %}
 Pokud uděláme vlastní třídu `Pračka`, kompilátor neví, podle čeho má říci, že pračka `a` je v pořadí výše/níže než pračka `b`.
@@ -10,7 +10,7 @@ Musíme tedy definovat porovnávací kritérium, které řekne, kdy je určitá 
 
 ## Rozhraní Comparable
 
-Základním rozhraním pro definici porovnávání je rozhraní `Comparable<E>`\` . K rozhraní se přidává generický parametr E, který nahrazujeme konkrétní třídou, kterou má naše implementace umět porovnávat.&#x20;
+Základním rozhraním pro definici porovnávání je rozhraní `Comparable<E>`\` . K rozhraní se přidává generický parametr E, který nahrazujeme konkrétní třídou, kterou má naše implementace umět porovnávat.
 
 Typicky tedy zápis vypadá:
 
@@ -21,7 +21,7 @@ public class Car implements Comparable<Car> {...}
 ```
 
 {% hint style="info" %}
-Toto rozhraní lze zapsat standardně bez generického parametru  `<>` (tedy `Comparable`) a tehdy umožňuje porovnávání instanci libovolných tříd mezi sebou. Často ale není žádoucí porovnávat cokoliv s čímkoliv, ale pouze shodné typy (tedy neporovnáváme jablka s hruškami, ale pouze jablka s jablky a hrušky s hruškami).&#x20;
+Toto rozhraní lze zapsat standardně bez generického parametru `<>` (tedy `Comparable`) a tehdy umožňuje porovnávání instanci libovolných tříd mezi sebou. Často ale není žádoucí porovnávat cokoliv s čímkoliv, ale pouze shodné typy (tedy neporovnáváme jablka s hruškami, ale pouze jablka s jablky a hrušky s hruškami).
 
 Běžně použijeme již známý zápis využívající lomených závorek `Comparable<E>` se zapsáním porovnávaného typu. Ve studijní opoře budeme dále využívat pouze druhou představenou variantu.
 {% endhint %}
@@ -112,3 +112,11 @@ class Person implements Comparable<Person> {
 Takto můžeme upravit libovolnou vlastní třídu tak, aby bylo možno ji použít v souvislosti s třídou `TreeSet`. Toto chování ale můžeme využít také u seznamů - seznamy (`java.util.List`) mají metodu `sort()`, která umožňuje seřazení jejich prvků, a toto seřazení také používá výše uvedený mechanismus.
 
 Tomuto způsobu řazení, kdy ve třídě definujeme pomocí rozhraní `Comparable` metodu `compareTo()`, ve které definujeme způsob řazení instancí třídy, se říká přirozené, nebo také **nativní řazení** (natural ordering). Alternativou je řazení pomocí rozhraní `Comparator` vysvětlené dále.
+
+{% hint style="info" %}
+Je důležité si uvědomit, že toto řazení lze definovat jen jednou, protože se definuje chováním metody `compareTo()`. Nemáme jak (jednoduše) udělat, že jednou tato metoda bude řadit podle jméno a jednou podle váhy.\
+\
+Právě proto se tomuto řazení říká přirozené - nativní; protože všem by mělo být jasné, že takto se tento typ řadí. Například u čísel víme, že řadíme 1 - 2 - 3 - 4.
+
+Velmi často se může stát, že pro náš typ nativní řazení neexistuje - například seznam osob se dá řadit podle jména, příjmení, rodného číslo, atp. Každá může chtít jiný způsob řazení. U těchto typů doporučujeme ale nativní řazení vůbec nedělat a rovnou řazení realizovat přes typ `Comparator`.
+{% endhint %}
