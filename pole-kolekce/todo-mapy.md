@@ -1,15 +1,15 @@
 # Mapy
 
-Dalším typem tříd definovaných v Java Collection Framework, jsou mapy. Cílem map je propojit (namapovat) k určitému klíči určitou hodnotu. Jedná se opravdu o zavedené pojmy, kdy klíč a hodnota spolu vytváří uspořádanou dvojici hodnot \<key, value> - tzv. pár. Pro klíč platí, že musí být jedinečný pro každý objekt a nemůže nabývat hodnoty null. Oproti tomu hodnota různých klíčů může být shodná a dokonce pro určitý klíč může hodnota nabývat _null_. Typickým příkladem mohou být tedy libovolné dvojice, kde jedna z hodnot je jednoznačným klíčem a druhá hodnotou - například číselný (např. čárový) kód zboží a jeho cena. Obchod má definované prodávané zboží, kde každé zboží má svůj jedinečný číselný kód (a mít jej musí, zboží bez kódu nepůjde prodat). Oproti tomu cena se u různých kódů může opakovat, nebo dokonce u zboží, které není určeno k prodeji, může mít hodnotu _null_.
+Dalším typem tříd definovaných v Java Collection Framework, jsou mapy. Cílem map je propojit (namapovat) k určitému klíči určitou hodnotu. Jedná se opravdu o zavedené pojmy, kdy klíč a hodnota spolu vytváří uspořádanou dvojici hodnot \<key, value> - tzv. pár. Pro klíč platí, že musí být jedinečný pro každý objekt a nemůže nabývat hodnoty `null`. Oproti tomu hodnota různých klíčů může být shodná a dokonce pro určitý klíč může hodnota nabývat `null`. Typickým příkladem mohou být tedy libovolné dvojice, kde jedna z hodnot je jednoznačným klíčem a druhá hodnotou - například číselný (třeba čárový) kód zboží a jeho cena. Obchod má definované prodávané zboží, kde každé zboží má svůj jedinečný číselný kód (a mít jej musí, zboží bez kódu nepůjde prodat). Oproti tomu cena se u různých kódů může opakovat, nebo dokonce u zboží, které není určeno k prodeji, může mít hodnotu `null`.
 
 V takovém případě se dostaneme do situace, kdy potřebujeme nějakou třídu, která bude tyto hodnoty uchovávat a navíc **v nich bude schopna rychle vyhledávat** prvky **podle klíče**.
 
 Z popisu je zřejmé, že nelze očekávat, že bude existovat více položek se stejným klíčem (takové položky jsou považovány za shodné). Proto je vhodné si ihned uvědomit, že chování klíčů je velmi podobné chování, které nabízejí množiny (kapitola 7.2.3). Podle implementace (analogicky k množinám) lze použít v Javě dvě základní třídy pro reprezentaci map:
 
-* **HashMap** - kde se pro přístup a vyhledávání přes klíče používá hashe (srovnej s _HashSet_, včetně výhod z toho vyplývajících); používá se tedy v případech, kdy do mapy potřebujeme rychle přidávat či editovat hodnoty, nebo rychle v mapě vyhledávat podle klíče;
-* **TreeMap** - kde jsou klíče vždy seřazeny podle přirozeného řazení (srovnej s _TreeSet_, včetně výhod z toho vyplývajících); používá se v případech, kdy potřebujeme, aby byly klíče v mapě seřazeny podle nativního řazení.
+* **HashMap** - kde se pro přístup a vyhledávání přes klíče používá hashe (srovnej s `HashSet`, včetně výhod z toho vyplývajících); používá se tedy v případech, kdy do mapy potřebujeme rychle přidávat či editovat hodnoty, nebo rychle v mapě vyhledávat podle klíče;
+* **TreeMap** - kde jsou klíče vždy seřazeny podle přirozeného řazení (srovnej s `TreeSet`, včetně výhod z toho vyplývajících); používá se v případech, kdy potřebujeme, aby byly klíče v mapě seřazeny podle nativního řazení.
 
-Společným předkem obou tříd je obecné rozhraní _java.util.Map_.
+Společným předkem obou tříd je obecné rozhraní `java.util.Map`.
 
 Při práci s mapami se typicky využívají základní metody:
 
@@ -43,4 +43,4 @@ Key: BY2340, value: 55.6
 BUILD SUCCESSFUL (total time: 1 second)
 ```
 
-Pokud nahradíme při vytváření proměnné s mapu typ _HashMap_ za typ _TreeMap_, lze si povšimnout, že stejný výpis bude vypisovat klíče seřazené podle abecedního pořadí.
+Pokud nahradíme při vytváření proměnné s mapu typ `HashMap` za typ `TreeMap`, lze si povšimnout, že stejný výpis bude vypisovat klíče seřazené podle abecedního pořadí.
