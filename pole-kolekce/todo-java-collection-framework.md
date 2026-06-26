@@ -1,8 +1,8 @@
-# TODO Java Collection Framework
+# Java Collection Framework
 
 ## Úvod do Java Collection Framework
 
-Jak bylo zmíněno, jazyk Java představuje několik datových typů pro práci se sadou prvků, které svou funkcionalitou překračují klasické pole. Tyto prvky představuje pod knihovnou _Collection framework_. Všechny typy jsou obsaženy v balíčku _java.lang_.
+Jak bylo zmíněno, jazyk Java představuje několik datových typů pro práci se sadou prvků, které svou funkcionalitou překračují klasické pole. Tyto prvky představuje pod knihovnou _Java Collection framework_. Všechny typy jsou obsaženy v balíčku `java.lang`.
 
 Obecně lze všechny třídy v tomto frameworku rozdělit do dvou skupin:
 
@@ -15,18 +15,18 @@ Ještě před představení obou skupin je ale třeba zmínit pojem _**typových
 
 Představme si jednoduchou třídu reprezentující seznam (například nákupní lístek), která nabízí tři základní metody:
 
-* _void add(Object o)_ - metoda, která přidá do seznamu prvek předaný jako parametr,
-* _int size() -_ metoda, která vrací počet prvků v seznamu, a
-* _Object get(int index) -_ metoda, která vrátí prvek ze seznamu na zadaném _indexu_.
+* `void add(Object o)` - metoda, která přidá do seznamu prvek předaný jako parametr,
+* `int size()` - metoda, která vrací počet prvků v seznamu, a
+* `Object get(int index)` - metoda, která vrátí prvek ze seznamu na zadaném _indexu_.
 
-Pomocí zmíněných metod můžeme do seznamu prvky přidávat a následně je vybírat podle indexu[\[22\]](https://word2md.com/#footnote-22), jak ukazuje následující rychlý příklad.
+Pomocí zmíněných metod můžeme do seznamu prvky přidávat a následně je vybírat podle indexu, jak ukazuje následující rychlý příklad.
 
 ```java
 seznam.add(1);
 Object prvek = seznam.get(0);
 ```
 
-Problém je v typech, se kterými obě operace pracují. Metoda _add()_ má jako parametr typ _Object_, do seznamu tedy lze vložit cokoliv (protože každá třída dědí z datového typu `Object`. Naopak, metoda _get()_ vrací také datový typ _Object_, prvku vybranému z kolekce tedy musíme věřit, že je správného typu a navíc jej tedy musíme explicitně přetypovat na požadovaný typ. Přitom se můžeme dostat do nepříjemné situace.
+Problém je v typech, se kterými obě operace pracují. Metoda `add()` má jako parametr typ `Object`, do seznamu tedy lze vložit cokoliv (protože každá třída dědí z datového typu `Object`. Naopak, metoda `get()` vrací také datový typ `Object`, prvku vybranému z kolekce tedy musíme věřit, že je správného typu a navíc jej tedy musíme explicitně přetypovat na požadovaný typ. Přitom se můžeme dostat do nepříjemné situace.
 
 ```java
 seznam.add("první");
@@ -39,19 +39,19 @@ for (int i = 0; i < seznam.size(); i++){
 }
 ```
 
-Problematickou situaci způsobí přidání čtvrtého prvku, který není řetězcem, ale jedná se o instanci třídy _Date_. Tím, že kolekce pracuje s jakoukoliv třídou (protože všechny třídy jsou potomci třídy _Object_), můžeme do ní vložit libovolný objekt, aniž by vznikla jakákoliv chyba. Toto velmi často není žádoucí - typicky dáváme do kolekce instance určitého konkrétního datového typu.&#x20;
+Problematickou situaci způsobí přidání čtvrtého prvku, který není řetězcem, ale jedná se o instanci třídy `Date`. Tím, že kolekce pracuje s jakoukoliv třídou (protože všechny třídy jsou potomci třídy `Object`), můžeme do ní vložit libovolný objekt, aniž by vznikla jakákoliv chyba. Toto velmi často není žádoucí - typicky dáváme do kolekce instance určitého konkrétního datového typu.&#x20;
 
-Za běhu programu se potom při procházení všech položek pokoušíme při vybírání prvků všechny přetypovat na řetězec (viz komentář v kódu). U čtvrtého prvku však operace selže, protože _Date_ nelze přetypovat na _String_ a program způsobí chybu neočekávanou za běhu. Tyto chyby se velmi špatně hledají, protože obecně se nemusí projevit vždy, ale pouze v určitých případech, kdy někdo (typicky finální uživatel aplikace) přidá do seznamu nějakou nečekanou hodnotu. Tomuto chování, kdy třídy v _Java Collection Frameworku_ pracují s obecnými objekty, se říká _**netypové kolekce**._
+Za běhu programu se potom při procházení všech položek pokoušíme při vybírání prvků všechny přetypovat na řetězec (viz komentář v kódu). U čtvrtého prvku však operace selže, protože `Date` nelze přetypovat na `String` a program způsobí chybu neočekávanou za běhu. Tyto chyby se velmi špatně hledají, protože obecně se nemusí projevit vždy, ale pouze v určitých případech, kdy někdo (typicky finální uživatel aplikace) přidá do seznamu nějakou nečekanou hodnotu. Tomuto chování, kdy třídy v _Java Collection Frameworku_ pracují s obecnými objekty, se říká _**netypové kolekce**._
 
 Java však od verze 1.5 (Java 5) umožňuje tvorbu kolekcí **typových**. Typová kolekce má definici obecnou - například výše uvedený seznam metod bychom mohli přepsat jako:
 
-* _void add(E e)_ - metoda, která přidá do seznamu prvek předaný jako parametr,
-* _int size() -_ metoda, která vrací počet prvků v seznamu, a
-* _E get(int index) -_ metoda, která vrátí prvek ze seznamu na zadaném _indexu_.
+* `void add(E e)` - metoda, která přidá do seznamu prvek předaný jako parametr,
+* `int size()` - metoda, která vrací počet prvků v seznamu, a
+* `E get(int index)` - metoda, která vrátí prvek ze seznamu na zadaném _indexu_.
 
-Lze si povšimnout, že stejný seznam najednou pracuje s nějakou neznámou třídou, označenou jako _E_. Seznam „neví", jakého konkrétního typu prvky v něm uloženy budou, ale ví, že budou určitého, stejného typu, nazvaného (prozatím) _E_. Důležité je, že metoda _add()_ i metoda _get()_ pracují se stejným typem, takže instance toho typu, který se do kolekce vloží, bude také z kolekce vyjmut.
+Lze si povšimnout, že stejný seznam najednou pracuje s nějakou neznámou třídou, označenou jako `E`. Seznam „neví", jakého konkrétního typu prvky v něm uloženy budou, ale ví, že budou určitého, stejného typu, nazvaného (prozatím) `E`. Důležité je, že metoda `add()` i metoda `get()` pracují se stejným typem, takže instance toho typu, který se do kolekce vloží, bude také z kolekce vyjmut.
 
-Programátor pak při použití takového seznamu explicitně řekne u deklarace proměnné, co vlastně oním typem _E_ bude - a provede to tak, že požadovaný typ zapíše do lomených závorek tak, jak ukazuje následující příklad.
+Programátor pak při použití takového seznamu explicitně řekne u deklarace proměnné, co vlastně oním typem `E` bude - a provede to tak, že požadovaný typ zapíše do lomených závorek tak, jak ukazuje následující příklad.
 
 ```java
 List<String> seznam = new ArrayList<String>(); // <-- list pro prvky String
@@ -65,10 +65,10 @@ for (int i = 0; i < seznam.size(); i++){
 }
 ```
 
-Co se změnilo? Při deklaraci se do lomených závorek uvedlo, že seznam tentokrát bude fungovat speciálně pro typ _String_. Kompilátor tedy všechny výskyty typu _E_ uvedené v předchozích bodech nahradí za typ _String_. Program se díky tomu bude chovat jinak:
+Co se změnilo? Při deklaraci se do lomených závorek uvedlo, že seznam tentokrát bude fungovat speciálně pro typ `String`. Kompilátor tedy všechny výskyty typu `E` uvedené v předchozích bodech nahradí za typ `String`. Program se díky tomu bude chovat jinak:
 
-* Čtvrtý prvek již vůbec nelze do kolekce přidat - **kompilátor již při překladu** zjistí, že typ _Date_ nelze převést na typ _String_ a proto na daném řádku zahlásí kompilační chybu a program vůbec nepůjde přeložit.
-* Při získávání prvku ze seznamu metodou _get()_ již nemusíme provádět explicitní přetypování pomocí „_(String)_", protože kompilátor již ví, že seznam bude obsahovat jenom instance třídy _String_.
+* Čtvrtý prvek již vůbec nelze do kolekce přidat - **kompilátor již při překladu** zjistí, že typ `Date` nelze převést na typ `String` a proto na daném řádku zahlásí kompilační chybu a program vůbec nepůjde přeložit.
+* Při získávání prvku ze seznamu metodou `get()` již nemusíme provádět explicitní přetypování pomocí `(String)`, protože kompilátor již ví, že seznam bude obsahovat jenom instance třídy `String`.
 
 Toto řešení umožňuje odstranit velké množství chyb již při návrhu aplikace. Chyby, které by se dříve projevily až za běhu aplikace, lze nyní detekovat již při překladu a bez jejich odstranění program vůbec nepůjde přeložit.
 
@@ -81,7 +81,7 @@ List<String> seznam = new ArrayList<>(); // použití s diamantovým operátorem
 ```
 {% endhint %}
 
-Drtivá většina datových typů (tříd, ale i rozhraní) z _Java Collection Framework_ umožňuje při deklaraci definovat a pracovat s takovýmto neznámým typem _E_, který se konkrétně specifikuje až při deklaraci proměnné. Beztypové kolekce se již téměř nepoužívají. Proto i v této studijní opoře budeme pracovat výhradně s typovými kolekcemi, i když explicitně postfix \<E>, kterým bychom takovouto třídu označovali, uvádět nebudeme. Velmi důležitá poznámka na konec: **Jako definici typu do lomených závorek lze zapsat pouze potomky třídy Object!** Nelze tedy použít primitivní typy, ale **musíme využít jejich wrapovacích typů** (viz kapitola 5.2). Při použití primitivního typu překladač zahlásí chybu.
+Drtivá většina datových typů (tříd, ale i rozhraní) z _Java Collection Framework_ umožňuje při deklaraci definovat a pracovat s takovýmto neznámým typem `E`, který se konkrétně specifikuje až při deklaraci proměnné. Beztypové kolekce se již téměř nepoužívají. Proto i v této studijní opoře budeme pracovat výhradně s typovými kolekcemi, i když explicitně postfix \<E>, kterým bychom takovouto třídu označovali, uvádět nebudeme. Velmi důležitá poznámka na konec: **Jako definici typu do lomených závorek lze zapsat pouze potomky třídy Object!** Nelze tedy použít primitivní typy, ale **musíme využít jejich wrapovacích typů** (viz kapitola 5.2). Při použití primitivního typu překladač zahlásí chybu.
 
 ### Typové kolekce vs primitivní typy
 
@@ -119,7 +119,7 @@ Kolekce jsou první skupinou typů v _Java Collection Framework_. Reprezentují 
 
 Následující obrázek ukazuje rozdělení základních představených typů v JCF.
 
-TODO IMG
+![Hierarchie kolekcí](../imgs/jcf-collections-simplified.svg)
 
 {% hint style="info" %}
 Samotná knihovna _Java Collection Framework_ je rozsáhlejší a obsahuje více typů. My budeme představovat pouze základní z nich, se kterými se při programování běžně setkáte. Na výše uvedeném obrázku se navíc soutředíme pouze na kolekce. Pro úplný list například viz [https://miro.medium.com/v2/resize:fit:720/format:webp/1\*vGt4ZxCjUhiyeEHFFwkujw.png](https://miro.medium.com/v2/resize:fit:720/format:webp/1*vGt4ZxCjUhiyeEHFFwkujw.png).
@@ -127,9 +127,9 @@ Samotná knihovna _Java Collection Framework_ je rozsáhlejší a obsahuje více
 
 Lze si povšimnout, že kolekce lze rozdělit do dvou základních skupin podle nadřazeného rozhraní:
 
-* Potomci/implementace třídy **Set** - reprezentují _množiny_;
-* Potomci/implementace třídy **List** - reprezentují _seznamy_.
-* Potomci/implementace třídy `Queue` - reprezentují fronty.
+* Potomci/implementace třídy `Set` - reprezentují _množiny_;
+* Potomci/implementace třídy `List` - reprezentují _seznamy_.
+* Potomci/implementace třídy `Queue` - reprezentují _fronty_.
 
 Následně budou skupiny (vyjma front) podrobně vysvětleny.
 
@@ -145,7 +145,7 @@ Množiny reprezentují sadu prvků - lze do nich také přidávat prvky, odebír
 * Prvky nemusí být vráceny v pořadí, ve kterém byly do množiny vloženy.
 * Na jednotlivé prvky se nelze dostat pomocí indexu a nelze tedy ani použít cyklus _for_.
 
-Základní rozhraní množiny _Set_ implementuje několik metod určených pro práci s prvky.
+Základní rozhraní množiny `Set` implementuje několik metod určených pro práci s prvky.
 
 <table><thead><tr><th width="249">Signatura funkce</th><th>Popis</th></tr></thead><tbody><tr><td>boolean add(E e)</td><td>Vloží do množiny prvek. Pokud již prvek v množině existuje, nic se neprovede.</td></tr><tr><td>void clear()</td><td>Odstraní všechny prvky z množiny.</td></tr><tr><td>boolean contains(Object o)</td><td>Vrací true, pokud prvek předaný jako parametr v množině existuje.</td></tr><tr><td>boolean isEmpty()</td><td>Vrací true, pokud je množina prázdná.</td></tr><tr><td>boolean remove(Object o)</td><td>Odstraní prvek z množiny.</td></tr><tr><td>int size()</td><td>Vrací počet prvků v množině.</td></tr></tbody></table>
 
@@ -158,7 +158,7 @@ Existují dvě základní implementace pro množiny:
 
 Typy množin se liší tedy podle toho, jakým způsobem si do sebe ukládají jednotlivé prvky.
 
-Obě třídy budou představeny blíže. Opět je vhodné se v ukázkových zdrojových kódech povšimnout, že v ideálním případě konkrétní typ množiny (_HashSet_ nebo _TreeSet_) určujeme pouze při vytváření nové instance (tedy za klíčovým slovem _new_), ale proměnnou typujeme na obecného předka _Set_ - programujeme tedy opět proti rozhraní.
+Obě třídy budou představeny blíže. Opět je vhodné se v ukázkových zdrojových kódech povšimnout, že v ideálním případě konkrétní typ množiny (`HashSet` nebo `TreeSet`) určujeme pouze při vytváření nové instance (tedy za klíčovým slovem `new`), ale proměnnou typujeme na obecného předka `Set` - programujeme tedy opět proti rozhraní.
 
 ```java
 Set<String> emails = new HashSet<>();
@@ -169,15 +169,15 @@ Set<String> emails = new HashSet<>();
 
 Jak bylo zmíněno, do množiny nelze vložit vícekrát stejný prvke. Jak ale množina pozná, že už prvek existuje?
 
-Nepoužívá se porovnání pomocí operátoru „==" - tehdy by se například v množině mohly vyskytovat dva stejné řetězce, umístěné na různých místech v paměti. Množiny namísto toho využívají již dříve představené metody _hashCode()_ a _equals()_ - [todo-object.md](../zakladni-datove-typy/todo-object.md "mention"). Programátor může pomocí přetížení těchto metod u každé třídy specifikovat, jak bude porovnání probíhat.
+Nepoužívá se porovnání pomocí operátoru „==" - tehdy by se například v množině mohly vyskytovat dva stejné řetězce, umístěné na různých místech v paměti. Množiny namísto toho využívají již dříve představené metody `hashCode()` a `equals()` - [todo-object.md](../zakladni-datove-typy/todo-object.md "mention"). Programátor může pomocí přetížení těchto metod u každé třídy specifikovat, jak bude porovnání probíhat.
 
 Pozor tedy, že při výchozím chování se bere, že každá instance je jedinečná (výchozí chování funkcí `equals()` a `hashcode()` pro třídu `Object`). Programátor ale toto chování může upravit přetížením těchto metod ve vlastní třídě.
 
 **HashSet**
 
-Už podle názvu, třída _HashSet_ pracuje s hash kódem a má tedy souvislost s metodou _hashCode()_ (viz kapitola 5.3.2), kterou má každý objekt. Jak bylo zmíněno, do instance takové množiny lze vložit instance libovolné třídy, vyjma hodnoty null. Instance se navíc nesmí opakovat.
+Už podle názvu, třída `HashSet` pracuje s hash kódem a má tedy souvislost s metodou `hashCode()` (viz kapitola 5.3.2), kterou má každý objekt. Jak bylo zmíněno, do instance takové množiny lze vložit instance libovolné třídy, vyjma hodnoty null. Instance se navíc nesmí opakovat.
 
-Výhoda typu _HashSet_ je v rychlosti přidávání prvků (konkrétně v testování, zda již existující prvek v množině není). Pokud chceme rychle vytvořit skupinu prvků a zároveň zajistit, že každý prvek se vyskytuje v množině pouze jednou, použijeme právě _HashSet_. Opakované přidání existujícího prvku ale nezpůsobí žádnou chybu; pokud přidávaný prvek již existuje, prostě se jeho opětovné přidání neprovede.
+Výhoda typu `HashSet` je v rychlosti přidávání prvků (konkrétně v testování, zda již existující prvek v množině není). Pokud chceme rychle vytvořit skupinu prvků a zároveň zajistit, že každý prvek se vyskytuje v množině pouze jednou, použijeme právě `HashSet`. Opakované přidání existujícího prvku ale nezpůsobí žádnou chybu; pokud přidávaný prvek již existuje, prostě se jeho opětovné přidání neprovede.
 
 ```java
 java.util.Set<String> hs = new java.util.HashSet();
@@ -192,7 +192,7 @@ for(String item : hs)
 System.out.println("Celkem: " + hs.size());
 ```
 
-Jak bylo zmíněno, použitá kolekce je typově bezpečná (pro typ _String_), lze ji procházet pomocí cyklu _for-each_ a ve výsledku výše uvedený kód vrátí následující výsledek:
+Jak bylo zmíněno, použitá kolekce je typově bezpečná (pro typ `String`), lze ji procházet pomocí cyklu _for-each_ a ve výsledku výše uvedený kód vrátí následující výsledek:
 
 ```
 run:
@@ -207,7 +207,7 @@ Přestože jsme tedy do množiny přidali 6 prvků, duplicitní vložení se nep
 
 **TreeSet**
 
-Druhým (běžným) typem množiny je stromová množina - _TreeSet_. V této množině oproti `HashSet` platí, že:
+Druhým (běžným) typem množiny je stromová množina - `TreeSet`. V této množině oproti `HashSet` platí, že:
 
 * jednotlivé vložené prvky jsou vždy seřazeny vzestupně **podle jejího nativního řazení**,
 * nelze do nich vložit prvek s hodnotou `null`.&#x20;
@@ -244,7 +244,7 @@ BUILD SUCCESSFUL (total time: 0 seconds)
 
 Je vidět, že prvky jsou opravdu seřazeny.
 
-Při práci však můžeme chtít do množiny vložit instanci libovolné třídy. Uvažujme například velmi jednoduchou třídu _Person_.
+Při práci však můžeme chtít do množiny vložit instanci libovolné třídy. Uvažujme například velmi jednoduchou třídu `Person`.
 
 ```java
 class Person {
@@ -257,7 +257,7 @@ class Person {
 }
 ```
 
-Výše uvedený příklad `TreeSet` upravíme pro vložení instancí třídy _Person_.
+Výše uvedený příklad `TreeSet` upravíme pro vložení instancí třídy `Person`.
 
 ```java
 java.util.Set<Person> hs = new java.util.TreeSet();
@@ -275,19 +275,19 @@ Exception (…): eng.demos.collectionFramework.Person cannot be cast to java.lan
 BUILD SUCCESSFUL (total time: 2 seconds)
 ```
 
-Řekli jsme totiž, že _TreeSet_ seřazuje do něj vložené objekty podle nativního řazení, ale prostředí jazyka Java netuší, jakým způsobem má porovnávat instance naší třídy _Person_. Pro další práci s typem _TreeSet_ je tedy třeba se seznámit s mechanismem, který definuje, jakým způsobem lze mezi sebou porovnávat instance vlastní třídy.&#x20;
+Řekli jsme totiž, že `TreeSet` seřazuje do něj vložené objekty podle nativního řazení, ale prostředí jazyka Java netuší, jakým způsobem má porovnávat instance naší třídy `Person`. Pro další práci s typem `TreeSet` je tedy třeba se seznámit s mechanismem, který definuje, jakým způsobem lze mezi sebou porovnávat instance vlastní třídy.&#x20;
 
 Tento přístup bude představen za chvilku.
 
 ### Seznamy
 
-Seznam je typ kolekce, který obsahuje sadu do něj vložených prvků s daným pořadím. Prvky lze postupně po jednom nebo hromadně přidávat, lze je odebírat, a hlavně - lze na ně přistupovat pomocí pořadí, tedy indexu. Prvky se v seznamu mohou vyskytovat vícekrát, seznam může i obsahovat hodnotu _null_.
+Seznam je typ kolekce, který obsahuje sadu do něj vložených prvků s daným pořadím. Prvky lze postupně po jednom nebo hromadně přidávat, lze je odebírat, a hlavně - lze na ně přistupovat pomocí pořadí, tedy indexu. Prvky se v seznamu mohou vyskytovat vícekrát, seznam může i obsahovat hodnotu `null`.
 
-Rozhraní _List_ nabízí tedy sadu metod pro práci s jednotlivými prvky. Některé z operací lze také provádět hromadně pro více prvků najednou. Seznam lze také (stejně jako množinu) procházet pomocí cyklu for-each.
+Rozhraní `List` nabízí tedy sadu metod pro práci s jednotlivými prvky. Některé z operací lze také provádět hromadně pro více prvků najednou. Seznam lze také (stejně jako množinu) procházet pomocí cyklu for-each.
 
 <table><thead><tr><th width="255">Signatura funkce</th><th>Popis</th></tr></thead><tbody><tr><td>boolean add(E e)</td><td>Přidá prvek na konec seznamu.</td></tr><tr><td>void add(int index, E e)</td><td>Přidá prvek na pozici v seznamu definovanou parametrem <em>index</em>.</td></tr><tr><td>void clear()</td><td>Odstraní všechny prvky ze seznamu.</td></tr><tr><td>boolean isEmpty()</td><td>Vrací true, pokud je seznam prázdný.</td></tr><tr><td>boolean contains(Object o)</td><td>Vrací true, pokud seznam obsahuje prvek předaný jako parametr.</td></tr><tr><td>E get(int index)</td><td>Vrací prvek na pozici parametru <em>index</em>.</td></tr><tr><td>int indexOf(Object o)</td><td>Vrací index prvního výskytu prvku předaného jako parametr.</td></tr><tr><td>int lastIndexOf(Object o)</td><td>Vrací index posledního výskytu prvku předaného jako parametr.</td></tr><tr><td>E remove(int index)</td><td>Odstraní prvek ze zadaného indexu a vrací odstraněný prvek jako výsledek volání.</td></tr><tr><td>boolean remove(Object o)</td><td>Odstraní prvek předaný jako parametr.</td></tr><tr><td>E set(int index, E element)</td><td>Nahradí prvek na indexu novou hodnotou. Nahrazovanou hodnotu vrací jako výsledek volání funkce.</td></tr><tr><td>int size()</td><td>Vrací počet prvků v seznamu.</td></tr></tbody></table>
 
-Nejčastěji používanou implementací je třída _ArrayList_, která již podle názvu reprezentuje „chytré" pole - objekt, který se chová jako pole, u kterého se ale programátor nemusí starat o kontrolu délky při operaci s prvky, zejména při přidávání nového prvku.
+Nejčastěji používanou implementací je třída `ArrayList`, která již podle názvu reprezentuje „chytré" pole - objekt, který se chová jako pole, u kterého se ale programátor nemusí starat o kontrolu délky při operaci s prvky, zejména při přidávání nového prvku.
 
 {% hint style="info" %}
 Stejně jako u množin se i u listů používá programování proti rozhraní, kdy proměnná je typu rozhraní, ale kvládáme do ní instanci implementační třídy, tedy:
@@ -357,7 +357,7 @@ ArrayList seznamAut = new LinkedList<>();
 
 ## **Další operace s kolekcemi - třída Collections**
 
-Rozhraní _java.util.List_ ani _java.util.Set_ neobsahují téměř žádné operace, které by byly běžné a bylo je možné s danou kolekcí provádět, jako například řazení, kopírování, otáčení apod. Všechny tyto operace lze nalézt v další třídě z Java Collection Frameworku, nazvané _Collections_. Tato třída obsahuje statické metody umožňující provádět operace s kolekcemi, zejména:
+Rozhraní `java.util.List` ani `java.util.Set` neobsahují téměř žádné operace, které by byly běžné a bylo je možné s danou kolekcí provádět, jako například řazení, kopírování, otáčení apod. Všechny tyto operace lze nalézt v další třídě z Java Collection Frameworku, nazvané `Collections`. Tato třída obsahuje statické metody umožňující provádět operace s kolekcemi, zejména:
 
 * **binarySearch()** - pro vyhledání indexu určitého prvku v seznamu prvků. Pozor, jedná se (už podle názvu) o vyhledávání binární a proto musí být seznam nejdříve setřízen (pomocí metody **sort()**);
 * **copy()** - zkopíruje všechny prvky z jednoho seznamu do seznamu druhého;
@@ -369,13 +369,13 @@ Rozhraní _java.util.List_ ani _java.util.Set_ neobsahují téměř žádné ope
 * **sort()** - setřídí seznam podle parametrů (ukázka použití viz kapitola 7.2.6);
 * **swap()** - přehodí prvky na dvou indexech.
 
-Jak bylo zmíněno, všechny metody jsou statické a vyžadují tak typicky jako první parametr seznam (instanci libovolného potomka třídy _java.util.List_), nad kterým se daná operace bude provádět.
+Jak bylo zmíněno, všechny metody jsou statické a vyžadují tak typicky jako první parametr seznam (instanci libovolného potomka třídy `java.util.List`), nad kterým se daná operace bude provádět.
 
 {% hint style="info" %}
 Pro úplný výpis operací viz dokumentace: [https://docs.oracle.com/javase/8/docs/api/java/util/Collections.html](https://docs.oracle.com/javase/8/docs/api/java/util/Collections.html)
 {% endhint %}
 
-Následuje velmi krátký příklad demonstrující seřazení seznamu čísel od největšího k nejmenšímu s použitím třídy _Collections_.
+Následuje velmi krátký příklad demonstrující seřazení seznamu čísel od největšího k nejmenšímu s použitím třídy `Collections`.
 
 ```java
 List<Integer> lst = new ArrayList();
