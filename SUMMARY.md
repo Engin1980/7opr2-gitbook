@@ -44,5 +44,5 @@
 
 ## Soubory
 
-* [TODO Práce se souborovým systémem](soubory/todo-prace-se-souborovym-systemem.md)
+* [Práce se souborovým systémem](soubory/todo-prace-se-souborovym-systemem.md)
 * [TODO Práce se soubory](soubory/todo-prace-se-soubory.md)
