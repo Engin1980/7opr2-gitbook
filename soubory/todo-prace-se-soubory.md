@@ -93,9 +93,9 @@ Každá z vytvořených variant má svůj typický název, který se používá 
 
 <table><thead><tr><th width="169">Směr</th><th width="175">Typ dat</th><th width="208">Název</th></tr></thead><tbody><tr><td>Vstupní</td><td>Byty</td><td>InputStream</td></tr><tr><td>Výstupní</td><td>Byty</td><td>OutputStream</td></tr><tr><td>Vstupní</td><td>Znaky</td><td>Reader</td></tr><tr><td>Výstupní</td><td>Znaky</td><td>Writer</td></tr></tbody></table>
 
-Celá problematika proudů staví na abstrakci, dědičnosti a rozhraních. Základy, jak bylo zmíněno, jsou pro všechny proudy shodné. Budeme uvažovat příklad typu _InputStream_. Pokud to bude proud dat z klávesnice, bude tento proud obsahovat byty reprezentující jednotlivé klávesy, které může programátor postupně po jednom načítat metodou _read()_. Pokud to bude proud dat ze síťové karty, bude tento proud obsahovat byty, které přišly do počítače ze sítě a které může programátor postupně po jednom načítat metodou _read()_. Pokud to bude vstupn z externí karty, odkud chodí nějaká data (například GPS modul), může tato data programátor načítat postupně po jednom metodou _read()_. Jak je zjevné, způsob práce se pro programátora nemění (vždy jej zajímá načítání pomocí metody _read()_, které mu vrací jednotlivé byty), odlišná je pouze implementace. Od této implementace je však programátor odstíněn, protože programuje proti rozhraní nebo abstraktní třídě. Programátor tedy **vůbec nemusí vědět, na jakém principu daný proud funguje**, pouze jej zajímá způsob získání (případně vložení) dat.
+Celá problematika proudů staví na abstrakci, dědičnosti a rozhraních. Základy, jak bylo zmíněno, jsou pro všechny proudy shodné. Budeme uvažovat příklad typu `InputStream`. Pokud to bude proud dat z klávesnice, bude tento proud obsahovat byty reprezentující jednotlivé klávesy, které může programátor postupně po jednom načítat metodou `read()`. Pokud to bude proud dat ze síťové karty, bude tento proud obsahovat byty, které přišly do počítače ze sítě a které může programátor postupně po jednom načítat metodou `read()`. Pokud to bude vstupn z externí karty, odkud chodí nějaká data (například GPS modul), může tato data programátor načítat postupně po jednom metodou `read()`. Jak je zjevné, způsob práce se pro programátora nemění (vždy jej zajímá načítání pomocí metody `read()`, které mu vrací jednotlivé byty), odlišná je pouze implementace. Od této implementace je však programátor odstíněn, protože programuje proti rozhraní nebo abstraktní třídě. Programátor tedy **vůbec nemusí vědět, na jakém principu daný proud funguje**, pouze jej zajímá způsob získání (případně vložení) dat.
 
-Proto pro každou ze 4 skupin uvedených výše existuje abstraktní třída - předek všech proudů tohoto typu, který implementuje právě požadovanou metodu _read()/write()_ a nějaké pomocné metody navíc. Tvůrce proudu tuto třídu podědí a požadovanou logiku naimplementuje dle potřeby. Tito předci se jmenují stejně jako název typu proudu a jejich název se dává jako postfix (přípona) názvů proudu od nich odvozených.
+Proto pro každou ze 4 skupin uvedených výše existuje abstraktní třída - předek všech proudů tohoto typu, který implementuje právě požadovanou metodu `read()/write()` a nějaké pomocné metody navíc. Tvůrce proudu tuto třídu podědí a požadovanou logiku naimplementuje dle potřeby. Tito předci se jmenují stejně jako název typu proudu a jejich název se dává jako postfix (přípona) názvů proudu od nich odvozených.
 
 Dále budeme představovat tuto problematiku na souborech, ale obecné principy se vztahují na všechny proudy.
 
@@ -107,7 +107,7 @@ Při práci se zdrojem pomocí proudu musí programátor již sám ošetřovat n
 
 Otevření spočívá ve vytvoření instance proudu - vytvořená instance automaticky otevírá zdroj, ze kterého bude čerpat (nebo kam bude zapisovat). Typicky se otevírání provádí pomocí přetíženého konstruktoru, kde jeho parametry udávají způsob a cíl otevření. Na tento bod typicky programátoři nezapomínají, protože bez nich program nebude fungovat.
 
-Neméně důležité je však uzavření zdroje po konci používání. Tím se zdroj uvolní pro ostatní aplikace, které s otevřeným zdrojem nemohou pracovat. Typickou ukázkou nezavřeného zdroje jsou chybové hlášky typu „soubor nelze smazat, neboť je dosud používán" apod. Pro uzavření svého zdroje mají všechny proudy metodu _close()_. Opakované volání této metody nezpůsobí žádnou chybu.
+Neméně důležité je však uzavření zdroje po konci používání. Tím se zdroj uvolní pro ostatní aplikace, které s otevřeným zdrojem nemohou pracovat. Typickou ukázkou nezavřeného zdroje jsou chybové hlášky typu „soubor nelze smazat, neboť je dosud používán" apod. Pro uzavření svého zdroje mají všechny proudy metodu `close()`. Opakované volání této metody nezpůsobí žádnou chybu.
 
 ### Čtení ze souboru pomocí proudů
 
@@ -143,7 +143,7 @@ try {
 }
 ```
 
-Povšimněte si způsobu ošetření v bloku finally. Proud _fileReader_ se zavíráme v bloku _finally_ vždy, ale pouze pokud se jej podařilo dříve otevřít (tedy není _null_). V bloku _try_ již zavírání provádět nebudeme, protože blok _finally_ se provede vždy.
+Povšimněte si způsobu ošetření v bloku finally. Proud `fileReader` se zavíráme v bloku `finally` vždy, ale pouze pokud se jej podařilo dříve otevřít (tedy není `null`). V bloku `try` již zavírání provádět nebudeme, protože blok `finally` se provede vždy.
 
 I tentokrát však kód nepůjde přeložit, protože i zavření souboru může způsobit chybu a vyvolat výjimku. I zde bychom museli doplnit bloky try-catch. O způsobu, jak korektně ošetřit případ, že se soubor nepodařilo zavřít, lze dlouho polemizovat - v našem případě pouze vypíšeme chybu uživateli na konzoli.
 
@@ -164,7 +164,7 @@ try (java.io.FileReader fileReader = new java.io.FileReader(fileName)) {
 }
 ```
 
-Nyní můžeme pokračovat. Při čtení ze souboru se používá funkce _read()_, která v případě, že již nejsou žádná další data k dispozici, vrací hodnotu -1.
+Nyní můžeme pokračovat. Při čtení ze souboru se používá funkce `read()`, která v případě, že již nejsou žádná další data k dispozici, vrací hodnotu -1.
 
 ```java
 String fileName = "D:\\demo.txt";
@@ -187,7 +187,7 @@ try (java.io.FileReader fileReader = new java.io.FileReader(fileName)) {
 }
 ```
 
-Funkce _read()_ však také vrací výjimku v případě chyby - proto musíme k blokům _catch_ doplnit další reflektující tuto chybu. Funkce také vrací _int_ a nikoliv _char_ (aby bylo možno vrátit hodnotu -1) a proto hodnotu před výpisem musíme explicitně přetypovat na _char_, jinak by se na konzoli ukazovaly číselné kódy vypisovaných znaků.
+Funkce `read()` však také vrací výjimku v případě chyby - proto musíme k blokům `catch` doplnit další reflektující tuto chybu. Funkce také vrací `int` a nikoliv `char` (aby bylo možno vrátit hodnotu -1) a proto hodnotu před výpisem musíme explicitně přetypovat na `char`, jinak by se na konzoli ukazovaly číselné kódy vypisovaných znaků.
 
 Zápis do souboru bude předveden až po další technice, která umožňuje pracovat s proudy, a to je vnořování proudů.
 
@@ -197,7 +197,7 @@ Jak bylo řečeno, proud je hodně obecné řešení, které programátorovi umo
 
 V principu se u komprimace tedy jedná o proudové řešení, které někdo vloží nějaká data, ta se zkomprimují a dále se vloží do dalšího proudu, který s nimi udělá další operaci (například je uloží na disk). Do komprimačního proudu se tedy **vloží** další proud, kterému komprimační proud předává data po komprimaci. Proudům, které dělají nějakou operaci a výsledek předávají do v nich vnořeného proudu, se říká _filtrační proudy_. Jejich konstruktor typicky obsahuje přetížení, do něhož se předává jako parametr proud, který fungovat bude vnořený.
 
-Jako praktický příklad může sloužit demonstrace čtení obsahu souboru - již bylo představeno čtení po znacích, ale typickou úlohou je čtení celých řádků. Pro tento účel slouží proud nazvaný _BufferedReader_ (podle postfixu je to tedy proud pro čtení textových dat). Ten je filtrační a potřebuje pod sebe podkladový proud, ze kterého bude tato data číst.
+Jako praktický příklad může sloužit demonstrace čtení obsahu souboru - již bylo představeno čtení po znacích, ale typickou úlohou je čtení celých řádků. Pro tento účel slouží proud nazvaný `BufferedReader` (podle postfixu je to tedy proud pro čtení textových dat). Ten je filtrační a potřebuje pod sebe podkladový proud, ze kterého bude tato data číst.
 
 ```java
 String fileName = "D:\\demo.txt";
@@ -240,7 +240,7 @@ try (
 
 Opačný směr zápisu bude předveden na upraveném posledním, výše uvedeném výpisu kódu určeného ke čtení ze souboru.
 
-Princip je zcela shodný se čtením, jenom tentokráte provádíme zápis, hledáme tedy ne třídu _Reader_, ale _Writer_. Prefixy názvů třídy typicky zůstávají stejné, mění se pouze koncovky, proto nám u použitých tříd proudů stačí nahradit _BufferedReader_ za _BufferedWriter_ a _FileReader_ za _FileWriter_.
+Princip je zcela shodný se čtením, jenom tentokráte provádíme zápis, hledáme tedy ne třídu `Reader`, ale `Writer`. Prefixy názvů třídy typicky zůstávají stejné, mění se pouze koncovky, proto nám u použitých tříd proudů stačí nahradit `BufferedReader` za `BufferedWriter` a `FileReader` za `FileWriter`.
 
 Dalším krokem je samozřejmě nahrazení algoritmu čtení nějakým zápisem. Ukázaný příklad zapíše do souboru dva řádky textu.
 
@@ -258,7 +258,7 @@ try (java.io.BufferedWriter bufferedWriter =
 }
 ```
 
-Ohledně zápisu do výstupních proudů je třeba zmínit ještě jednu problematiku - zápis na výstupní zařízení je typicky velmi pomalá operace (zvláště u souborů zapisovaných na klasický pevný disk) a zapisování dat postupně (například po jednom bytu) velmi výrazně sníží rychlost běhu aplikace. Z toho důvodu ty výstupní proudy, u kterých by tento problém mohl nastat, používájí tzv. _bufferování_ dat - tzn. při požadavku na zápis nezapíší data ihned, ale počkají, až se jich nashromáždí větší množství a data zapíší najednou. U tohoto přístupu je však nebezpečí, že pokud aplikace spadne neřízeně dříve, než se připravená data opravdu fyzicky zapíší do cíle proudu, k žádnému zápisu nedojde. Pokud chceme tedy v určitou chvíli explicitně vynutit, aby se data zapsala do cílového zdroje bez ohledu na jejich množství, zavoláme nad výstupním proudem metodu _flush()_. Tato metoda se volá také samozřejmě automaticky, kdykoliv je výstupní proud uzavírání.
+Ohledně zápisu do výstupních proudů je třeba zmínit ještě jednu problematiku - zápis na výstupní zařízení je typicky velmi pomalá operace (zvláště u souborů zapisovaných na klasický pevný disk) a zapisování dat postupně (například po jednom bytu) velmi výrazně sníží rychlost běhu aplikace. Z toho důvodu ty výstupní proudy, u kterých by tento problém mohl nastat, používájí tzv. `bufferování` dat - tzn. při požadavku na zápis nezapíší data ihned, ale počkají, až se jich nashromáždí větší množství a data zapíší najednou. U tohoto přístupu je však nebezpečí, že pokud aplikace spadne neřízeně dříve, než se připravená data opravdu fyzicky zapíší do cíle proudu, k žádnému zápisu nedojde. Pokud chceme tedy v určitou chvíli explicitně vynutit, aby se data zapsala do cílového zdroje bez ohledu na jejich množství, zavoláme nad výstupním proudem metodu `flush()`. Tato metoda se volá také samozřejmě automaticky, kdykoliv je výstupní proud uzavírání.
 
 ### Další typy proudů
 
@@ -303,7 +303,7 @@ U první varianty musí programátor vše udělat ručně. Problematiku lze rozl
 * Jak zajistit uložení sady prvků v kolekci.
 * Jak zajistit uložení jednoho konkrétního prvku.
 
-Uložení prvku v kolekci zajistí třída _PersonCollection_ metodou _save()_, kde parametrem bude název cílového souboru. Kolekce musí zajistit uložení dvou částí: a) uložení počtu prvků v souboru (aby při načítání bylo hned jasné, kolik prvků se bude načítat; b) opakovaného postupného uložení jednotlivých prvků.
+Uložení prvku v kolekci zajistí třída `PersonCollection` metodou `save()`, kde parametrem bude název cílového souboru. Kolekce musí zajistit uložení dvou částí: a) uložení počtu prvků v souboru (aby při načítání bylo hned jasné, kolik prvků se bude načítat; b) opakovaného postupného uložení jednotlivých prvků.
 
 Před samotným kódem ještě jedna problematika - chceme-li mít řešení univerzální, platí vlastně, že kolekce se umí uložit do čehokoliv, „do čeho se dá psát" (tedy libovolný výstupní stream) a naopak načítat z čehokoliv, „z čeho se dá číst" (tedy libovolný vstupní stream).
 
@@ -312,7 +312,7 @@ Problematiku zápisu do souboru tedy rozdělíme ještě na dvě části, obě i
 * Řešení práce se souborem
 * Samotný zápis dat do proudu
 
-Práci se souborem zajistí jednoduchá metoda _save()_, která přijme jako parametr název souboru. Tato metoda řeší otevření a zavření souboru a předání chyby, ale **neřeší vůbec samotné uložení dat**. Pro tuto část využije přetížení, které přijímá jako parametr zapisovací proud. Tato metoda ve třídě _PersonCollection_ bude vypadat například následovně.
+Práci se souborem zajistí jednoduchá metoda `save()`, která přijme jako parametr název souboru. Tato metoda řeší otevření a zavření souboru a předání chyby, ale **neřeší vůbec samotné uložení dat**. Pro tuto část využije přetížení, které přijímá jako parametr zapisovací proud. Tato metoda ve třídě `PersonCollection` bude vypadat například následovně.
 
 ```java
 public void save (String fileName) throws IOException {
@@ -324,9 +324,9 @@ public void save (String fileName) throws IOException {
 }
 ```
 
-V prvním kroku se pomocí syntaxe _try-with-resources_ otevře zapisovací proud do souboru zadaného jména. V druhém kroku se zavolá přetížená metoda (bude uvedena dále), která provede samotný zápis dat. Konec bloku _try_ zajistí korektní uzavření souboru po dokončení operace.
+V prvním kroku se pomocí syntaxe _try-with-resources_ otevře zapisovací proud do souboru zadaného jména. V druhém kroku se zavolá přetížená metoda (bude uvedena dále), která provede samotný zápis dat. Konec bloku `try` zajistí korektní uzavření souboru po dokončení operace.
 
-Druhá metoda, realizující samotný zápis, bude přijímat jako parametr obecný _Writer_, tedy jakýkoliv textový výstupní proud - nejsme při ukládání vůbec omezeni na cíl, do kterého se budou data ukládat.
+Druhá metoda, realizující samotný zápis, bude přijímat jako parametr obecný `Writer`, tedy jakýkoliv textový výstupní proud - nejsme při ukládání vůbec omezeni na cíl, do kterého se budou data ukládat.
 
 ```java
 public void save (Writer writer) throws IOException {
@@ -340,23 +340,23 @@ public void save (Writer writer) throws IOException {
 }
 ```
 
-V prvním kroku k danému zapisovacímu proudu vytvoříme _BufferedWriter_, abychom mohli zapisovat řetězce a znaky nového řádku (což tato třída umí sama).
+V prvním kroku k danému zapisovacímu proudu vytvoříme `BufferedWriter`, abychom mohli zapisovat řetězce a znaky nového řádku (což tato třída umí sama).
 
-Další trojpříkaz zapíše do proudu počet položek v kolekci (_this.size()_) a následně připíše znak konce řádku.
+Další trojpříkaz zapíše do proudu počet položek v kolekci (`this.size()`) a následně připíše znak konce řádku.
 
 {% hint style="info" %}
 **Pozor na zápis čísla do proudu!**&#x20;
 
-Metoda _write()_ má přetížení přijímající jako parametr _int_, ale zapisuje jej jako char (tj. podle ASCII tabulky nebo kódování, místo 60 tedy napíše písmeno „A" apod.). Cílem je však zapsat řetězec reprezentující dané číslo, proto musíme hodnotu _int_ převést na řetězec a teprve tento řetězec zapsat do souboru. O převod čísla na řetězec se nám postará metoda _toString()_ třídy _Integer_ - celý příkaz tedy je _Integer.toString(\<hodnota\_k\_prevedeni>)_.&#x20;
+Metoda `write()` má přetížení přijímající jako parametr `int`, ale zapisuje jej jako char (tj. podle ASCII tabulky nebo kódování, místo 60 tedy napíše písmeno „A" apod.). Cílem je však zapsat řetězec reprezentující dané číslo, proto musíme hodnotu `int` převést na řetězec a teprve tento řetězec zapsat do souboru. O převod čísla na řetězec se nám postará metoda `toString()` třídy `Integer` - celý příkaz tedy je `Integer.toString(\<hodnota\_k\_prevedeni>)`.&#x20;
 {% endhint %}
 
-Poslední příkaz zajistí propsání zadaných dat do cílového zdroje pomocí metody _flush()_.
+Poslední příkaz zajistí propsání zadaných dat do cílového zdroje pomocí metody `flush()`.
 
-Dále se v cyklu přes všechny osoby v kolekci zavolá metoda _save()_ třídy _Person_ (tato metoda bude vytvořena v zápětí) a jako parametr se jí předá cílový proud, do kterého se zapisuje.
+Dále se v cyklu přes všechny osoby v kolekci zavolá metoda `save()` třídy `Person` (tato metoda bude vytvořena v zápětí) a jako parametr se jí předá cílový proud, do kterého se zapisuje.
 
 Tímto kolekce umí uložit veškeré informace, které potřebuje zpět ke svému načtení.
 
-Dalším krokem je implementace metody _save()_ u třídy _Person._ Princip zůstává shodný s výše představeným, pouze kód bude trošku delší kvůli většímu množství dat, které tato třída ukládá.
+Dalším krokem je implementace metody `save()` u třídy `Person.` Princip zůstává shodný s výše představeným, pouze kód bude trošku delší kvůli většímu množství dat, které tato třída ukládá.
 
 ```java
 public void save (Writer writer) throws IOException {
@@ -375,7 +375,7 @@ public void save (Writer writer) throws IOException {
 }
 ```
 
-Nejdříve se opět vytvoří _BufferedWriter_ pro snazší zápis.
+Nejdříve se opět vytvoří `BufferedWriter` pro snazší zápis.
 
 Následuje zápis jména a odřádkování, ihned na další řádek zápis věku a odřádkování.
 
@@ -383,7 +383,7 @@ Princip zápisu telefonních čísel je stejný jako u zápisu počtu prvků kol
 
 Posledním příkazem se zajistí propsání výsledku do zdroje.
 
-Všimněte si, že ani v této metodě se proud _bufferedWriter_ **nezavírá!** Zavření proudu by způsobilo zavření i vnořeného proudu a to není cílem, protože by se případné další osoby neměly kam zapsat. Proto je vhodné držet pravidlo, že zavíráme pouze ty fyzické proudy, které jsme sami otevřeli. Filtrační proudy tedy fyzické proudy zavírat nemají.
+Všimněte si, že ani v této metodě se proud `bufferedWriter` **nezavírá!** Zavření proudu by způsobilo zavření i vnořeného proudu a to není cílem, protože by se případné další osoby neměly kam zapsat. Proto je vhodné držet pravidlo, že zavíráme pouze ty fyzické proudy, které jsme sami otevřeli. Filtrační proudy tedy fyzické proudy zavírat nemají.
 
 Následuje velmi krátká a jednoduchá ukázka použití.
 
@@ -432,9 +432,9 @@ Jana ; jméno druhého záznamu
 
 Lze tedy vidět, že uložení dat do souboru vyžaduje trochu programátorské práce a zručnosti. Výhodou je, že výsledný soubor je textový a programátor, který zná jeho obsah, jej může sám upravit a přizpůsobit tak případně data dle potřeby.
 
-Druhou částí je načtení dat z tohoto souboru. Opět budeme pracovat stejným způsobem, jenom funkce nazveme _load()_. Důležitou odchylkou je ale vazba funkce ke své instanci. Zatímco funkce _save()_ ví, kterou instanci ukládá (tu instanci, nad kterou byla zavolána), funkce _load()_ v době svého vykonání ještě žádnou instanci nemá, teprve se ji snaží načíst ze souboru. Z toho důvodu musí být funkce _load_() statické. Vytvořenou instanci budou vracet jako svou návratovou hodnotu.
+Druhou částí je načtení dat z tohoto souboru. Opět budeme pracovat stejným způsobem, jenom funkce nazveme `load()`. Důležitou odchylkou je ale vazba funkce ke své instanci. Zatímco funkce `save()` ví, kterou instanci ukládá (tu instanci, nad kterou byla zavolána), funkce `load()` v době svého vykonání ještě žádnou instanci nemá, teprve se ji snaží načíst ze souboru. Z toho důvodu musí být funkce `load()` statické. Vytvořenou instanci budou vracet jako svou návratovou hodnotu.
 
-Začneme opět třídou _PersonCollection_ a prací se souborem.
+Začneme opět třídou `PersonCollection` a prací se souborem.
 
 ```java
 PersonCollection ret = null;
@@ -447,9 +447,9 @@ try (FileReader reader = new FileReader(fileName)){
 return ret;
 ```
 
-Opět, cílem je pouze otevřít soubor do instance třídy _FileReader_ pomocí bloku _try-with-resources_. O načtení dat se postará přetížená metoda _load()_, které předáme jako parametr vstupní textový proud.
+Opět, cílem je pouze otevřít soubor do instance třídy `FileReader` pomocí bloku _try-with-resources_. O načtení dat se postará přetížená metoda `load()`, které předáme jako parametr vstupní textový proud.
 
-Trošku složitější je problematika načítání z vstupního textového proudu. Pro jednoduchou práci si pomůžeme vytvořením filtrovacíhou proudu _BufferedReader_ - ten však již podle názvu data _bufferuje_, tedy si je pro svou potřebu přednačte do svých vnitřních struktur. Díky tomu, že data již byla načtena, nemůžeme dál předávat původní proud _reader_, protože v něm již žádná data být nemusí. Proto budeme dál třídě _Person_ předávat přímo instanci _bufferedReader_ a nikoliv _reader_ jako u ukládání.
+Trošku složitější je problematika načítání z vstupního textového proudu. Pro jednoduchou práci si pomůžeme vytvořením filtrovacíhou proudu `BufferedReader` - ten však již podle názvu data _bufferuje_, tedy si je pro svou potřebu přednačte do svých vnitřních struktur. Díky tomu, že data již byla načtena, nemůžeme dál předávat původní proud `reader`, protože v něm již žádná data být nemusí. Proto budeme dál třídě `Person` předávat přímo instanci `bufferedReader` a nikoliv `reader` jako u ukládání.
 
 ```java
 public static PersonCollection load (Reader reader) throws IOException {
@@ -467,15 +467,15 @@ public static PersonCollection load (Reader reader) throws IOException {
 }
 ```
 
-V prvním kroku vytvoříme pomocnou proměnnou _tmp_ a proměnnou _count_, do které později uložíme počet načítaných osob. Dále vytvoříme instanci objektu _PersonCollection_, který budeme vracet. Nakonec vytvoříme instanci _bufferedReaderu_.
+V prvním kroku vytvoříme pomocnou proměnnou `tmp` a proměnnou `count`, do které později uložíme počet načítaných osob. Dále vytvoříme instanci objektu `PersonCollection`, který budeme vracet. Nakonec vytvoříme instanci `bufferedReaderu`.
 
-Na začátku načtení nejdříve načteme ze vstupu řádek (_bufferedReader.readLine()_) a ten následně převedem z řetězce na typ _int_. Víme, že první hodnotou v souboru je počet záznamů, který jsme nyní zjistili.
+Na začátku načtení nejdříve načteme ze vstupu řádek (`bufferedReader.readLine()`) a ten následně převedem z řetězce na typ `int`. Víme, že první hodnotou v souboru je počet záznamů, který jsme nyní zjistili.
 
-Následně v cyklu načítáme postupně jednotlivé osoby a načtené instance přiřazujeme do cílové proměnné _ret_.
+Následně v cyklu načítáme postupně jednotlivé osoby a načtené instance přiřazujeme do cílové proměnné `ret`.
 
 Po ukončení načítání všech osob výslednou proměnnou vrátíme jako výsledek funkce.
 
-Dalším krokem je vytvoření funkce _load()_ ve třídě _Person_. I zde budeme postupovat analogicky jako v předchozím případě.
+Dalším krokem je vytvoření funkce `load()` ve třídě `Person`. I zde budeme postupovat analogicky jako v předchozím případě.
 
 ```java
 public static Person load (BufferedReader bufferedReader) 
@@ -503,7 +503,7 @@ public static Person load (BufferedReader bufferedReader)
 }
 ```
 
-Nejdříve připravíme pomocné proměnné pro řetězec, věk a počet telefonních čísel. Také vytvoříme budoucí výsledný vrácený objekt _ret_.
+Nejdříve připravíme pomocné proměnné pro řetězec, věk a počet telefonních čísel. Také vytvoříme budoucí výsledný vrácený objekt `ret`.
 
 První načtený řádek z dat nastavíme jako jméno navraceného objektu. Druhý načtený řádek z dat převedeme z řetězce na číslo a nastavíme jako věk vraceného objektu. Třetí načtený řádek z dat převedeme z řetězce na číslo a uložíme si jej jako počet telefonních čísel, které daná osoba bude mít. Následně v cyklu načteme ze souboru ještě stejný počet řádků - telefonních čísel, které uložíme do kolekce telefonních čísel. Výsledný objekt vrátíme.
 
@@ -511,14 +511,14 @@ Celá problematika není příliš složitá (opakují se neustále stejné vzor
 
 ### Automatická serializace
 
-Řešením je využití automatické _serializace_, kterou Java podporuje. V Javě existují třídy _ObjectOutputStream_ a _ObjectInputStream_ podporující právě takovýto automatizovaný přístup. Tyto třídy obsahují metody pro automatické uložení primitivních datových typů a také instance obecné třídy. Uložení obecné třídy probíhá (velmi zjednodušeně) tak, že objekt zjistí, jaké třídní proměnné jsou ve třídě definovány, jakých jsou datových typů a následně je všechny uloží. Načtení probíhá obdobně.
+Řešením je využití automatické `serializace`, kterou Java podporuje. V Javě existují třídy `ObjectOutputStream` a `ObjectInputStream` podporující právě takovýto automatizovaný přístup. Tyto třídy obsahují metody pro automatické uložení primitivních datových typů a také instance obecné třídy. Uložení obecné třídy probíhá (velmi zjednodušeně) tak, že objekt zjistí, jaké třídní proměnné jsou ve třídě definovány, jakých jsou datových typů a následně je všechny uloží. Načtení probíhá obdobně.
 
 Z pohledu programátora je obrovskou výhodou, že tento způsob se velmi snadno programuje. Je třeba zajistit dvě věci:
 
-* Všechny třídy, které se mají ukládat, musí implementovat rozhraní _Serializable_. Toto rozhraní neobsahuje žádné členy ani metody a slouží pouze jako příznak, že danou třídu lze serializovat. Primitivní typy lze serializovat automaticky. Většina typů definovaných v rámci knihoven Javy toto rozhraní implementuje také.
+* Všechny třídy, které se mají ukládat, musí implementovat rozhraní `Serializable`. Toto rozhraní neobsahuje žádné členy ani metody a slouží pouze jako příznak, že danou třídu lze serializovat. Primitivní typy lze serializovat automaticky. Většina typů definovaných v rámci knihoven Javy toto rozhraní implementuje také.
 * Realizovat programátorsky uložení a načtení dat.
 
-Prvním krokem je zajištění implementace rozhraní. V představeném příkladě to znamená, že je třeba doplnit implementaci tohoto rozhraní ke třídě _Person_. Třída _PersonCollection_ dědí ze třídy _ArrayList_, která již toto rozhraní (nepřímo) implementuje.
+Prvním krokem je zajištění implementace rozhraní. V představeném příkladě to znamená, že je třeba doplnit implementaci tohoto rozhraní ke třídě `Person`. Třída `PersonCollection` dědí ze třídy `ArrayList`, která již toto rozhraní (nepřímo) implementuje.
 
 ```java
 class Person implements Serializable {
@@ -539,9 +539,9 @@ public void serialize (String fileName) throws IOException {
 }
 ```
 
-Lze si povšimnout, že kód je velmi jednoduchý. Začátek spočívá opět v otevření výstupního proudu. Protože serializace pracuje s **byty**, potřebujeme nyní pracovat s _…OutputWriter_ proudy a nikoliv s _…Writer_ proudy. Třídu _FileWriter\_jsme tedy nahradili třídou \_FileOutputStream_.
+Lze si povšimnout, že kód je velmi jednoduchý. Začátek spočívá opět v otevření výstupního proudu. Protože serializace pracuje s **byty**, potřebujeme nyní pracovat s `…OutputWriter` proudy a nikoliv s `…Writer` proudy. Třídu `FileWriter` jsme tedy nahradili třídou `FileOutputStream`.
 
-Dalším krokem je použití filtrovacího proudu _ObjectOutputStream_ jako filtrovacího nad proudem do souboru. Samotné uložení realizuje jediný příkaz - _writeObject(this)._ Ten zajistí automatické uložení dat aktuálního objektu (_this_) do souboru.
+Dalším krokem je použití filtrovacího proudu `ObjectOutputStream` jako filtrovacího nad proudem do souboru. Samotné uložení realizuje jediný příkaz - `writeObject(this)`. Ten zajistí automatické uložení dat aktuálního objektu (`this`) do souboru.
 
 Načtení je obdobně jednoduché.
 
@@ -562,11 +562,11 @@ public static PersonCollection deserialize (String fileName)
 }
 ```
 
-Opět je třeba nejdříve otevřít vstupní bytový souborový proud (_FileInputStream_) a nad ním vytvořit _ObjectInputStream_.
+Opět je třeba nejdříve otevřít vstupní bytový souborový proud (`FileInputStream`) a nad ním vytvořit `ObjectInputStream`.
 
-Dále již stačí pouze zavolat metodu _readObject()_, která načte objekt ze souboru - protože tato metoda vrací jako návratový typ _Object_, musíme ještě výsledek explicitně přetypovat na datový typ, který chceme vracet jako výsledek z funkce (_PersonCollection_).
+Dále již stačí pouze zavolat metodu `readObject()`, která načte objekt ze souboru - protože tato metoda vrací jako návratový typ `Object`, musíme ještě výsledek explicitně přetypovat na datový typ, který chceme vracet jako výsledek z funkce (`PersonCollection`).
 
-Drobnou starostí navíc je ošetření výjimky _ClassNotFoundException_, která nástává v případě, kdy se deserializace snaží načíst ze souboru datový typ, který virtuální stroj Javy nezná.
+Drobnou starostí navíc je ošetření výjimky `ClassNotFoundException`, která nástává v případě, kdy se deserializace snaží načíst ze souboru datový typ, který virtuální stroj Javy nezná.
 
 Následuje ukázka použití.
 
