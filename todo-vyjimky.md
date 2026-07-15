@@ -239,7 +239,7 @@ V tomto případě je původní chyba `ex` zcela ztracena. Lepší (leč ne o mo
 
 Naprosto fatální chybou je vypsání výjimky na konzoli (kromě případů, kdy je to očekávané), případně její úplné skrytí.
 
-Tato varianta typicky vzniká u začátečníků, buď když se výjimky pro jedoduchost chtějí zcela zbavit:
+Tato varianta typicky vzniká u začátečníků, nejčastěji když se výjimky chtějí jednoduše zcela zbavit:
 
 ```java
 void mojeMetoda()
