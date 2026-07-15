@@ -681,32 +681,102 @@ TODO pokračovat
 
 ## Zřetězení výjimek - chained exceptions
 
-Zřetězené výjimky (tzv. chained[\[39\]](https://word2md.com/#footnote-39) exceptions) je technika, kdy postupným zkoumáním výjimek programátor zjistí bližší informace o zadané chybě. Asi nejjednodušší bude rychlý příklad.
+Zřetězené výjimky (tzv. chained exceptions) je technika, kdy postupným zkoumáním výjimek programátor zjistí bližší informace o zadané chybě. Asi nejjednodušší bude rychlý příklad.
+
+{% hint style="info" %}
+Pozor, odlišujte kontrolované - checked - od zřetězených - chained.
+{% endhint %}
+
+### Motivace k zřetězení výjimek
 
 Programátor píše aplikaci pro kopírování souborů v pravidelných časových intervalech (zálohování). Protože chce aplikaci navrhnout přehledně, rozdělí aplikaci do několika vrstev, které se mezi sebou postupně volají k vykonání dané funkcionality - nemá tedy všechen kód v jedné funkci, ale využívá hierarchického volání funkcí.
 
+```mermaid
+sequenceDiagram
+    participant T as Timer
+    participant BM as BackupManager
+    participant CM as CopyManager
+
+    activate T
+
+    T->>BM: doBackup()
+    activate BM
+    
+    BM->>CM: copyFolder(složka)
+    activate CM
+
+    CM->>CM: copyFile(soubor)
+    activate CM
+    
+    note over CM: ❌ IOException thrown   
+    
+    CM -->> CM: propagace IOException     
+    deactivate CM
+    
+    CM -->> BM: propagace IOException
+    deactivate CM
+    
+    BM -->> T: propagace IOException
+    deactivate BM
+    
+    T ->> T: zpracování chyby
+    
+    deactivate T
+```
+
 Na nejvyšší úrovni je objektu _Timer_ vyvolána virtuálním strojem metoda _intervalElapsed()_. Timer ví, že při uplynutí intervalu má zahájit zálohování zavoláním metody _doBackup()_ objektu _BackupManager_. Tento správce zálohování provede nalezení souborů a složek k zálohování a pro cyklicky pro každou nalezenou složku požádá o její zkopírování objekt _CopyManager_ zavoláním jeho metody _copyFolder()_. CopyManager při kopírování složky nalezne všechny vnořené soubory a pro každý soubor cyklicky zavolá metodu _copyFile()_.
 
-Programátor také ví, že někde v procesu může nastat chyba, a tak na nejvyšší úrovni umístí blok _try-catch_ a volání _BackupManager.doBackup()_ provede v bloku _try_.
+Programátor také ví, že někde v procesu může nastat chyba, a tak v `Timer` úrovni umístí blok _try-catch_ a volání _BackupManager.doBackup()_ provede v bloku _try_.
 
-Při použití však na nejnižší úrovni vznikne výjimka typu _IOException_, která je zachycena na úrovni nejvyšší a programátor se tam dozví popis chyby (například): _IOException - Invalid file name_. Žádné další informace nemá, neví tedy vůbec, kdy v procesu zálohování k chybě došlo, v jaké složce a u jakého souboru.
+Při použití však na nejnižší úrovni vznikne výjimka typu _IOException_, která je zachycena na úrovni nejvyšší a programátor se tam dozví popis chyby (například):&#x20;
+
+```
+IOException - Invalid file name
+```
+
+Žádné další informace nemá, neví tedy vůbec, kdy v procesu zálohování k chybě došlo, v jaké složce a u jakého souboru.
 
 Chtěl by tedy provést zachycení výjimky v metodě _copyFile()_ a přidat k ní vlastní informace týkající se názvu souboru, aby věděl, který soubor způsobil chybu. Jak ale efektivně ponechat původní výjimku a přidat k ní nějaké další, vlastní informace? Odpovědí jsou právě zřetězené výjimky.
 
-Konstruktor každé výjimky má přetížení, kdy posledním parametrem je objekt typu _Throwable_ nazvaný _cause_ - příčina. Při vytváření objektů výjimek pomocí konstruktoru tedy můžeme jako poslední parametr dávat výjimku jinou. Tento proces lze dělat cyklicky, jak ukazuje následující kód.
+Programátor ve výše uvedeném příkladu tedy vždy na každé úrovni vytvoří vlastní výjimku, přidá do jejího popisu důležité informace a vnořenou výjimku z předchozí úrovně. Výsledný objekt pomocí klauzule _throw_ vyhodí opět o úroveň výše.&#x20;
 
-```java
-Exception first = new Exception("D");
-Exception second = new Exception ("C", first);
-Exception third = new Exception("B", second);
-Exception fourth = new Exception("A", third);
+```mermaid
+sequenceDiagram
+    participant T as Timer
+    participant BM as BackupManager
+    participant CM as CopyManager
+
+    activate T
+
+    T->>BM: doBackup()
+    activate BM
+    
+    BM->>CM: copyFolder(složka)
+    activate CM
+
+    CM->>CM: copyFile(soubor)
+    activate CM
+    
+    note over CM: ❌ IOException thrown   
+    
+    CM -->> CM: propagace IOException     
+    deactivate CM
+
+    CM -->> CM: Zabal FileOperationException(IOException)
+    
+    CM -->> BM: propagace FileOperationException
+    deactivate CM
+
+    BM -->> BM: Zabal BackupException(FileOperationException)
+    BM -->> T: propagace BackupException
+    deactivate BM
+    
+    T ->> T: zpracování chyby
+    
+    deactivate T
 ```
 
-Vytvořili jsme první výjimku s nějakým popisem („D"), vytvořili jsme druhou, s dalším popisem („C") a příčinou („D") atd., až čtvrtá výjimka má popis („A"). Vytvořená čtvrtá výjimka je tedy „A", má v sobě výjimku „C", která má v sobě výjimku „B" a ta má v sobě výjimku „A". Výjimky tedy postupně vytvořily řetězec - proto zřetězené výjimky. Datové typy výjimek se mohou lišit - objekt _cause_ je typován na datový typ _Throwable_, takže je schopen držet instanci libovolného typu jakékoliv výjimky.
-
-Na příčinu libovolné výjimky se lze dostat pomocí metody _getCause()_ - pokud žádná výjimka vnořená není, metoda vrací hodnotu _null_.
-
-Programátor ve výše uvedeném příkladu tedy vždy na každé úrovni vytvoří vlastní výjimku, přidá do jejího popisu důležité informace a vnořenou výjimku z předchozí úrovně. Výsledný objekt pomocí klauzule _throw_ vyhodí opět o úroveň výše. Výsledné výjimky tedy mohou obsahovat v dané metodě:
+Výsledné výjimky tedy mohou obsahovat v dané metodě:
 
 * _copyFile -_ název souboru. Vnořená výjimka obsahuje důvod chyby kopírování souboru;
 * _copyFolder_ - název složky. Vnořená výjimky obsahuje název souboru, v ní vnořená obsahuje důvod chyby kopírování souboru;
@@ -746,6 +816,65 @@ Při volání této funkce na objekt _fourth_ z předchozího výpisu dostaneme 
 
 ```
 java.lang.Exception: A ||| java.lang.Exception: B ||| java.lang.Exception: C ||| java.lang.Exception: D |||
+```
+
+### Implementace zřetězení výjimek
+
+Konstruktor každé (normální) výjimky má přetížení, kdy posledním parametrem je objekt typu _Throwable_ nazvaný _cause_ - příčina. Při vytváření objektů výjimek pomocí konstruktoru tedy můžeme jako poslední parametr dávat výjimku jinou. Tento proces lze dělat cyklicky, jak ukazuje následující kód.
+
+```java
+Exception first = new Exception("D");
+Exception second = new Exception ("C", first);
+Exception third = new Exception("B", second);
+Exception fourth = new Exception("A", third);
+```
+
+Vytvořili jsme první výjimku s nějakým popisem („D"), vytvořili jsme druhou, s dalším popisem („C") a příčinou („D") atd., až čtvrtá výjimka má popis („A"). Vytvořená čtvrtá výjimka je tedy „A", má v sobě výjimku „C", která má v sobě výjimku „B" a ta má v sobě výjimku „A". Výjimky tedy postupně vytvořily řetězec - proto zřetězené výjimky. Datové typy výjimek se mohou lišit - objekt _cause_ je typován na datový typ _Throwable_, takže je schopen držet instanci libovolného typu jakékoliv výjimky.
+
+```
+Exception A
+   └── cause → Exception B
+                  └── cause → Exception C
+                                 └── cause → Exception D
+```
+
+Na příčinu výjimky se lze dostat pomocí metody _getCause()_ - pokud žádná výjimka vnořená není, metoda vrací hodnotu _null_.
+
+Základ pro práci zřetězených výjimek je tedy konstruktor, který umí předat příčinu - cause:
+
+```java
+public class BackupException extends Exception {
+
+    public BackupException(String message) {
+        super(message);
+    }
+
+    public BackupException(String message, Throwable cause) {
+        super(message, cause);
+    }
+}
+```
+
+{% hint style="info" %}
+Pokud děláte vlastní výjimku,  zvažte, zda k ní automaticky nedáte konstruktor, který umožňuje přidat příčinu. Jsou případy, kdy to není třeba, ale u většiny vlastních výjimek možnost vložit její příčinu využijete a konstruktor proto vytvořte.
+{% endhint %}
+
+### Procházení příčin výjimek
+
+Jak bylo zmíněno, pro příčinu výjimky se lze jednoduše dotázat metodou `getCause()`. Pokud víme, že máme strom zanoření hlubší (nebo vůbec nevíme, jak hlubový strom zanoření je), lze si napsat jednoduchý cyklus, který danou výjimku projde do hloubky a vypíše všechny vnořené příčiny:
+
+```java
+Throwable current = exception;
+int depth = 0;
+while (current != null) {
+    System.out.println("Depth " + depth + ": "
+            + current.getClass().getSimpleName()
+            + " - "
+            + current.getMessage());
+
+    current = current.getCause();
+    depth++;
+}
 ```
 
 ## Výjimky a práce se zdroji -- try-with-resources
