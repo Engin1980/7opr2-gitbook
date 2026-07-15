@@ -81,131 +81,107 @@ Souvislost se skupinami vychází i dělení výjimek podle hierarchie dědično
 
 ```mermaid
 classDiagram
-
+direction TB
     class Object {
         <<class>>
     }
 
-    class Throwable:::imp {
+    class Throwable {
         <<class>>
-        +getMessage()
-        +printStackTrace()
+	    +getMessage()
+	    +printStackTrace()
     }
 
-    namespace errors {
-        class Error:::imp {
-            <<class>>
-        }
-
-        class StackOverflowError {
-            <<class>>
-        }
-
-        class VirtualMachineError {
-            <<class>>
-        }
-
-        class AssertionError {
-            <<class>>
-        }
-    }
-
-    namespace checked{
-      class Exception:::imp {
+    class Error {
         <<class>>
-      }
+    }
 
-      class IOException {
+    class Exception {
         <<class>>
-        }
-
-        class SQLException {
-            <<class>>
-        }
-
-            class ClassNotFoundException{
-            <<class>>
-        }
-    class InterruptedException{
-            <<class>>
-        }
     }
 
-    %% RuntimeException hierarchy
-    namespace unchecked {
-        class RuntimeException:::imp {
-                <<class>>
-            }
-
-        class NullPointerException {
-            <<class>>
-        }
-
-        class IllegalArgumentException {
-            <<class>>
-        }
-
-        class IndexOutOfBoundsException {
-            <<class>>
-        }
-
-        class ArithmeticException {
-            <<class>>
-        }
-
-        class ClassCastException {
-            <<class>>
-        }
+    class RuntimeException {
+        <<class>>
     }
 
-note "Zjednodušený diagram. 
-Barevně zvýrazněny jsou důležité třídy.
-Zvýrazněné třídy mají mnohem více potomků,
-zaznačeno jich je pouze pár pro ilustraci."
+	note for Exception "Kontrolované výjimky"
+	note for RuntimeException "Běhové (nekontrolované) výjimky"
 
-    %% Relationships
     Object <|-- Throwable
     Throwable <|-- Error
     Throwable <|-- Exception
-
-    Error <|-- VirtualMachineError
-    Error <|-- StackOverflowError
-    Error <|-- AssertionError
-
-    Exception <|-- IOException
-    Exception <|-- SQLException
-    Exception <|-- ClassNotFoundException
-    Exception <|-- InterruptedException    
-
     Exception <|-- RuntimeException
-
-    RuntimeException <|-- NullPointerException
-    RuntimeException <|-- IllegalArgumentException
-    RuntimeException <|-- IndexOutOfBoundsException
-    RuntimeException <|-- ArithmeticException
-    RuntimeException <|-- ClassCastException
-
-
-    %% Styles
-    classDef imp fill:#883
 ```
 
 Každá výjimka je tedy reprezentována **instancí třídy**, která je přímým nebo nepřímým potomkem třídy `Throwable`:
 
-* Pokud se jedná o potomka třídy `Error`, jedná se o chybu.&#x20;
-* Pokud se jedná o potomka třídy `RuntimeException`, jedná se o běhovou výjimku.&#x20;
+* Pokud se jedná o potomka třídy `Error`, jedná se o chybu.
+* Pokud se jedná o potomka třídy `RuntimeException`, jedná se o běhovou výjimku.
 * V ostatních případech se jedná o kontrolovanou výjimku.
 
-## Proč/Kdy zachytávat výjimky
+Od každé základní výše uvedené třídy pak existuje spousta potomků, kteří reprezentují specifičtější případy různých chyb.
+
+```
+Object
+└── Throwable
+    ├── Error
+    │   ├── VirtualMachineError
+    │   │   ├── OutOfMemoryError
+    │   │   ├── StackOverflowError
+    │   │   ├── InternalError
+    │   │   └── UnknownError
+    │   ├── AssertionError
+    │   ├── NoClassDefFoundError
+    │   ├── ExceptionInInitializerError
+    │   └── ...
+    │
+    └── Exception
+        ├── IOException
+        │   ├── FileNotFoundException
+        │   ├── EOFException
+        │   ├── SocketException
+        │   └── ...
+        ├── SQLException
+        ├── ClassNotFoundException
+        ├── InterruptedException
+        ├── ReflectiveOperationException
+        │   ├── InstantiationException
+        │   ├── IllegalAccessException
+        │   └── InvocationTargetException
+        │
+        └── RuntimeException
+            ├── NullPointerException
+            ├── IllegalArgumentException
+            │   ├── NumberFormatException
+            │   └── IllegalChannelGroupException
+            ├── IndexOutOfBoundsException
+            │   ├── ArrayIndexOutOfBoundsException
+            │   └── StringIndexOutOfBoundsException
+            ├── ArithmeticException
+            ├── ClassCastException
+            ├── IllegalStateException
+            ├── ConcurrentModificationException
+            ├── UnsupportedOperationException
+            ├── SecurityException
+            ├── TimeoutException
+            ├── CompletionException
+            └── ...
+```
+
+{% hint style="info" %}
+Tabulku není třeba studovat, slouží jen pro ilustraci.
+{% endhint %}
+
+## Proč / Kdy zachytávat výjimky
 
 Při návrhu a implementaci softwaru je správná práce s výjimkami klíčová pro stabilitu a čitelnost kódu. Častou chybou (zejména začátečníků) je:
 
 * I) Nezachytávání výjimek - začátečníci často nezachytávají výjimky v případech, kdy je není možné vyřešit. Je však důležité si uvědomit, že v určitých případech je vhodné k existující výjimce doplnit nějaké dodatečné info, které později pomůže k identifikaci a řešení chyby (např. který soubor způsobil chybu, do které tabulky v databázi se zapisovalo, který uživatel vyvolal neúspěšnou operaci mazání).
-* II) Zachytávání výjimek - začátečníci často také  zachytávají výjimky, kdy to není nutné, protože nejsou schopni stav napravit, ale "nějaké učební texty/učitelé/tutorialy" říkaly, že výjimky se mají zachytávat. Pak většinou dochází k tomu, že buď vznikne násilné ošetření chyby na místech, kde to není vhodné, nebo se výjimka vyhodí podruhé, čímž se maskuje původní problém.
+* II) Zachytávání výjimek - začátečníci často také zachytávají výjimky, kdy to není nutné, protože nejsou schopni stav napravit, ale "nějaké učební texty/učitelé/tutorialy" říkaly, že výjimky se mají zachytávat. Pak většinou dochází k tomu, že buď vznikne násilné ošetření chyby na místech, kde to není vhodné, nebo se výjimka vyhodí podruhé, čímž se maskuje původní problém.
 
-Základní a nejdůležitější pravidlo pro zachytávání výjimek zní:&#x20;
+Základní a nejdůležitější pravidlo pro zachytávání výjimek zní:
 
-> Výjimku zachytávejte pouze tehdy, pokud s ní dokážete v daném místě programu udělat něco smysluplného.&#x20;
+> Výjimku zachytávejte pouze tehdy, pokud s ní dokážete v daném místě programu udělat něco smysluplného.
 
 Pokud pro vzniklou chybu nemáte okamžité řešení nebo interpretaci, je nejlepším postupem nechat ji volně „probublat“ do vyšších vrstev aplikace, kde bude zpracována globálně (například zalogována a uživateli bude zobrazeno obecné chybové hlášení). Bezhlavé chytání každé chyby kód pouze znepřehledňuje a maskuje skutečné problémy.
 
@@ -217,7 +193,7 @@ Existují v zásadě pouze dva legitimní důvody, proč byste měli výjimku v 
 {% hint style="info" %}
 #### Častý antipattern I: Zachycení a bezhlavé přeposlání
 
-Velkým nešvarem v programování je takzvané „přehazování horkého bramboru“. Jde o situaci, kdy vývojář výjimku zachytí, ale nijak ji nezpracuje a pouze ji znovu vyhodí dál (např. pomocí konstrukce `throw e;` v některých jazycích).&#x20;
+Velkým nešvarem v programování je takzvané „přehazování horkého bramboru“. Jde o situaci, kdy vývojář výjimku zachytí, ale nijak ji nezpracuje a pouze ji znovu vyhodí dál (např. pomocí konstrukce `throw e;` v některých jazycích).
 
 ```java
 void mojeMetoda() throws Exception
@@ -305,7 +281,7 @@ Jak často se například díváte na konzoli na mobilním telefonu, zda tam ně
 {% hint style="info" %}
 Kdy teda mohu v `catch` psát na konzoli?
 
-Záleží na kontextu v aplikaci.&#x20;
+Záleží na kontextu v aplikaci.
 
 * Pokud jsem ve třídě, která se "baví" s uživatelem, píše mu zprávy na konzoli, žádá ho o vstupy a komunikuje s ním, je v pořádku na této úrovni napsat uživateli z `catch` na konzoli, že se něco nepovedlo.
 * Pokud jsem ale ve třídě, která je například součástí knihovny ukládající data na disk, a o uživateli a uživatelském rozhraní nic netuším, nemohu psát na konzoli. Co když je aplikace, ve které je kód použit, webová? (Pak se konzole píše na server a uživatel ji neuvidí.) Co když to je mobilní aplikace? Pokud nejsem třída, která má "právo" bavit se s uživatelem přes UI, na konzoli bych neměla psát nikdy.
@@ -317,7 +293,7 @@ Přecházíte z .NET a C#? Pozor, že v .NET se `throw ex;` chová jinak než v 
 
 ## Zachytávání výjimek
 
-Zachytávat lze všechny typy výjimek, povinně se však zachytávají pouze výjimky kontrolované.&#x20;
+Zachytávat lze všechny typy výjimek, povinně se však zachytávají pouze výjimky kontrolované.
 
 Výjimky zachyhtáváme použitím konstrukce `try-catch-finally`, která je základním stavebním kamenem pro ošetření chyb v moderních programovacích jazycích. Umožňuje nám oddělit samotnou „šťastnou cestu“ programu (standardní běh kódu) od logiky, která řeší mimořádné a chybové stavy.
 
@@ -355,8 +331,8 @@ Bez této konstrukce by jakákoliv neočekávaná chyba (např. chybějící sou
 Zde je podrobné vysvětlení jednotlivých částí, ze kterých se tento blok skládá:
 
 * `try` (Zkus provést): Do tohoto bloku uzavíráme kód, u kterého hrozí, že by mohl vyvolat výjimku (např. čtení z databáze, parsování uživatelského vstupu nebo síťová komunikace). Program se pokusí tyto instrukce standardně vykonat. Pokud vše proběhne v pořádku, blok `catch` se zcela přeskočí. Pokud však na libovolném řádku uvnitř bloku `try` dojde k chybě, vykonávání běžného kódu se okamžitě přeruší a řízení se předá dál.
-* &#x20;`catch` (Zachyť a vyřeš): Tento blok slouží jako „záchranná síť“. Vstoupí se do něj pouze v případě, že uvnitř bloku `try` došlo k výjimce. V bloku `catch` definujeme, jak chceme na konkrétní chybu reagovat – můžeme zde zapsat chybu do logu, zobrazit uživatelsky přívětivé varování, nebo se pokusit o náhradní řešení (např. načtení výchozích dat). Můžeme mít dokonce více bloků `catch` za sebou pro různé typy výjimek (např. zvlášť pro chybu sítě a zvlášť pro chybu v databázi).
-* `finally` (Ukliď po sobě): Kód v tomto bloku se spustí vždy, bez ohledu na to, zda k nějaké výjimce došlo, nebo ne (tedy jak po úspěšném dokončení bloku `try`, tak po zpracování chyby v bloku `catch`). Tento blok je naprosto klíčový pro uvolňování systémových prostředků. Typicky se zde zavírají otevřené soubory, ukončují se síťová spojení nebo se uzavírají databázové transakce. Tím se předchází takzvaným „únikům paměti“ (memory leaks), kdy by aplikace držela uzamčené prostředky i po svém selhání.&#x20;
+* `catch` (Zachyť a vyřeš): Tento blok slouží jako „záchranná síť“. Vstoupí se do něj pouze v případě, že uvnitř bloku `try` došlo k výjimce. V bloku `catch` definujeme, jak chceme na konkrétní chybu reagovat – můžeme zde zapsat chybu do logu, zobrazit uživatelsky přívětivé varování, nebo se pokusit o náhradní řešení (např. načtení výchozích dat). Můžeme mít dokonce více bloků `catch` za sebou pro různé typy výjimek (např. zvlášť pro chybu sítě a zvlášť pro chybu v databázi).
+* `finally` (Ukliď po sobě): Kód v tomto bloku se spustí vždy, bez ohledu na to, zda k nějaké výjimce došlo, nebo ne (tedy jak po úspěšném dokončení bloku `try`, tak po zpracování chyby v bloku `catch`). Tento blok je naprosto klíčový pro uvolňování systémových prostředků. Typicky se zde zavírají otevřené soubory, ukončují se síťová spojení nebo se uzavírají databázové transakce. Tím se předchází takzvaným „únikům paměti“ (memory leaks), kdy by aplikace držela uzamčené prostředky i po svém selhání.
 
 {% hint style="info" %}
 Díky moderním technikám a alternativním přístupům (zejména `try-with-resources` — bude vysvětleno dále) se dnes klíčové slovo `finally` používá spíše výjimečně.
@@ -364,12 +340,10 @@ Díky moderním technikám a alternativním přístupům (zejména `try-with-res
 
 Pro zachytávání **kontrolovaných** výjimek se používá v Javě zvláštní pravidlo, které se nazývá _Catch Or Specify Requirement_. Toto pravidlo říká, že **pro každou kontrolovanou výjimku musí platit jedna z následujících variant:**
 
-* **Catch -** místo vyvolání výjimky je uzavřeno v bloku `try`{…}`. K tomuto bloku musí být bezprostředně připojen blok `catch {…}`, který umí ošetřit a zotavit program při vzniku této výjimky.
+* **Catch -** místo vyvolání výjimky je uzavřeno v bloku `try`{…}`. K tomuto bloku musí být bezprostředně připojen blok` catch {…}\`, který umí ošetřit a zotavit program při vzniku této výjimky.
 * **Specify -** metoda, který vyvolává tuto výjimku, musí explicitně ve své deklaraci (úvodním řádku) definovat, že tuto výjimku vyvolává, pomocí klíčového slova `throws` následovaným seznamem vyvolávaných výjimek oddělených čárkou.
 
-{% hint style="info" %}
-Pozor, odlišujte klíčová slova `throw` a `throws`. Mají různý kontext i význam.
-{% endhint %}
+\{% hint style="info" %\} Pozor, odlišujte klíčová slova `throw` a `throws`. Mají různý kontext i význam. \{% endhint %\}
 
 Obě varianty budou vysvětleny dále.
 
@@ -465,7 +439,7 @@ public static long getFileSize (String fileName)
 Výše uvedený příklad ukazuje funkci, která vrací velikost souboru (tato problematika bude vysvětlena dále ve studijní opoře - zaměřeno bude tedy pouze na problematiku zpracování chyby). Pro zjištění velikosti využije funkci `java.nio.file.Files.size` - tato funkce však v případě, kdy soubor neexistuje, spadne na výjimce `java.io.IOException`. Jak víme, můžeme buď výjimku zachytit pomocí bloku try-catch(-finally) — ale jak? Programátor na této úrovni nemá způsob, jak smysluplně výjimku zachytit. Proto ji zpracovávat nebude, ale do záhlaví funkce připíše `throws java.io.IOException`. Tato výjimka se bude tedy z této metody posílat výše do nadřazené/ých metod, dokud nedojde k jejímu zpracování, nebo k pádu programu (pokud nebude ošetřena nikde).
 
 {% hint style="info" %}
-Lze kontrolovanou výjimku nezotavit? Hypoteticky můžete výjimku propagovat dokolečka až do funkce `main()`, jejíž deklaraci můžete mít napsanou jako `public static void main() throws IOException`. V tu chvíli můžete v  `main()` vyvolat výjimku `IOException` a nezpracovávat ji, protože jste řekli, že `main()` ji bude propagovat výše.
+Lze kontrolovanou výjimku nezotavit? Hypoteticky můžete výjimku propagovat dokolečka až do funkce `main()`, jejíž deklaraci můžete mít napsanou jako `public static void main() throws IOException`. V tu chvíli můžete v `main()` vyvolat výjimku `IOException` a nezpracovávat ji, protože jste řekli, že `main()` ji bude propagovat výše.
 
 V reálu však samozřejmě aplikace při vyvolání výjimky spadne, protože nad `main()` už není nikdo, kdo by ji zachytil.
 
@@ -731,7 +705,7 @@ Na nejvyšší úrovni je objektu `Timer` vyvolána virtuálním strojem metoda 
 
 Programátor také ví, že někde v procesu může nastat chyba, a tak v `Timer` úrovni umístí blok `try-catch` a volání `BackupManager.doBackup()` provede v bloku `try`.
 
-Při použití však na nejnižší úrovni vznikne výjimka typu `IOException`, která je zachycena na úrovni nejvyšší a programátor se tam dozví popis chyby (například):&#x20;
+Při použití však na nejnižší úrovni vznikne výjimka typu `IOException`, která je zachycena na úrovni nejvyšší a programátor se tam dozví popis chyby (například):
 
 ```
 IOException - Invalid file name
@@ -741,7 +715,7 @@ IOException - Invalid file name
 
 Chtěl by tedy provést zachycení výjimky v metodě `copyFile()` a přidat k ní vlastní informace týkající se názvu souboru, aby věděl, který soubor způsobil chybu. Jak ale efektivně ponechat původní výjimku a přidat k ní nějaké další, vlastní informace? Odpovědí jsou právě zřetězené výjimky.
 
-Programátor ve výše uvedeném příkladu tedy vždy na každé úrovni vytvoří vlastní výjimku, přidá do jejího popisu důležité informace a vnořenou výjimku z předchozí úrovně. Výsledný objekt pomocí klauzule `throw` vyhodí opět o úroveň výše.&#x20;
+Programátor ve výše uvedeném příkladu tedy vždy na každé úrovni vytvoří vlastní výjimku, přidá do jejího popisu důležité informace a vnořenou výjimku z předchozí úrovně. Výsledný objekt pomocí klauzule `throw` vyhodí opět o úroveň výše.
 
 ```mermaid
 sequenceDiagram
@@ -836,7 +810,7 @@ public class BackupException extends Exception {
 ```
 
 {% hint style="info" %}
-Pokud děláte vlastní výjimku,  zvažte, zda k ní automaticky nedáte konstruktor, který umožňuje přidat příčinu. Jsou případy, kdy to není třeba, ale u většiny vlastních výjimek možnost vložit její příčinu využijete a konstruktor proto vytvořte.
+Pokud děláte vlastní výjimku, zvažte, zda k ní automaticky nedáte konstruktor, který umožňuje přidat příčinu. Jsou případy, kdy to není třeba, ale u většiny vlastních výjimek možnost vložit její příčinu využijete a konstruktor proto vytvořte.
 {% endhint %}
 
 Samotné zabalení a vyhození se používá nejčastě ve spojení s blokem `catch`, kde v tomto bloku nejdříve zachytíme vyvolanou původní výjimku, vytvoříme vlastní objekt s doplňujícími informacemi a vnoříme do něj původní výjimku; a následně tento vytvořený objekt vyhodíme do nadřazeného bloku.
@@ -957,9 +931,9 @@ Pokud se rozhodneme vytvořit vlastní výjimku (a to je často vhodné), měli 
 
 * Rozhodnout, zda bude výjimka kontrolovaná (předek `Exception`) nebo běhová (předek `RuntimeException`). Měli bychom se vyhnout předkovi `Error`, pokud neděláme opravdu něco velmi specifického.
 * Zvolit vhodný název pro výjimku. Z názvu výjimky by mělo být jasné, o jakou chybu jde. Název by měl vždy obsahovat postfix `...Exception`.
-* Vytvořit odpovídající konstrutkory.&#x20;
+* Vytvořit odpovídající konstrutkory.
   * Velmi zřídka dává smysl výjimka bez konstruktoru, která nepotřebuje žádné doplňující informace. Téměř vždy budeme potřebovat dát výjimce zprávu (`String message`), případně nějaký jiný ekvivalent informace (například hodnotu výčtového typu - FILE\_NOT\_FOUND/FILE\_NOT\_ACCESSIBLE/FILE\_OUT\_OF\_LIMIT/FILE\_NAME\_INVALID/...).
-  * Často budeme také potřebovat variantu, kdy budeme výjimce dávat příčinu `Throwable cause`.&#x20;
+  * Často budeme také potřebovat variantu, kdy budeme výjimce dávat příčinu `Throwable cause`.
   * Všechny předané hodnoty dále předáváme předkovi voláním jeho konstruktoru, kdy mu plníme jak jeho `message`, tak `cause`.
 * Zvažte, zda chcete informace o chybě dávat pouze do message, nebo výjimce udělat nějaké jednoduché properties (`get...()` metody), ve kterých půjde z výjimky získat bližší informace a nebude se tak muset složitě získávát z message (například název chybujícího argument, hodnotu nesprávného indexu, název problémového souboru atp.).
 
@@ -1096,4 +1070,3 @@ Uzavření souboru (původní větev `finally`) se však nemusí provádět, pro
 {% hint style="info" %}
 Zájemce o vysvětlení bližšího principu a chování celého mechanismu odkážeme na web - hledejte princip _try-with-resources_ a rozhranní `AutoCloseable`.
 {% endhint %}
-
