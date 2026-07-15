@@ -297,24 +297,88 @@ void mojeMetoda()
 ```
 
 V obou případech se může stát, že si vzniklé chyby nikdo nevšimne, zůstane skryta a aplikace běží na první pohled dále. Důsledky pak samozřejmě mohou být fatální (uložení dokumentu se neprovede, data se nepošlu), protože uživatel (a často ani programátor) netuší, že se něco nepovedlo či neprovedlo.
+
+Jak často se například díváte na konzoli na mobilním telefonu, zda tam nějaká aplikace nevypsala chybu?
+
+**Pozor: Ve skriptech často budeme v bloku `catch` používat výpisy na konzoli, ale toto je pouze pro ilustrační příklady.**
+{% endhint %}
+
+{% hint style="info" %}
+Kdy teda mohu v `catch` psát na konzoli?
+
+Záleží na kontextu v aplikaci.&#x20;
+
+* Pokud jsem ve třídě, která se "baví" s uživatelem, píše mu zprávy na konzoli, žádá ho o vstupy a komunikuje s ním, je v pořádku na této úrovni napsat uživateli z `catch` na konzoli, že se něco nepovedlo.
+* Pokud jsem ale ve třídě, která je například součástí knihovny ukládající data na disk, a o uživateli a uživatelském rozhraní nic netuším, nemohu psát na konzoli. Co když je aplikace, ve které je kód použit, webová? (Pak se konzole píše na server a uživatel ji neuvidí.) Co když to je mobilní aplikace? Pokud nejsem třída, která má "právo" bavit se s uživatelem přes UI, na konzoli bych neměla psát nikdy.
 {% endhint %}
 
 ## Zachytávání výjimek
 
-Zachytávat lze všechny typy výjimek, povinně se však zachytávají pouze výjimky kontrolované. Pro zachytávání výjimek se používá v Javě zvláštní pravidlo, které se nazývá _Catch Or Specify Requirement_. Toto pravidlo říká, že **pro každou kontrolovanou výjimku musí platit jedna z následujících variant:**
+Zachytávat lze všechny typy výjimek, povinně se však zachytávají pouze výjimky kontrolované.&#x20;
+
+Výjimky zachyhtáváme použitím konstrukce `try-catch-finally`, která je základním stavebním kamenem pro ošetření chyb v moderních programovacích jazycích. Umožňuje nám oddělit samotnou „šťastnou cestu“ programu (standardní běh kódu) od logiky, která řeší mimořádné a chybové stavy.
+
+```java
+try {
+    // TRY: Zkoušíme otevřít a přečíst soubor
+    soubor = new FileReader("config.txt");
+    int data = soubor.read();
+    System.out.println("První znak v souboru: " + (char)data);
+} 
+catch (IOException ex) {
+    // CATCH: Zachytíme pouze jednu obecnou chybu při práci se souborem
+    System.out.println("⚠️ Nepodařilo se přečíst soubor: " + ex.getMessage());
+} 
+finally {
+    // FINALLY: Tento kód se spustí VŽDY, abychom uvolnili paměť a zavřeli soubor
+    // Pouze pro ilustraci, dnes se to řeší jinak.
+    if (soubor != null) {
+        try {
+            soubor.close();
+            System.out.println("🧹 Soubor byl úspěšně zavřen.");
+        } catch (IOException e) {
+            System.out.println("Chyba při zavírání souboru.");
+        }
+    }
+}
+```
+
+{% hint style="info" %}
+Opět připomínáme, že výše uvedený příklad píše v `catch` na konzoli pouze z ilustrativních příkladů. Jak to udělat lépe/správně uvidíte v dalším textu.
+{% endhint %}
+
+Bez této konstrukce by jakákoliv neočekávaná chyba (např. chybějící soubor nebo výpadek sítě) vedla k okamžitému pádu celé aplikace. Díky tomuto mechanismu můžeme chybu kontrolovaně zachytit, bezpečně na ni zareagovat a zajistit, že program bude pokračovat v činnosti nebo se korektně ukončí.
+
+Zde je podrobné vysvětlení jednotlivých částí, ze kterých se tento blok skládá:
+
+* `try` (Zkus provést): Do tohoto bloku uzavíráme kód, u kterého hrozí, že by mohl vyvolat výjimku (např. čtení z databáze, parsování uživatelského vstupu nebo síťová komunikace). Program se pokusí tyto instrukce standardně vykonat. Pokud vše proběhne v pořádku, blok `catch` se zcela přeskočí. Pokud však na libovolném řádku uvnitř bloku `try` dojde k chybě, vykonávání běžného kódu se okamžitě přeruší a řízení se předá dál.
+* &#x20;`catch` (Zachyť a vyřeš): Tento blok slouží jako „záchranná síť“. Vstoupí se do něj pouze v případě, že uvnitř bloku `try` došlo k výjimce. V bloku `catch` definujeme, jak chceme na konkrétní chybu reagovat – můžeme zde zapsat chybu do logu, zobrazit uživatelsky přívětivé varování, nebo se pokusit o náhradní řešení (např. načtení výchozích dat). Můžeme mít dokonce více bloků `catch` za sebou pro různé typy výjimek (např. zvlášť pro chybu sítě a zvlášť pro chybu v databázi).
+* `finally` (Ukliď po sobě): Kód v tomto bloku se spustí vždy, bez ohledu na to, zda k nějaké výjimce došlo, nebo ne (tedy jak po úspěšném dokončení bloku `try`, tak po zpracování chyby v bloku `catch`). Tento blok je naprosto klíčový pro uvolňování systémových prostředků. Typicky se zde zavírají otevřené soubory, ukončují se síťová spojení nebo se uzavírají databázové transakce. Tím se předchází takzvaným „únikům paměti“ (memory leaks), kdy by aplikace držela uzamčené prostředky i po svém selhání.&#x20;
+
+{% hint style="info" %}
+Díky moderním technikám a alternativním přístupům (zejména `try-with-resources` — bude vysvětleno dále) se dnes klíčové slovo `finally` používá spíše výjimečně.
+{% endhint %}
+
+Pro zachytávání **kontrolovaných** výjimek se používá v Javě zvláštní pravidlo, které se nazývá _Catch Or Specify Requirement_. Toto pravidlo říká, že **pro každou kontrolovanou výjimku musí platit jedna z následujících variant:**
 
 * **Catch -** místo vyvolání výjimky je uzavřeno v bloku _try_ {…}. K tomuto bloku musí být bezprostředně připojen blok _catch {…}_, který umí ošetřit a zotavit program při vzniku této výjimky.
-* **Specify -** metoda, který vyvolává tuto výjimku, musí explicitně ve své deklaraci (úvodním řádku) definovat, že tuto výjimku vyvolává, pomocí klíčového slova _throws_[_\[34\]_](https://word2md.com/#footnote-34) následovaným seznamem vyvolávaných výjimek oddělených čárkou.
+* **Specify -** metoda, který vyvolává tuto výjimku, musí explicitně ve své deklaraci (úvodním řádku) definovat, že tuto výjimku vyvolává, pomocí klíčového slova _throws_ následovaným seznamem vyvolávaných výjimek oddělených čárkou.
+
+{% hint style="info" %}
+Pozor, odlišujte klíčová slova `throw` a `throws`. Mají různý kontext i význam.
+{% endhint %}
+
+Obě varianty budou vysvětleny dále.
 
 ### Catch requirement
 
-Výjimka se zachytává do sekvence bloků _try{…}_ _catch{…} finally{…}_, kde platí, že:
+Výjimka se zachytává do sekvence bloků `try{…} catch{…} finally{…}`, kde platí, že:
 
-* Blok _try_ musí být právě jeden;
-* Bloků _catch_ může být více, ale každý musí platit pro odlišný typ výjimky (bude vysvětleno dále);
-* Blok _finály_ je nepovinný.
+* Blok `try` musí být právě jeden;
+* Bloků `catch` může být více, ale každý musí platit pro odlišný typ výjimky (bude vysvětleno dále);
+* Blok `finally` je nepovinný.
 
-Blok _try_ kontroluje kód na vznik výjimky. Pokud je nějaký výjimka vyvolána, řízení se předá do bloku _catch_ odpovídajícího typu výjimky. Pokud existuje i blok _finally_, vykoná se vždy buď po úspěšném ukončení bloku _try_ nebo po ukončení odpovídajícího bloku _catch_, a to i v případech, že blok _catch_ obsahuje odskok pryč z funkce (například klíčovým slovem _return_).
+Blok `try` kontroluje kód na vznik výjimky. Pokud je nějaký výjimka vyvolána, řízení se předá do bloku `catch` odpovídajícího typu výjimky. Pokud existuje i blok `finally`, vykoná se vždy buď po úspěšném ukončení bloku `try` nebo po ukončení odpovídajícího bloku `catch`, a to i v případech, že blok `catch` obsahuje odskok pryč (například klíčovým slovem `return`, `break` či `continue`).
 
 ```java
 try{
@@ -329,40 +393,40 @@ finally {
 }
 ```
 
-Blok _try_ může pokrývat několik příkazů (volání funkcí), není tedy třeba pro každou funkci, o které víme, že bude vyvolávat kontrolovanou výjimku, vytvářet vlastní sekvenci try-catch(-finally).
+Blok `try` může pokrývat několik příkazů (volání funkcí), není tedy třeba pro každou funkci, o které víme, že bude vyvolávat kontrolovanou výjimku, vytvářet vlastní sekvenci try-catch(-finally). Oproti tomu je vhodné, aby jeden blok `try` pokrýval určitou část "chybové problematiky". Nedává smysl uzavřít celou aplikaci do jednoho bloku `try`, protože pak jsme schopni z kontextu `try` říct jen obecnou chybu "někdy se něco pokazilo".
 
-Blok _catch_ je oproti ostatním blokům konstrukčně složitější a specifičtější. Za klíčové slovo _catch_ se do závorek (obdobně jako parametr funkce) musí zapsat datový typ (třída) zachytávané výjimky a proměnná, do níž se výjimka uloží. Typicky se uvádí zápis:
+Blok `catch` je oproti ostatním blokům konstrukčně složitější a specifičtější. Za klíčové slovo `catch` se do závorek (obdobně jako parametr funkce) musí zapsat datový typ (třída) zachytávané výjimky a proměnná, do níž se výjimka uloží. Typicky se uvádí zápis:
 
 ```java
 catch (Exception ex)
 ```
 
-, kde _catch_ je klíčové slovo, _Exception_ je typ zachytávané výjimky, a _ex_ je název proměnné, do které bude uložen objekt reprezentující danou výjimku. Typ výjimky musí být vždy buď třída _Throwable_ nebo nějaký její přímý či nepřímý potomek. Jeden blok může zachytávat více typů vyjímek[\[35\]](https://word2md.com/#footnote-35) (tehdy se typy oddělují pomocí znaku „svislítka" - |, nebo bloků _catch_ může být uvedeno více (zapisují se pod sebou) a každý bude mít definován odlišný typ výjimky, který může zachytit[\[36\]](https://word2md.com/#footnote-36).
+, kde `catch` je klíčové slovo, _Exception_ je typ zachytávané výjimky, a `ex` je název proměnné, do které bude uložen objekt reprezentující danou výjimku. Typ výjimky musí být vždy buď třída _Throwable_ nebo nějaký její přímý či nepřímý potomek. Jeden blok může zachytávat více typů vyjímek (tehdy se typy oddělují pomocí znaku „svislítka" - `|`, nebo bloků _catch_ může být uvedeno více (zapisují se pod sebou) a každý bude mít definován odlišný typ výjimky, který může zachytit.
 
 ```java
 try {
     int a = 0;
     int b = 0;
     int c = a / b; // dělení nulou
-} catch (IllegalArgumentException ex) {
-    System.out.println("-IllegalArgumentException-");
+} catch (IllegalArgumentException | NullArgumentException ex) {
+    System.out.println("-IllegalArgumentException-or-NullArgumentException-");
 } catch (RuntimeException ex) {
     System.out.println("-RuntimeException-");
 } catch (Exception ex) {
-    System.out.println("-CheckedException-");
+    System.out.println("-AnyCheckedException-");
 } catch (Throwable ex) {
-    System.out.println("-Throwable-");
+    System.out.println("-AnyThrowable-");
 }
 ```
 
 Zde:
 
-* První blok _catch_ zachycuje pouze výjimku třídy _IllegalArgumentException_ - což je výjimka, kterou vyvolávají některé funkce v případech, kdy se jim předá nesprávný parametr.
+* První blok _catch_ zachycuje pouze výjimku třídy _IllegalArgumentException_ - což je výjimka, kterou vyvolávají některé funkce v případech, kdy se jim předá nesprávný parametr, **nebo** `NullArgumentException` (naše fiktivní výjimka, která se volá, pokud je argument nečekaně `null`.
 * Druhý blok _catch_ zachycuje všechny běhové výjimky (v našem případě zde dojde k zachycení dělení nulou, které se provádí v bloku _try_).
 * Třetí blok zachycuje obecně všechny kontrolované výjimky.
 * Čtvrtý blok zachycuje obecně všechny ostatní výjimky, jaké mohou v programu nastat.
 
-Lze si povšimnout, že i když je doporučeno zachytávat pouze kontrolované výjimky (jiné by v programu nastat neměly, nebo se z nich nelze zotavit), tak zachytit lze úplně všechny výjimky (s využitím třídy _Throwable_).
+Lze si povšimnout, že i když je povinné zachytávat pouze kontrolované výjimky, tak zachytit lze úplně všechny výjimky (s využitím třídy _Throwable_).
 
 ### Specify requirement
 
@@ -370,9 +434,9 @@ Sekvence try-catch(-finally) předpokládá, že programátor v bloku _catch_ um
 
 Například - uživatel zadá soubor ke kopírování, cílový soubor však existuje. Vyhodí se výjimka, která říká, že cílový soubor nelze přepsat. Programátor zobrazí uživateli dialog, že soubor nelze přepsat a program sám pokračuje korektně dále, byť se daná operace neprovede. (Mimochodem, kdyby tento případ ošetřen nebyl, celá aplikace by spadla na kritickou chybu a ukončila by se, což by běžného uživatele jistě nepotěšilo.)
 
-Ne vždy je však programátor schopen (na daném místě) provést korektní zotavení z chyby a uvést program do konzistentního stavu. Například při práci s databází může selhat operace vložení hodnoty do tabulky, protože uživatel zadal číslo, které neodpovídá požadovanému rozsahu. Ve funkci, která vložení provádí, se však programátor nemůže zeptat uživatele, co má s danou chybou dělat (zda například nechce zadat jinou hodnotu), protože taková operace může typicky běžet na úplně jiném počítači, než na kterém požadavek na uložení dat vznikl. Programátor tedy v tuto chvíli nemá k dispozici prostředek, jak korektně provést uložení dat a výjimku smysluplně ošetřit. (Opět, je důležité si uvědomit chování programu. Programátor nemůže uložit do sloupce například nejbližší hodnotu - opravdu uživatel, který omylem místo 2011 zadá 1911, chce, aby program sám automaticky uložil například hodnotu 2000 (protože je nejblíže povolené hodnotě) a uživateli oznámil, že uložení proběhlo úspěšně?)
+Ne vždy je však programátor schopen (na daném místě) provést korektní zotavení z chyby a uvést program do konzistentního stavu. Například při práci s databází může selhat operace vložení hodnoty do tabulky, protože uživatel zadal číslo, které neodpovídá požadovanému rozsahu. Ve funkci, která vložení provádí, se však programátor nemůže zeptat uživatele, co má s danou chybou dělat (zda například nechce zadat jinou hodnotu), protože taková operace může typicky běžet na úplně jiném počítači - databázovém serveru, než na kterém požadavek na uložení dat vznikl. Programátor tedy v tuto chvíli nemá k dispozici prostředek, jak korektně provést uložení dat a výjimku smysluplně ošetřit.
 
-**Pokud programátor nemá způsob, jak smysluplně ošetřit danou výjimku v metodě, ve které se nachází, může ji předat výše** (nadřazené metodě v zásobníku volání), a ta může zkusit zpracování provést (nebo výjimku předat ještě výše).
+**Pokud programátor nemá způsob, jak smysluplně ošetřit danou výjimku v metodě, ve které se nachází, může ji předat výše** (nadřazené metodě v zásobníku volání), a ta může zkusit zpracování provést (nebo výjimku předat ještě výše) - tomuto procesu se říká _**propagace**_ výjimky.
 
 ```java
 /**
@@ -382,17 +446,28 @@ Ne vždy je však programátor schopen (na daném místě) provést korektní zo
  * @throws java.io.IOException Vyvolá chybu, pokud soubor neexistuje.
  */
 public static long getFileSize (String fileName)
-        throws java.io.IOException{
+        throws java.io.IOException {  // <-- propagace výjimky pomocí `throws`
+
     // vytvoreni pomocneho objektu pro praci se souborem
     java.nio.file.Path filePath = java.nio.file.Paths.get(fileName);
+    
     // zjisteni velikosti souboru
     // tato operace vyvola chybu, pokud soubor neexistuje !
     long ret = java.nio.file.Files.size(filePath);
+    
     return ret;
 }
 ```
 
-Výše uvedený příklad ukazuje funkci, která vrací velikost souboru (tato problematika bude vysvětlena dále ve studijní opoře - zaměřeno bude tedy pouze na problematiku zpracování chyby). Pro zjištění velikosti využije funkci _java.nio.file.Files.size_ - tato funkce však v případě, kdy soubor neexistuje, spadne na výjimce _java.io.IOException_. Jak víme, můžeme buď výjimku zachytit pomocí bloku try-catch(-finally), ale jak? Programátor na této úrovni nemá způsob, jak smysluplně výjimku zachytit. Proto ji zpracovávat nebude, ale do záhlaví funkce připíše _throws java.io.IOException_ (viz tučný text). Tato výjimka se bude tedy z této metody posílat výše do nadřazené/ých metod, dokud nedojde k jejímu zpracování, nebo k pádu programu (pokud nebude ošetřena nikde).
+Výše uvedený příklad ukazuje funkci, která vrací velikost souboru (tato problematika bude vysvětlena dále ve studijní opoře - zaměřeno bude tedy pouze na problematiku zpracování chyby). Pro zjištění velikosti využije funkci _java.nio.file.Files.size_ - tato funkce však v případě, kdy soubor neexistuje, spadne na výjimce _java.io.IOException_. Jak víme, můžeme buď výjimku zachytit pomocí bloku try-catch(-finally) — ale jak? Programátor na této úrovni nemá způsob, jak smysluplně výjimku zachytit. Proto ji zpracovávat nebude, ale do záhlaví funkce připíše _throws java.io.IOException_. Tato výjimka se bude tedy z této metody posílat výše do nadřazené/ých metod, dokud nedojde k jejímu zpracování, nebo k pádu programu (pokud nebude ošetřena nikde).
+
+{% hint style="info" %}
+Lze kontrolovanou výjimku nezotavit? Hypoteticky můžete výjimku propagovat dokolečka až do funkce `main()`, jejíž deklaraci můžete mít napsanou jako `public static void main() throws IOException`. V tu chvíli můžete v  `main()` vyvolat výjimku `IOException` a nezpracovávat ji, protože jste řekli, že `main()` ji bude propagovat výše.
+
+V reálu však samozřejmě aplikace při vyvolání výjimky spadne, protože nad `main()` už není nikdo, kdo by ji zachytil.
+
+Obecně tedy nelze doporučit klauzuli `throws` u funkce `main()` vyjma demonstrační, prototypovací a testovací účely.
+{% endhint %}
 
 ### Běhové vs. kontrolované výjimky
 
@@ -401,46 +476,8 @@ V úvodu kapitoly bylo zmíněno dělení na běhové a kontrolované výjimky. 
 Druhou odlišností je potřeba a způsob zachytávání:
 
 * Pokud metoda vyvolává kontrolovanou výjimku, musí za deklarací obsahovat příkaz _throws_ \[ty&#x70;_&#x6B;ontrolované\_výjimky]. Pokud metoda vyvolává běhovou výjimku, není třeba ji deklarovat příkazem \_throws_. (Nicméně je to volitelné, a pokud chceme, můžeme blok _throws_ dopsat i pro běhovou výjimku.)
-* Programátor může libovolně vyhazovat výjimky jak běhové, tak kontrolované, a to vždy příkazem _throw \[instance\_výjimky]_, tj. např. _throw new Exception()_.
-* Programátor **musí** zachytávat všechny vyvolané, nebo propagované **kontrolované** výjimky. Vyvolaná kontrolovaný výjimka je taková, která se v kódu vyvolá pomocí příkazu _throw \[instance\_výjimky]_. Propragovanými kontrolovanými výjimkami myslíme volání metod, která za svou deklarací uvádějí …_throws \[typ\_výjimky]_[_\[37\]_](https://word2md.com/#footnote-37). Na druhou stranu programátor pouze **může** zachytávat běhové výjimky. Pokud je zachytávat bude, je řešení shodné jako u výjimek kontrolovaných. Pokud programátor nebude zachytávat běhovou výjimku a ta při běhu programu vznikne a nebude zachycena žádným blokem _catch_, způsobí pád programu.
-
-## Zjištění informaci o výjimce
-
-Jak bylo zmíněno na začátku kapitoly, instance třídy _Throwable_, která je zachycena v bloku _catch_, obsahuje informace o místu vzniku chyby, důvodu vzniku chyby a případné další informace.
-
-Dvě základní informace, které je třeba u většiny výjimek získat, abychom byli schopni rozhodnout, jak s danou výjimkou naložit, jsou:
-
-* Přesný datový typ výjimky - zjistit, jaký je přesný datový typ vyhozeného objektu, protože název výjimky může pomoci identifikovat typ chyby a navrhnout tak korektně její opravu.
-* Vnitřní informace o výjimce, tzv. zprávu výjimky - každá výjimka v sobě může obsahovat zadaný textový řetězec, který popisuje bližší informace o chybě.
-
-První informaci zjistíme pomocí příkazu (předpokládáme proměnnou _ex_) _ex.getClass().getName()_. Tento složitější příkaz nejdříve zjistí, jaká třída je vlastně reprezentována proměnnou _ex_ (příkaz _getClass()_) a následně vrátí její název (příkaz _getName()_).
-
-Druhá informace je mnohem jednodušší - informaci o zprávě výjimky zjistíme jednoduchým voláním metody _getMessage()_.
-
-Obě informace dohromady vrací jako výsledek metoda _toString()_.
-
-Následující příklad nejdříve demonstračně vyvolá nějakou chybu. Následující řádky v bloku _catch_ ukazují na způsob získání daných informací o výjimce.
-
-```java
-try{
-    throw new IllegalArgumentException("Hodnota proměnné je null.");
-} catch (IllegalArgumentException ex){
-    System.out.println("Typ výjimky je: " +
-        ex.getClass().getName());
-    System.out.println("Zpráva výjimky je: " + ex.getMessage());
-    System.out.println("-toString()- výjimky je: " + ex.toString());
-}
-```
-
-Následuje výstup výše uvedeného příkladu.
-
-```
-Typ výjimky je: java.lang.IllegalArgumentException
-Zpráva výjimky je: Hodnota proměnné je null.
--toString()- výjimky je: java.lang.IllegalArgumentException: Hodnota proměnné je null.
-```
-
-Tyto získané informace lze většinou částečně použít i pro výpisy do grafického prostředí uživatelům - je však třeba dávat pozor u lokalizovaných programů, že chybové hlášky výjimek jsou typicky v anglickém jazyce.
+* Programátor může libovolně vyhazovat výjimky jak běhové, tak kontrolované, a to vždy příkazem _throw \[instance\_výjimky]_, tj. např. _throw new Exception()_ — viz dále.
+* Programátor **musí** zachytávat všechny vyvolané nebo propagované **kontrolované** výjimky. Vyvolaná kontrolovaný výjimka je taková, která se v kódu vyvolá pomocí příkazu _throw \[instance\_výjimky]_. Propragovanými kontrolovanými výjimkami myslíme volání metod, která za svou deklarací uvádějí …_throws \[typ\_výjimky]_. Na druhou stranu programátor pouze **může** zachytávat běhové výjimky. Pokud je zachytávat bude, je řešení shodné jako u výjimek kontrolovaných. Pokud programátor nebude zachytávat běhovou výjimku a ta při běhu programu vznikne a nebude zachycena žádným blokem _catch_, způsobí pád programu.
 
 ## Vyvolání výjimek
 
@@ -502,40 +539,114 @@ public static long getFileSize2 (String fileName)
 }
 ```
 
-## Tvorba vlastní výjimky
+## Zjištění informaci o výjimce
 
-Vytvoření vlastní výjimky je velmi jednoduché. Protože **programátorské výjimky by měl být vždy** až na závažné případy **kontrolované výjimky**, novou výjimku programátor vytvoří jednoduchým poděděním ze třídy _java.lang.Exception_.
+Jak bylo zmíněno na začátku kapitoly, instance třídy _Throwable_, která je zachycena v bloku _catch_, obsahuje informace o místu vzniku chyby, důvodu vzniku chyby a případné další informace.
+
+Dvě základní informace, které je třeba u většiny výjimek získat, abychom byli schopni rozhodnout, jak s danou výjimkou naložit, jsou:
+
+* Přesný datový typ výjimky - zjistit, jaký je přesný datový typ vyhozeného objektu, protože název výjimky může pomoci identifikovat typ chyby a navrhnout tak korektně její opravu.
+* Vnitřní informace o výjimce, tzv. zprávu výjimky - každá výjimka v sobě může obsahovat zadaný textový řetězec, který popisuje bližší informace o chybě.
+
+První informaci zjistíme pomocí příkazu (předpokládáme proměnnou _ex_) _ex.getClass().getName()_. Tento složitější příkaz nejdříve zjistí, jaká třída je vlastně reprezentována proměnnou _ex_ (příkaz _getClass()_) a následně vrátí její název (příkaz _getName()_).
+
+Druhá informace je mnohem jednodušší - informaci o zprávě výjimky zjistíme jednoduchým voláním metody _getMessage()_.
+
+Obě informace dohromady vrací jako výsledek metoda _toString()_.
+
+Následující příklad nejdříve demonstračně vyvolá nějakou chybu. Následující řádky v bloku _catch_ ukazují na způsob získání daných informací o výjimce.
 
 ```java
-class ArgumentNullException extends Exception
+try{
+    throw new IllegalArgumentException("Hodnota proměnné je null.");
+} catch (IllegalArgumentException ex){
+    System.out.println("Typ výjimky je: " +
+        ex.getClass().getName());
+    System.out.println("Zpráva výjimky je: " + ex.getMessage());
+    System.out.println("-toString()- výjimky je: " + ex.toString());
+}
+```
+
+Následuje výstup výše uvedeného příkladu.
+
+```
+Typ výjimky je: java.lang.IllegalArgumentException
+Zpráva výjimky je: Hodnota proměnné je null.
+-toString()- výjimky je: java.lang.IllegalArgumentException: Hodnota proměnné je null.
+```
+
+Tyto získané informace lze většinou částečně použít i pro výpisy do grafického prostředí uživatelům - je však třeba dávat pozor u lokalizovaných programů, že chybové hlášky výjimek jsou typicky v anglickém jazyce.
+
+## Tvorba vlastní výjimky
+
+### Kontrolovaná či nekontrolovaná?
+
+Při návrhu vlastních výjimek v Javě stojí každý vývojář před zásadním rozhodnutím: Má být moje výjimka kontrolovaná (checked), nebo nekontrolovaná (unchecked)? Tento souboj provází Javu od jejích počátků. Zatímco tvůrci jazyka původně zamýšleli kontrolované výjimky jako skvělý nástroj pro robustní kód, moderní softwarový vývoj se výrazně přiklonil na stranu nekontrolovaných výjimek.
+
+Níže si rozebereme, jaký je mezi nimi rozdíl, proč se dnes dává přednost jedné skupině a jak se správně rozhodnout. Rozhodování by nemělo být o pocitech, ale o tom, zda volající programátor může s chybou reálně něco udělat.
+
+#### Kdy vytvořit nekontrolovanou výjimku (`RuntimeException`)
+
+Dnes by měla být výchozí volbou pro 90 % vašich vlastních výjimek. Použijte ji v těchto případech:
+
+* Chyba programátora (bug): Pokud někdo pošle do metody záporné číslo tam, kde má být kladné, nebo předá `null`. Volající kód na toto neumí za běhu smysluplně zareagovat, chyba se musí opravit v kódu. (Např. `IllegalArgumentException`).
+* Neodstranitelná systémová chyba: Selhal hardware, databáze je zcela offline, nebo spadla externí API služba. Program s tím v daném místě kódu nic neudělá, nejlepší je nechat aplikaci spadnout (nebo transakci rollbackovat) a zalogovat to.
+* Čistota kódu: Nechcete zahlcovat ostatní vývojáře nutností psát neustálé `try-catch` bloky pro chyby, které stejně neumí vyřešit.
+
+#### Kdy vytvořit kontrolovanou výjimku (`Exception`)
+
+Kontrolovanou výjimku vytvořte pouze tehdy, pokud jsou splněny všechny následující podmínky najednou:
+
+1. K chybě dochází za běžného provozu a nelze jí předem snadno předejít (např. chyba sítě, obsazený soubor).
+2. Volající kód má reálnou šanci situaci zachránit a pokračovat v alternativním scénáři (např. vyzvat uživatele k zadání jiného jména souboru, zkusit se připojit znovu).
+3. Chcete, aby se o této chybě vědělo hned při překladu, protože ignorovat ji by znamenalo vážné bezpečnostní nebo funkční riziko.
+
+{% hint style="info" %}
+## Proč moderní vývoj odmítá kontrolované výjimky?
+
+Ačkoliv myšlenka kontrolovaných výjimek zněla skvěle (donutit vývojáře myslet na chyby), v praxi se ukázalo, že vede k takzvanému znečištění kódu (code pollution):
+
+* Ignorování chyb (Prázdné catch bloky): Vývojáři, kteří jsou nuceni ošetřit výjimku, se kterou ale neumí nic udělat, často napíší prázdný `catch` blok (`// TODO vyřešit později`). Tím se chyba zcela zamete pod koberec a aplikace se chová nepředvídatelně.
+* Porušení zapouzdření: Pokud nízkoúrovňová metoda vyhodí kontrolovanou výjimku, musíte ji přidat do `throws` v signatuře metody. Pokud se tato metoda volá přes pět dalších vrstev, musíte upravit signatury všech pěti metod výše. Tím vyšší vrstvy zbytečně zjišťují detaily o těch nízkých.
+* Nekompatibilita s moderní Javou: Kontrolované výjimky se extrémně špatně používají v lambdách a Stream API, protože standardní funkcionální rozhraní v Javě (jako `Function`, `Predicate`) nepovolují vyhazování kontrolovaných výjimek.
+{% endhint %}
+
+Pokud píšete novou vlastní výjimku, děďte z `RuntimeException` (bude nekontrolovaná). Je to moderní, čistý přístup, který udržuje kód čitelný. Z `Exception` (kontrolované) děďte pouze tehdy, pokud výslovně chcete ostatní programátory donutit na tuto chybu reagovat alternativním scénářem a víte, že je taková obnova reálně možná. Nezapomeňte, že propragace kontrolovaných výjimek (signatura funkce `... throws MyException` ovlivňuje i signatury stejné funkce v potomcích v případě překrývání metod.
+
+### Vlastní tvorba výjimky
+
+Vytvoření vlastní výjimky je velmi jednoduché. Novou výjimku programátor vytvoří jednoduchým poděděním ze třídy _java.lang.Exception_ či _java.lang.RuntimeException_, nebo potomka jiné již existující výjimky.
+
+```java
+class ArgumentNullException extends RuntimeException
 ```
 
 V drtivé většině případů nezůstává tato třída prázdná, ale typicky se přetěžují nebo vytvářejí konstruktory reprezentující odpovídající informace.
 
-Představen bude velmi jednoduchý příklad výjimky _ArgumentNullException_, která bude vyvolávána, pokud do nějaké funkce vstoupí argument, jehož hodnota nesmí být null. Budou vytvořeny vlastní konstruktory, které voláním konstruktoru nadřazeného předka[\[38\]](https://word2md.com/#footnote-38) zajistí, že výjimka bude vždy obsahovat smysluplnou zprávu popisující chybu.
+Představen bude velmi jednoduchý příklad výjimky _ArgumentNullException_, která bude vyvolávána, pokud do nějaké funkce vstoupí argument, jehož hodnota nesmí být null. Budou vytvořeny vlastní konstruktory, které voláním konstruktoru nadřazeného předka zajistí, že výjimka bude vždy obsahovat smysluplnou zprávu popisující chybu. Protože hodnota argumentu `null` bude specifickým případem varianty "špatná hodnota argumentu", pro kterou již výjimka existuje - `IllegalArgumentException`, použijeme ji jako předka. Protože tento předek je nekontrolovaná běhová výjimka (dědí v hierarchii přímo či nepřímo z `RuntimeException`), bude i naše výjimka běhová.
 
 ```java
-class ArgumentNullException extends Exception{
+class ArgumentNullException extends IllegalArgumentException{
     public ArgumentNullException (){
         super ("Argument has -null- value.");
     }
     public ArgumentNullException (String argumentName){
-        super ("Argument " + argumentName + " has -null- value.");
+        super ("Argument '" + argumentName + "' has -null- value.");
     }
 }
 ```
 
-Následuje velmi jednoduchá ukázka použití uvnitř funkce. Jedná se opět o upravenou funkci pro zjištění velikosti souboru (opakující se části byly nahrazeny výpustkou - …)
+Následuje velmi jednoduchá ukázka použití uvnitř funkce. Jedná se opět o upravenou funkci pro zjištění velikosti souboru.
 
 ```java
-public static long getFileSize3(String fileName)
+public static long getFileSize(String fileName)
         throws ArgumentNullException,
         java.io.FileNotFoundException,
         java.io.IOException {
     if (fileName == null) {
         throw new ArgumentNullException("fileName");
     }
-    …
+    // ... práce se souborem
 }
 ```
 
@@ -561,8 +672,12 @@ try {
 A nakonec výstup výše uvedeného volání.
 
 ```
-Název souboru není platný -> Argument fileName has -null- value.
+Název souboru není platný -> Argument 'fileName' has -null- value.
 ```
+
+Vidíme, že zpráva chyby hezky informuje o vzniklém problému a jeho kontextu.
+
+TODO pokračovat
 
 ## Zřetězení výjimek - chained exceptions
 
