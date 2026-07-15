@@ -1,4 +1,4 @@
-# TODO Výjimky
+# Výjimky
 
 Výjimky jsou základním mechanismem v Jazyce java pro zpracování chybových stavů. Protože při programování běžných aplikací se jejich použití nikdy nelze vyhnout, je třeba důkladně a dokonale porozumět principu jak vznikají a jak se zpracovávají.
 
@@ -217,8 +217,7 @@ Existují v zásadě pouze dva legitimní důvody, proč byste měli výjimku v 
 {% hint style="info" %}
 #### Častý antipattern I: Zachycení a bezhlavé přeposlání
 
-Velkým nešvarem v programování je takzvané „přehazování horkého bramboru“. Jde o situaci, kdy vývojář výjimku zachytí, ale nijak ji nezpracuje a pouze ji znovu vyhodí dál (např. pomocí konstrukce `throw e;` v některých jazycích). \
-Většinou to vznikne, když se programátor snaží zachytit kontrolovanou výjimku (kterou zachytit musí) a vyhodit ji jako nekontrolovanou.
+Velkým nešvarem v programování je takzvané „přehazování horkého bramboru“. Jde o situaci, kdy vývojář výjimku zachytí, ale nijak ji nezpracuje a pouze ji znovu vyhodí dál (např. pomocí konstrukce `throw e;` v některých jazycích).&#x20;
 
 ```java
 void mojeMetoda() throws Exception
@@ -234,7 +233,7 @@ void mojeMetoda() throws Exception
 }
 ```
 
-Toto chování nicméně problém neřeší, jen skryje místo původního vyvolání výjimky, což pak značně ztěžuje její dohledání.
+Toto chování vlastně nic nedělá, proože zachycenou výjimku v původním stavu předáváme dále, takže jen vytváříme komplikovaný kód, který by se bez try/catch choval stejně.
 {% endhint %}
 
 {% hint style="warning" %}
@@ -310,6 +309,10 @@ Záleží na kontextu v aplikaci.&#x20;
 
 * Pokud jsem ve třídě, která se "baví" s uživatelem, píše mu zprávy na konzoli, žádá ho o vstupy a komunikuje s ním, je v pořádku na této úrovni napsat uživateli z `catch` na konzoli, že se něco nepovedlo.
 * Pokud jsem ale ve třídě, která je například součástí knihovny ukládající data na disk, a o uživateli a uživatelském rozhraní nic netuším, nemohu psát na konzoli. Co když je aplikace, ve které je kód použit, webová? (Pak se konzole píše na server a uživatel ji neuvidí.) Co když to je mobilní aplikace? Pokud nejsem třída, která má "právo" bavit se s uživatelem přes UI, na konzoli bych neměla psát nikdy.
+{% endhint %}
+
+{% hint style="info" %}
+Přecházíte z .NET a C#? Pozor, že v .NET se `throw ex;` chová jinak než v Javě a použití `throw ex;` je v .NET velmi špatná praktika. Pokud v .NET chcete přehodit výjimku se zachováním průběhu volání, musíte používat pouze `throw;`. V Javě samotné `throw;` použít nejde a musíte vždy pokračovat instancí výjimky, tedy např.: `throw ex;`.
 {% endhint %}
 
 ## Zachytávání výjimek
@@ -479,9 +482,9 @@ Druhou odlišností je potřeba a způsob zachytávání:
 * Programátor může libovolně vyhazovat výjimky jak běhové, tak kontrolované, a to vždy příkazem _throw \[instance\_výjimky]_, tj. např. _throw new Exception()_ — viz dále.
 * Programátor **musí** zachytávat všechny vyvolané nebo propagované **kontrolované** výjimky. Vyvolaná kontrolovaný výjimka je taková, která se v kódu vyvolá pomocí příkazu _throw \[instance\_výjimky]_. Propragovanými kontrolovanými výjimkami myslíme volání metod, která za svou deklarací uvádějí …_throws \[typ\_výjimky]_. Na druhou stranu programátor pouze **může** zachytávat běhové výjimky. Pokud je zachytávat bude, je řešení shodné jako u výjimek kontrolovaných. Pokud programátor nebude zachytávat běhovou výjimku a ta při běhu programu vznikne a nebude zachycena žádným blokem _catch_, způsobí pád programu.
 
-## Vyvolání výjimek
+## Vyhození výjimky
 
-Výjimky nemusí vyvolávat pouze hotové knihovny, ale může je vyvolávat samozřejmě sám programátor. Pro vyvolání potřebuje klíčové slovo _throw_ a **instance** třídy výjimky, kterou chceme vyvolat.
+Výjimky nemusí vyvolávat pouze hotové knihovny, ale může je vyvolávat samozřejmě sám programátor. (Ony knihovny na to ostatně používají stejný mechanismus, jako je vysvětlen zde). Pro vyvolání potřebuje klíčové slovo _throw_ a **instance** třídy výjimky, kterou chceme vyvolat.
 
 Typicky se vyvolávají výjimky dvěma způsoby:
 
@@ -494,7 +497,7 @@ První způsob je velmi jednoduchý. V bloku _catch_ zachytíme výjimku, typick
 try{
     methodToRaiseException();
 } catch (Exception ex){
-    ...
+    // provedeme operace, například logování
     throw ex; // <-- zde vyhazujeme původní výjimku
 }
 ```
@@ -884,25 +887,212 @@ Při volání této funkce na objekt _fourth_ z výše uvedeného příkladu dos
 java.lang.Exception: A ||| java.lang.Exception: B ||| java.lang.Exception: C ||| java.lang.Exception: D |||
 ```
 
+Na zanořování výjimek je třeba myslet, protože zejména při použití některých komplexnějších frameworků (například SpringBoot, nebo webové servery) může být zřetězení velmi dlouhé (20+).
+
+## Shrnutí
+
+Následuje krátké shrnutí, jak by tedy měla práce s výjimkami vypadat.
+
+### Zachycení
+
+Výjimky zachytáváme pouze pokud k tomu máme důvod:
+
+* můžeme ji ošetřit a situaci opravit, nebo
+* můžeme k výjimce přidat další informace a poslat ji dále.
+
+Při zachytávání výjimky s cílem ji analyzovat se primárně díváme:
+
+* na její zprávu - `getMessage()`,
+* na její typ, abychom získali další informace
+* na zanořené výjimky `getCause()`, které obsahující upřesňující informace.
+
+#### Zachycení s ošetřením
+
+Představme si, že zálohujeme soubory. Pokud se však záloha nějakého souboru nepovede (např. nemáme práva ke čtení/zápisu), nechceme, ať se proces zhroutí, ale chceme jen problémový soubor přeskočit a pokračovat dále.
+
+```java
+String[] files = {
+    "data.txt",
+    "config.xml",
+    "missing.txt",
+    "report.pdf"
+};
+
+List<String> results = new ArrayList<>();
+
+for (String file : files) {
+    try {
+        backupFile(file);
+        results.add(file + " - úspěch");
+    } catch (Exception e) {
+        // ošetření, soubor logujeme, přeskočíme a pokračujeme
+        results.add(file + " - neúspěch: " + ex.getMessage());
+    }
+}
+```
+
+#### Zachycení s přidáním informace
+
+Při zálohování konkrétního souboru a chybě chceme vrátit informaci, jaký konkrétně soubor selhal a co se nepovedlo. Použijeme k tomu vlastní výjimku.
+
+```java
+static void backupFile(String file) throws FileBackupException {
+    try {
+        copyFile(file);
+    } catch (Exception e) {
+        throw new FileBackupException(
+            "Chyba při zálohování souboru: " + file,
+            e
+        );
+    }
+}
+
+```
+
+Protože je naše výjimka nekontrolovaná, musíme ji propagovat přes klauzuli `throws` na konci funkce.
+
+### Vytvoření vlastní výjimky
+
+Pokud se rozhodneme vytvořit vlastní výjimku (a to je často vhodné), měli bychom:
+
+* Rozhodnout, zda bude výjimka kontrolovaná (předek `Exception`) nebo běhová (předek `RuntimeException`). Měli bychom se vyhnout předkovi `Error`, pokud neděláme opravdu něco velmi specifického.
+* Zvolit vhodný název pro výjimku. Z názvu výjimky by mělo být jasné, o jakou chybu jde. Název by měl vždy obsahovat postfix `...Exception`.
+* Vytvořit odpovídající konstrutkory.&#x20;
+  * Velmi zřídka dává smysl výjimka bez konstruktoru, která nepotřebuje žádné doplňující informace. Téměř vždy budeme potřebovat dát výjimce zprávu (`String message`), případně nějaký jiný ekvivalent informace (například hodnotu výčtového typu - FILE\_NOT\_FOUND/FILE\_NOT\_ACCESSIBLE/FILE\_OUT\_OF\_LIMIT/FILE\_NAME\_INVALID/...).
+  * Často budeme také potřebovat variantu, kdy budeme výjimce dávat příčinu `Throwable cause`.&#x20;
+  * Všechny předané hodnoty dále předáváme předkovi voláním jeho konstruktoru, kdy mu plníme jak jeho `message`, tak `cause`.
+
+Například obecná výjimka řešící chybu při práci se souborem:
+
+```java
+public class FileOperationException extends IOException {
+
+    private final String fileName;
+    private final String errorDescription;
+
+    public FileOperationException(String fileName, String errorDescription) {
+        this(fileName, errorDescription, null);
+    }
+
+    public FileOperationException(String fileName, String errorDescription, Throwable cause) {
+        super(createMessage(fileName, errorDescription), cause);
+        this.fileName = fileName;
+        this.errorDescription = errorDescription;
+    }
+
+    private static String createMessage(String fileName, String errorDescription) {
+        return "Operace se souborem '" + fileName + "' selhala: " + errorDescription;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public String getErrorDescription() {
+        return errorDescription;
+    }
+}
+```
+
+A její vyvolání:
+
+```java
+try{
+    analyseFile(fileName);
+} catch (IOException ex){
+    throw new FileOperatoinException(fileName, "File analysis failed.", ex);
+}
+```
+
+### Tvořte vhodnou hierarchii výjimek
+
+Jak jste si na začátku všimli, výjimky jsou řazeny v hierarchii dědičnosti. Pokud budete dělat větší projekt, je vhodné se zamyslet a vytvářet vhodně hierarchii výjimek, protože vám může následně pomoci při práci s výjimkami a definici chování dle toho "co se pokazilo". Například můžeme mít:
+
+```
+AppException
+├── BadDataException
+│   ├── InvalidCredentialsException
+│   ├── AuthorizationException
+│   ├── ValidationException
+│   │   ├── MissingValueException
+│   │   ├── InvalidFormatException
+│   │   └── ValueOutOfRangeException
+│   ├── EntityNotFoundException
+│   └── DuplicateEntityException
+│
+└── ServerException
+    ├── InternalServiceException
+    ├── InternalDatabaseException
+    ├── ConfigurationException
+    └── ExternalServiceException
+```
+
+V takové hierarhcii víme, že chyby `BadDataException` můžeme vracet uživateli a zobrazovat mu je, protože problémem jsou nějaká jeho nesprávně poskytnutá data. Oproti tomu `ServerException` chyby chytáme, logujeme a informujeme vývojáře, že se aplikace rozbila a něco je špatně; a uživateli zobrazíme jen obecnou informaci, že "se něco pokazilo a na nápravě se pracuje".
+
+Vhodná hierarchie výjimek samozřejmě velmi záleží na modelu dané aplikace a zvolené architektuře.
+
 ## Výjimky a práce se zdroji -- try-with-resources
 
 V dřívějších verzích javy byl problém pracovat s určitým typem zdrojů, které bylo třeba otevírat a po ukončení práce zase zavírat. Typicky obě tyto operace mohou vyvolat chybový stav a programátor pak neví, jak takovou situaci ošetřit - například: pokud se soubor podaří otevřít, ale nepodaří se načíst, je třeba ho zavřít. Zavření se ale také nemusí povést a je třeba jej kontrolovat pomocí bloků try-catch. A jak zotavit program v případě, kdy se zavření nepovedlo?
 
+```java
+BufferedReader reader = null;
+
+try {
+    // Otevření souboru
+    reader = new BufferedReader(new FileReader("data.txt"));
+
+    // Čtení řádku souboru
+    String line = br.readLine();
+
+} catch (IOException e) {
+    // Zpracování chyby při otevření nebo čtení
+    System.err.println("Chyba při práci se souborem: "
+            + e.getMessage());
+
+} finally {
+    // Ruční zavření zdroje
+    if (reader != null) {
+        try {
+            reader.close();
+        } catch (IOException e) {
+            // Chyba při zavírání souboru
+            System.err.println("Chyba při zavírání souboru: "
+                    + e.getMessage());
+        }
+    }
+}
+```
+
+{% hint style="info" %}
+Třídy BufferedReader a FileReader nezkoumejte - berte je prostě jako nějaké třídy, které umí ve spolupráci číst data ze souboru.
+{% endhint %}
+
 Protože takové kontroly generovali velké množství kódu a zanořené bloky try-catch(-finally), od Javy 7 přichází upravený příkaz _try_, nazvaný _try-with-resources_.
 
-Princip této problematiky ponecháme nevysvětlen[\[40\]](https://word2md.com/#footnote-40). Základem však je, že jisté zdroje (ve smyslu inicializované proměnné) se po použití umí na příkaz virtuálního stroje samy uzavřít. Na jejich uzavírání se tedy explicitně nemusí hlídat pomocí try-catch-finally bloků. Syntaxe příkazu je:
+Princip této problematiky ponecháme nevysvětlen. Základem však je, že jisté zdroje (ve smyslu inicializované proměnné) se po použití umí na příkaz virtuálního stroje samy uzavřít. Na jejich uzavírání se tedy explicitně nemusí hlídat pomocí try-catch-finally bloků. Syntaxe příkazu je:
 
 ```java
 try (datový_typ_zdroje proměnná = inicializace) { /* obsah bloku */ }
 ```
 
-Následuje krátký příklad.
+Následuje krátký příklad, který zcela nahrazuje výše uvedenou sekvenci:
 
 ```java
 try (BufferedReader br =
         new BufferedReader(new FileReader(path))) {
     return br.readLine();
 }
+catch (IOException e) {
+    // Zpracování chyby při otevření nebo čtení
+    System.err.println("Chyba při práci se souborem: "
+            + e.getMessage());
+}
 ```
 
-Třídy jsou pro čtenáře zřejmě zatím neznámé, proto bude jenom zběžně vysvětlen princip. _BufferedReader_ je třída, která umí z nějakého objektu vyčíst řetězec dat. Zdrojem tohoto objektu je v našem případě nějaký soubor reprezentovaný cestou _path_. Soubor se samozřejmě po ukončení práce musí korektně uzavřít, jinak by s ním ostatní aplikace nemohly pracovat. Uzavření souboru se však nemusí provádět ve větvi finally, protože je použita **syntaxe&#x20;**_**try-with-resources**_, která **se postará, že daný zdroj** (v našem případě soubor) **bude automaticky uzavřen po opuštění bloku&#x20;**_**try**_.
+Uzavření souboru (původní větev `finally`) se však nemusí provádět, protože je použita **syntaxe&#x20;**_**try-with-resources**_, která **se postará, že daný zdroj** (v našem případě soubor) **bude automaticky uzavřen po opuštění bloku&#x20;**_**try**_.
+
+{% hint style="info" %}
+Zájemce o vysvětlení bližšího principu a chování celého mechanismu odkážeme na web - hledejte princip _try-with-resources_ a rozhranní `AutoCloseable`.
+{% endhint %}
+
