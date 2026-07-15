@@ -296,6 +296,8 @@ class PersonCollection extends ArrayList<Person> { }
 
 Uživatel (programátor) nějakým způsobem naplní kolekci osob a nyní potřebuje zajistit, aby se tato kolekce uložila do souboru, případně dokázala ze souboru zase úspěšně načíst.
 
+### Vlastní serializace
+
 U první varianty musí programátor vše udělat ručně. Problematiku lze rozložit na dvě části:
 
 * Jak zajistit uložení sady prvků v kolekci.
@@ -507,7 +509,9 @@ První načtený řádek z dat nastavíme jako jméno navraceného objektu. Druh
 
 Celá problematika není příliš složitá (opakují se neustále stejné vzorce chování), ale je časově náročná na vytvoření.
 
-Řešením je využití automatické _serializace_, kterou Java podporuje. V Javě existují třídy _ObjectOutputStream_ a _ObjectInputStream_[_\[48\]_](https://word2md.com/#footnote-48) podporující právě takovýto automatizovaný přístup. Tyto třídy obsahují metody pro automatické uložení primitivních datových typů a také instance obecné třídy. Uložení obecné třídy probíhá (velmi zjednodušeně) tak, že objekt zjistí, jaké třídní proměnné jsou ve třídě definovány, jakých jsou datových typů a následně je všechny uloží. Načtení probíhá obdobně.
+### Automatická serializace
+
+Řešením je využití automatické _serializace_, kterou Java podporuje. V Javě existují třídy _ObjectOutputStream_ a _ObjectInputStream_ podporující právě takovýto automatizovaný přístup. Tyto třídy obsahují metody pro automatické uložení primitivních datových typů a také instance obecné třídy. Uložení obecné třídy probíhá (velmi zjednodušeně) tak, že objekt zjistí, jaké třídní proměnné jsou ve třídě definovány, jakých jsou datových typů a následně je všechny uloží. Načtení probíhá obdobně.
 
 Z pohledu programátora je obrovskou výhodou, že tento způsob se velmi snadno programuje. Je třeba zajistit dvě věci:
 
