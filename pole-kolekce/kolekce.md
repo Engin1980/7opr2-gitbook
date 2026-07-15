@@ -4,8 +4,6 @@ Kolekce jsou první skupinou typů v _Java Collection Framework_. Reprezentují 
 
 Následující obrázek ukazuje rozdělení základních představených typů v JCF.
 
-![Hierarchie kolekcí](../.gitbook/assets/jcf-collections-simplified.svg)
-
 ```mermaid
 classDiagram
 direction TB
@@ -28,9 +26,6 @@ direction TB
     }
 
     class Queue {
-	    +offer()
-	    +poll()
-	    +peek()
     }
 
     class HashSet {
@@ -53,19 +48,20 @@ direction TB
 	<<interface>> Queue
 
 	note "Zjednodušená verze diagramu.
-Obsahuje pouze základní 
-typy a důležité metody."
-	note for Queue "Frontám se zde
-nebudeme věnovat."
+      Obsahuje pouze základní 
+      typy a důležité metody."
+
+	note for Queue "Frontám se zde 
+      nebudeme věnovat."
 
     Iterable <|-- Collection
     Collection <|-- Set
     Collection <|-- List
     Collection <|-- Queue
-    Set <|-- HashSet
-    Set <|-- TreeSet
-    List <|-- ArrayList
-    List <|-- LinkedList
+    Set <|.. HashSet
+    Set <|.. TreeSet
+    List <|.. ArrayList
+    List <|.. LinkedList
 ```
 
 {% hint style="info" %}
