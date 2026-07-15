@@ -6,6 +6,68 @@ Následující obrázek ukazuje rozdělení základních představených typů v
 
 ![Hierarchie kolekcí](../.gitbook/assets/jcf-collections-simplified.svg)
 
+```mermaid
+classDiagram
+direction TB
+    class Iterable {
+    }
+
+    class Collection {
+	    +add()
+	    +remove()
+	    +size()
+	    +contains()
+    }
+
+    class Set {
+    }
+
+    class List {
+	    +get(index)
+	    +set(index, element)
+    }
+
+    class Queue {
+	    +offer()
+	    +poll()
+	    +peek()
+    }
+
+    class HashSet {
+    }
+
+    class TreeSet {
+	    +sorted()
+    }
+
+    class ArrayList {
+    }
+
+    class LinkedList {
+    }
+
+	<<interface>> Iterable
+	<<interface>> Collection
+	<<interface>> Set
+	<<interface>> List
+	<<interface>> Queue
+
+	note "Zjednodušená verze diagramu.
+Obsahuje pouze základní 
+typy a důležité metody."
+	note for Queue "Frontám se zde
+nebudeme věnovat."
+
+    Iterable <|-- Collection
+    Collection <|-- Set
+    Collection <|-- List
+    Collection <|-- Queue
+    Set <|-- HashSet
+    Set <|-- TreeSet
+    List <|-- ArrayList
+    List <|-- LinkedList
+```
+
 {% hint style="info" %}
 Samotná knihovna _Java Collection Framework_ je rozsáhlejší a obsahuje více typů. My budeme představovat pouze základní z nich, se kterými se při programování běžně setkáte. Na výše uvedeném obrázku se navíc soutředíme pouze na kolekce. Pro úplný list například viz [https://miro.medium.com/v2/resize:fit:720/format:webp/1\*vGt4ZxCjUhiyeEHFFwkujw.png](https://miro.medium.com/v2/resize:fit:720/format:webp/1*vGt4ZxCjUhiyeEHFFwkujw.png).
 {% endhint %}
