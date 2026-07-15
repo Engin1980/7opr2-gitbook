@@ -11,7 +11,46 @@ Z popisu je zřejmé, že nelze očekávat, že bude existovat více položek se
 
 Společným předkem obou tříd je obecné rozhraní `java.util.Map`.
 
-![Hierarchie map](../.gitbook/assets/jcf-maps-simplified.svg)
+```mermaid
+classDiagram
+direction TB
+    class Map~K,V~ {
+	    +put(key, value)
+	    +get(key)
+	    +remove(key)
+	    +containsKey(key)
+	    +size()
+	    +keySet()
+	    +entrySet()
+    }
+
+    class Entry~K,V~ {
+	    +getKey()
+	    +getValue()
+    }
+
+    class HashMap~K,V~ {
+    }
+
+    class TreeMap~K,V~ {
+	    +sortedKeys()
+    }
+
+	<<interface>> Map
+	<<interface>> Entry
+
+	note "Zjednodušená verze diagramu
+      Obsahuje pouze základní typy
+      a důležité metody."
+	note for Entry "Reprezentuje dvojici 
+      'Klíč-Hodnota'"
+	note for Map "'keySet()' a 'entrySet()'
+      vrací typ množiny 'Set' představený
+      dříve."
+
+    Map <|.. HashMap
+    Map <|.. TreeMap
+```
 
 {% hint style="info" %}
 Obrázek je opět zjednodušen pro potřeby této studijní opory. Skutečná hierarchie tříd je drobně složitější.
