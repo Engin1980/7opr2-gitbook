@@ -652,9 +652,7 @@ A nakonec výstup výše uvedeného volání.
 Název souboru není platný -> Argument 'fileName' has -null- value.
 ```
 
-Vidíme, že zpráva chyby hezky informuje o vzniklém problému a jeho kontextu.
-
-TODO pokračovat
+Vidíme, že zpráva chyby přehledně informuje o vzniklém problému a jeho kontextu.
 
 ## Zřetězení výjimek - chained exceptions
 
