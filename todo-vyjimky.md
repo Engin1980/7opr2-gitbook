@@ -196,6 +196,109 @@ Každá výjimka je tedy reprezentována **instancí třídy**, která je přím
 * Pokud se jedná o potomka třídy `RuntimeException`, jedná se o běhovou výjimku.&#x20;
 * V ostatních případech se jedná o kontrolovanou výjimku.
 
+## Proč/Kdy zachytávat výjimky
+
+Při návrhu a implementaci softwaru je správná práce s výjimkami klíčová pro stabilitu a čitelnost kódu. Častou chybou (zejména začátečníků) je:
+
+* I) Nezachytávání výjimek - začátečníci často nezachytávají výjimky v případech, kdy je není možné vyřešit. Je však důležité si uvědomit, že v určitých případech je vhodné k existující výjimce doplnit nějaké dodatečné info, které později pomůže k identifikaci a řešení chyby (např. který soubor způsobil chybu, do které tabulky v databázi se zapisovalo, který uživatel vyvolal neúspěšnou operaci mazání).
+* II) Zachytávání výjimek - začátečníci často také  zachytávají výjimky, kdy to není nutné, protože nejsou schopni stav napravit, ale "nějaké učební texty/učitelé/tutorialy" říkaly, že výjimky se mají zachytávat. Pak většinou dochází k tomu, že buď vznikne násilné ošetření chyby na místech, kde to není vhodné, nebo se výjimka vyhodí podruhé, čímž se maskuje původní problém.
+
+Základní a nejdůležitější pravidlo pro zachytávání výjimek zní:&#x20;
+
+> Výjimku zachytávejte pouze tehdy, pokud s ní dokážete v daném místě programu udělat něco smysluplného.&#x20;
+
+Pokud pro vzniklou chybu nemáte okamžité řešení nebo interpretaci, je nejlepším postupem nechat ji volně „probublat“ do vyšších vrstev aplikace, kde bude zpracována globálně (například zalogována a uživateli bude zobrazeno obecné chybové hlášení). Bezhlavé chytání každé chyby kód pouze znepřehledňuje a maskuje skutečné problémy.
+
+Existují v zásadě pouze dva legitimní důvody, proč byste měli výjimku v kódu zachytit:
+
+* **Vyřešení** - Oprava chybového stavu a pokračování v běhu: Tímto způsobem reagujete na situaci, kterou aplikace dokáže vyřešit a bezpečně pokračovat dál. Typickým příkladem je situace, kdy selže připojení k primární databázi, vy výjimku zachytíte a v bloku catch aplikaci přesměrujete na záložní (read-only) server. Aplikace sice běží v omezeném režimu, ale nespadla a funguje smysluplně dál.
+* **Přidání kontextu** - Rozšíření informace o výjimce (a typicky zabalení do specifické )vlastní) výjimky): Někdy potřebujete výjimku zachytit na rozhraní určité vrstvy, abyste ji obohatili o kontext nebo ji transformovali na doménově specifickou chybu. Pokud například nízkoúrovňová knihovna vyhodí `IOException` při čtení konfiguračního souboru, v aplikační logice tuto chybu zachytíte a přebalíte ji do vlastní `ConfigurationLoadException`. Tímto krokem schováte implementační detaily a vyšším vrstvám předáte srozumitelnější informaci o tom, co se z pohledu byznys logiky stalo. Můžete často doplnit další důležité informace (jaký soubor selhal, který uživatel operaci prováděl, jaká data se nepodařilo zpracovat).
+
+{% hint style="info" %}
+#### Častý antipattern I: Zachycení a bezhlavé přeposlání
+
+Velkým nešvarem v programování je takzvané „přehazování horkého bramboru“. Jde o situaci, kdy vývojář výjimku zachytí, ale nijak ji nezpracuje a pouze ji znovu vyhodí dál (např. pomocí konstrukce `throw e;` v některých jazycích). \
+Většinou to vznikne, když se programátor snaží zachytit kontrolovanou výjimku (kterou zachytit musí) a vyhodit ji jako nekontrolovanou.
+
+```java
+void mojeMetoda() throws Exception
+{
+    try
+    {
+        nizkourovnovaMetoda(); // Zde dojde k chybě
+    }
+    catch (Exception ex)
+    {        
+        throw ex; // ztráta původního kontextu chyby
+    }
+}
+```
+
+Toto chování nicméně problém neřeší, jen skryje místo původního vyvolání výjimky, což pak značně ztěžuje její dohledání.
+{% endhint %}
+
+{% hint style="warning" %}
+## **Častý antipattern II: Zabalení kontrolované výjimky nekontrolovanou**
+
+Další variantou je stav, kdy se programátor chce zbavit nutnosti kontrolovat výjimky a rychle ji zabalí pomocí nekontrolované. Tento mechanismus nemusí být nutně úplně špatně, pokud programátor korektně předá veškeré související informace. Nevhodné je ale jen jednoduché zabalení, často ještě bez vložení původní výjimky dovnitř (chained exception — bude vysvětleno později):
+
+```java
+void mojeMetoda()
+{
+    try
+    {
+        nizkourovnovaMetoda(); // Zde dojde k chybě
+    }
+    catch (Exception ex)
+    {        
+        throw new RuntimeException(); // zcela ztráta původní chyby
+    }
+}
+```
+
+V tomto případě je původní chyba `ex` zcela ztracena. Lepší (leč ne o moc) variantou je alespoň zabalení původní výjimky `throw new RuntimeException(ex);`
+{% endhint %}
+
+{% hint style="danger" %}
+## Častý antipattern III: Skrytí výjimky
+
+Naprosto fatální chybou je vypsání výjimky na konzoli (kromě případů, kdy je to očekávané), případně její úplné skrytí.
+
+Tato varianta typicky vzniká u začátečníků, buď když se výjimky pro jedoduchost chtějí zcela zbavit:
+
+```java
+void mojeMetoda()
+{
+    try
+    {
+        nizkourovnovaMetoda(); // Zde dojde k chybě
+    }
+    catch (Exception ex)
+    {        
+        // skryje výjimku a běh pokračuje dále
+    }
+}
+```
+
+Nebo ve variantě, kdy ji vypíší na konzoli, ale dále neřeši.
+
+```java
+void mojeMetoda()
+{
+    try
+    {
+        nizkourovnovaMetoda(); // Zde dojde k chybě
+    }
+    catch (Exception ex)
+    {        
+        System.out.println("Něco se nepovedlo." + ex);
+    }
+}
+```
+
+V obou případech se může stát, že si vzniklé chyby nikdo nevšimne, zůstane skryta a aplikace běží na první pohled dále. Důsledky pak samozřejmě mohou být fatální (uložení dokumentu se neprovede, data se nepošlu), protože uživatel (a často ani programátor) netuší, že se něco nepovedlo či neprovedlo.
+{% endhint %}
+
 ## Zachytávání výjimek
 
 Zachytávat lze všechny typy výjimek, povinně se však zachytávají pouze výjimky kontrolované. Pro zachytávání výjimek se používá v Javě zvláštní pravidlo, které se nazývá _Catch Or Specify Requirement_. Toto pravidlo říká, že **pro každou kontrolovanou výjimku musí platit jedna z následujících variant:**
