@@ -4,23 +4,44 @@ Výjimky jsou základním mechanismem v Jazyce java pro zpracování chybových 
 
 Dle definice je výjimka „_událost, která nastane při zpracování programu a která přeruší běžný tok instrukcí programu_".
 
-Každý program běží jako vykonávaná metoda (typicky _main()_), která následně volá další a další metody ostatních objektů. Tyto metody po provedení svého kódu předají vykonávání zpět nadřazené metodě. Seznamu aktuálně do sebe zanořených metod se říká _zásobník volání_ (call stack).
+Každý program běží jako vykonávaná metoda (typicky `main()`), která následně volá další a další metody ostatních objektů. Tyto metody po provedení svého kódu předají vykonávání zpět nadřazené metodě. Seznamu aktuálně do sebe zanořených metod se říká _zásobník volání_ (call stack).
 
-Pokud v určité metodě dojde k chybě, která způsobí vyvolání výjimky, běhové prostředí v metodě vytvoří objekt popisující tuto chybu a místo vzniku. Tento objekt se poté předává zpět nahoru volanými metodami až do nalezení prvního bloku (tzv. _handleru_), který umí danou výjimku ošetřit.
+Pokud v určité metodě dojde k chybě, která způsobí vyvolání výjimky, běhové prostředí v metodě vytvoří objekt popisující tuto chybu a místo vzniku. Tento objekt se poté předává zpět nahoru volanými metodami až do nalezení prvního tzv. _handleru_, který umí danou výjimku ošetřit.
 
-Program.main()
+```mermaid
+sequenceDiagram
 
-Manager.orderPizza()
+    participant Main as Program.main()
+    participant Manager as Manager.orderPizza()
+    participant Pizza as Pizzeria.preparePizza()
+    participant Cook as ChiefCook.cookPizza()
 
-pizzeria.preparePizza()
+    Main->>Manager: orderPizza()
 
-chiefCook.cookPizza()
+    Manager->>Pizza: preparePizza()
 
-Volání metod
+    Pizza->>Cook: cookPizza()
 
-Hledání ošetření výjimky
+    Cook-->>Cook: ❌ CookingException thrown
 
-Místo vzniku chyby
+    Cook-->>Pizza: propagate CookingException¨
+
+    Pizza -->> Pizza: (no exception handler)
+
+    Pizza-->>Manager: propagate CookingException
+
+    Note over Manager: catch(CookingException)
+
+    Manager->>Manager: create PizzaOrderException
+
+    Manager-->>Main: throw PizzaOrderException
+
+    Note over Main: catch(PizzaOrderException)
+
+    Main->>Main: notify user<br />about the issue
+    
+
+```
 
 Pokud žádná metoda ošetření neprovede, program spadne za běhu a uživateli se objeví kritická chybová hláška o činnosti programu.
 
@@ -28,15 +49,152 @@ Protože Java je objektově orientovaný programovací jazyk, výjimka jako obje
 
 Obecně se v Javě vyskytují tři typy výjimek:
 
-* Kontrolované výjimky (checker exceptions) - jedná se o chybové stavy, které by měla dobře napsaná aplikace být schopna ošetřit a korektně se z nich zotavit. Příkladem může být pokus o smazání neexistujícího souboru, reakce na chybové vstupy uživatele, ošetření náhle nedostupných zařízení nebo výpadků v síťovém připojení. Program na tyto chyby umí zareagovat a korektně uživatele informovat o problému. Při správném zachycení program pokračuje korektně (s případnými omezeními) dále. Kontrolované výjimky jsou všechny výjimky vyjma těch uvedených v dalších dvou bodech.
-* Chyby (errors) - jedná se o fatální stavy typicky způsobené prostředím vně aplikace. Příkladem může být odepření přístupu k paměti, chyba ve virtuálním stroji, neplatná instrukce, selhání hardware a podobně. Z těchto chyb se aplikace typicky nedokáže smysluplně zotavit a po pádu kvůli této výjimce její běh končí. Tyto výjimky se typicky neošetřují, protože programátor je nemůže předpokládat, ani smysluplně ošetřovat. Chyby reprezentují všechny třídy dědící z předka _Error_.
-* Běhové výjimky (runtime exceptions) - jedná se o chyby v rámci aplikace, které typicky vznikají kvůli programátorským chybám. Patří zde aritmetické chyby (dělení nulou), špatné použití indexů (mimo rozsah pole), použití _null_ objektu k vyvolání metod a další. Aplikace se typicky z této chyby nedokáže zotavit. Pokud je však taková chyba zachycena, programátor může opravit logiku aplikace, aby její výskyt nemohl příště nastat (opravou kódu, omezením vstupu od uživatele apod.). Běhové výjimky reprezentují potomci třídy _RuntimeException_.
+* Kontrolované výjimky (checked exceptions) - jedná se o chybové stavy, které by měla dobře napsaná aplikace být schopna ošetřit a korektně se z nich zotavit. Příkladem může být pokus o smazání neexistujícího souboru, reakce na chybové vstupy uživatele, ošetření náhle nedostupných zařízení nebo výpadků v síťovém připojení. Program na tyto chyby umí zareagovat a korektně uživatele informovat o problému. Při správném zachycení program pokračuje korektně (s případnými omezeními) dále. Kontrolované výjimky jsou všechny výjimky vyjma těch uvedených v dalších dvou bodech.
+* Běhové výjimky (runtime exceptions) - jedná se o chyby v rámci aplikace, které typicky vznikají kvůli programátorským chybám. Patří zde aritmetické chyby (dělení nulou), špatné použití indexů (mimo rozsah pole), použití _null_ objektu k vyvolání metod a další. Aplikace se typicky z této chyby nedokáže zotavit. Pokud je však taková chyba zachycena, programátor může opravit logiku aplikace, aby její výskyt nemohl příště nastat (opravou kódu, omezením vstupu od uživatele apod.). Běhové výjimky reprezentují potomci třídy `RuntimeException`.
+* Chyby (errors) - jedná se o fatální stavy typicky způsobené prostředím vně aplikace. Příkladem může být odepření přístupu k paměti, chyba ve virtuálním stroji, neplatná instrukce, selhání hardware a podobně. Z těchto chyb se aplikace typicky nedokáže smysluplně zotavit a po pádu kvůli této výjimce její běh končí. Tyto výjimky se typicky neošetřují, protože programátor je nemůže předpokládat, ani smysluplně ošetřovat. Chyby reprezentují všechny třídy dědící z předka `Error`.
 
 Výjimky lze tedy rozdělit do skupin dle následujícího obrázku.
 
+```mermaid
+flowchart TD
+
+    A[Java Problems]
+
+    A --> B[Chyby\nErrors]
+    A --> C[Kontrolované výjimky\nChecked Exceptions]
+    A --> D[Nekontrolované výjimky\nUnchecked Exceptions]
+
+    B --> B1[Fatální problémy JVM<br/><hr />‣ Málo paměti<br/>‣ Neznámá instrukce<br />‣ ... další]
+
+    C --> C1[Musí být ošetřeny<br/>'try/catch' nebo 'throws'<br/><hr/>‣ Chyby vstupu/výstupu<br/>‣ Chyby SQL<br />‣ ... další]
+
+    D --> D1[Nemusí být ošetřeny, ale způsobí pád programu<br /><hr/>‣ Odkaz na 'null'<br/>‣ Neplatný argument<br />‣ ... další]
+
+    B1:::note
+    C1:::note
+    D1:::note
+
+    classDef note fill:#DDD,color:#777,stroke:#FFF
+```
+
 Souvislost se skupinami vychází i dělení výjimek podle hierarchie dědičnosti jednotlivých tříd, ze kterých dané výjimky vycházejí. Pozor, že tato **hierarchie tříd nekoresponduje s hierarchií typů výjimek**.
 
-Každá výjimka je tedy reprezentována **instancí třídy**, která je přímým nebo nepřímým potomkem třídy _Throwable_. Pokud se jedná o potomka třídy _Error_, jedná se o chybu. Pokud se jedná o potomka třídy _RuntimeException_, jedná se o běhovou výjimku. V ostatních případech se jedná o kontrolovanou výjimku.
+```mermaid
+classDiagram
+
+    class Object {
+        <<class>>
+    }
+
+    class Throwable:::imp {
+        <<class>>
+        +getMessage()
+        +printStackTrace()
+    }
+
+    namespace errors {
+        class Error:::imp {
+            <<class>>
+        }
+
+        class StackOverflowError {
+            <<class>>
+        }
+
+        class VirtualMachineError {
+            <<class>>
+        }
+
+        class AssertionError {
+            <<class>>
+        }
+    }
+
+    namespace checked{
+      class Exception:::imp {
+        <<class>>
+      }
+
+      class IOException {
+        <<class>>
+        }
+
+        class SQLException {
+            <<class>>
+        }
+
+            class ClassNotFoundException{
+            <<class>>
+        }
+    class InterruptedException{
+            <<class>>
+        }
+    }
+
+    %% RuntimeException hierarchy
+    namespace unchecked {
+        class RuntimeException:::imp {
+                <<class>>
+            }
+
+        class NullPointerException {
+            <<class>>
+        }
+
+        class IllegalArgumentException {
+            <<class>>
+        }
+
+        class IndexOutOfBoundsException {
+            <<class>>
+        }
+
+        class ArithmeticException {
+            <<class>>
+        }
+
+        class ClassCastException {
+            <<class>>
+        }
+    }
+
+note "Zjednodušený diagram. 
+Barevně zvýrazněny jsou důležité třídy.
+Zvýrazněné třídy mají mnohem více potomků,
+zaznačeno jich je pouze pár pro ilustraci."
+
+    %% Relationships
+    Object <|-- Throwable
+    Throwable <|-- Error
+    Throwable <|-- Exception
+
+    Error <|-- VirtualMachineError
+    Error <|-- StackOverflowError
+    Error <|-- AssertionError
+
+    Exception <|-- IOException
+    Exception <|-- SQLException
+    Exception <|-- ClassNotFoundException
+    Exception <|-- InterruptedException    
+
+    Exception <|-- RuntimeException
+
+    RuntimeException <|-- NullPointerException
+    RuntimeException <|-- IllegalArgumentException
+    RuntimeException <|-- IndexOutOfBoundsException
+    RuntimeException <|-- ArithmeticException
+    RuntimeException <|-- ClassCastException
+
+
+    %% Styles
+    classDef imp fill:#883
+```
+
+Každá výjimka je tedy reprezentována **instancí třídy**, která je přímým nebo nepřímým potomkem třídy `Throwable`:
+
+* Pokud se jedná o potomka třídy `Error`, jedná se o chybu.&#x20;
+* Pokud se jedná o potomka třídy `RuntimeException`, jedná se o běhovou výjimku.&#x20;
+* V ostatních případech se jedná o kontrolovanou výjimku.
 
 ## Zachytávání výjimek
 
