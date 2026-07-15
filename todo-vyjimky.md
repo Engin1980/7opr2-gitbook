@@ -783,40 +783,17 @@ Výsledné výjimky tedy mohou obsahovat v dané metodě:
 * _doBackup_ - název zálohovací úlohy. Vnořená výjimka obsahuje název složky, v ní vnořená obsahuje název souboru, v ní vnořená obsahuje důvod chyby kopírování souboru;
 * _intervalElapsed -_ tady programátor výjimku zpracuje, uloží do seznamu chyb a vypíše informaci uživateli. Má k dispozici výjimku, která obsahuje název zálohovací úlohy, v ní vnořená výjimka obsahuje název složky, v ní vnořená obsahuje název souboru, v ní vnořená obsahuje důvod chyby kopírování souboru;
 
+Obecně bychom tedy mohli získat informaci:
+
+```
+TimerException: Naplánovaná operace selhala
+  ‣ BackupException: Úloha 'Denní zálohování' skončila s chybou
+    ‣ FileOperationException: Chyba při čtení "F:\log.txt".
+      ‣ IOException: Název souboru není platný
+
+```
+
 Při takovémto řetězení výjimek se typicky používají vlastní vytvořené výjimky (ve smyslu vlastních datových typů), které samy, již typicky podle názvu, reprezentují daný typ chyby.
-
-Tento způsob se používá nejčastě ve spojení s blokem _catch_, kde v tomto bloku nejdříve zachytíme vyvolanou původní výjimku, vytvoříme vlastní objekt s doplňujícími informacemi a vnoříme do něj původní výjimku; a následně tento vytvořený objekt vyhodíme do nadřazeného bloku.
-
-```java
-try {
-    copyFile(source, target);
-} catch (Exception ex){
-    throw new Exception ("Failed to copy file.", ex);
-}
-```
-
-Jak bylo zmíněno, pro procházení zřetězených výjimek následně slouží metoda _getCause()_. Jednoduchou funkci, která projde zadanou výjimku jako parametr a vypíše ji i všechny vnořené výjimky oddělené trojznakem ||| by mohl ukázat následující kód.
-
-```java
-public static String reportAllChainedExceptions(Throwable exception){
-    StringBuilder ret = new StringBuilder();
-    Throwable t = exception;
-    while (t != null){
-        ret.append(t.toString());
-        ret.append(" ||| "); // oddeleni mezi vyjimkami
-        t = t.getCause();
-    }
-    return ret.toString();
-}
-```
-
-Funkce si uloží výjimku do lokální proměnné _t_. Následně v cyklu, dokud v _t_ není _null,_ provede vložení popisu výjimky do objektu _ret_ a do objektu _t_ zkusí vložit vnořenou výjimku (pokud existuje). Jakmile další vnořená výjimka není nalezena, cyklus se ukončí.
-
-Při volání této funkce na objekt _fourth_ z předchozího výpisu dostaneme následující výstup:
-
-```
-java.lang.Exception: A ||| java.lang.Exception: B ||| java.lang.Exception: C ||| java.lang.Exception: D |||
-```
 
 ### Implementace zřetězení výjimek
 
@@ -840,7 +817,7 @@ Exception A
 
 Na příčinu výjimky se lze dostat pomocí metody _getCause()_ - pokud žádná výjimka vnořená není, metoda vrací hodnotu _null_.
 
-Základ pro práci zřetězených výjimek je tedy konstruktor, který umí předat příčinu - cause:
+Základ pro práci zřetězených výjimek je tedy konstruktor, který umí předat příčinu - cause. Parametr příčiny se většinou dává datového typu `Throwable`:
 
 ```java
 public class BackupException extends Exception {
@@ -859,22 +836,52 @@ public class BackupException extends Exception {
 Pokud děláte vlastní výjimku,  zvažte, zda k ní automaticky nedáte konstruktor, který umožňuje přidat příčinu. Jsou případy, kdy to není třeba, ale u většiny vlastních výjimek možnost vložit její příčinu využijete a konstruktor proto vytvořte.
 {% endhint %}
 
-### Procházení příčin výjimek
-
-Jak bylo zmíněno, pro příčinu výjimky se lze jednoduše dotázat metodou `getCause()`. Pokud víme, že máme strom zanoření hlubší (nebo vůbec nevíme, jak hlubový strom zanoření je), lze si napsat jednoduchý cyklus, který danou výjimku projde do hloubky a vypíše všechny vnořené příčiny:
+Samotné zabalení a vyhození se používá nejčastě ve spojení s blokem _catch_, kde v tomto bloku nejdříve zachytíme vyvolanou původní výjimku, vytvoříme vlastní objekt s doplňujícími informacemi a vnoříme do něj původní výjimku; a následně tento vytvořený objekt vyhodíme do nadřazeného bloku.
 
 ```java
-Throwable current = exception;
-int depth = 0;
-while (current != null) {
-    System.out.println("Depth " + depth + ": "
-            + current.getClass().getSimpleName()
-            + " - "
-            + current.getMessage());
-
-    current = current.getCause();
-    depth++;
+try {
+    copyFile(source, target);
+} catch (IOException ex){
+    throw new MyException ("Failed to copy file.", ex);
 }
+```
+
+### Procházení příčin výjimek
+
+Jak bylo zmíněno, pro příčinu výjimky se lze jednoduše dotázat metodou `getCause()`, která vrací instanci datového typu `Throwable` nebo hodnout `null`, pokud žádná vnořená výjimka není.
+
+```java
+try{
+...
+}
+catch(RuntimeException ex){
+  System.out.println("Msg: " + ex.getMessage());
+  System.out.println("Cause-msg: " + ex.getCause().getMessage());
+  ...
+}
+```
+
+Jednoduchou funkci, která projde zadanou výjimku jako parametr a vypíše ji i všechny vnořené výjimky oddělené trojznakem `|||` by mohl ukázat následující kód.
+
+```java
+public static String reportAllChainedExceptions(Throwable exception){
+    StringBuilder ret = new StringBuilder();
+    Throwable t = exception;
+    while (t != null){
+        ret.append(t.toString());
+        ret.append(" ||| "); // oddeleni mezi vyjimkami
+        t = t.getCause();
+    }
+    return ret.toString();
+}
+```
+
+Funkce si uloží výjimku do lokální proměnné _t_. Následně v cyklu, dokud v _t_ není _null,_ provede vložení popisu výjimky do objektu _ret_ a do objektu _t_ zkusí vložit vnořenou výjimku (pokud existuje). Jakmile další vnořená výjimka není nalezena, cyklus se ukončí.
+
+Při volání této funkce na objekt _fourth_ z výše uvedeného příkladu dostaneme následující výstup:
+
+```
+java.lang.Exception: A ||| java.lang.Exception: B ||| java.lang.Exception: C ||| java.lang.Exception: D |||
 ```
 
 ## Výjimky a práce se zdroji -- try-with-resources
