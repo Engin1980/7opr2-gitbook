@@ -2,21 +2,21 @@
 
 Po představení operací pro procházení a práci se složkami a soubory následuje část vysvětlující problematiku práce s daty uvnitř souboru. Obecně lze v Javě rozdělit přístupy na tři základní:
 
-* Nejjednodušší práce pomocí zapouzdřených funkcí, typicky vhodná pro jednoduché textové soubory s využitím balíčku _java.nio.files_.
-* Pokročilejší techniky práce s proudy umožňující plné přizpůsobení techniky čtení a zápisu dat s využitím balíčku _java.io_.
-* Nejnovější techniky práce s kanály umožňující plné přizpůsobení techniky čtení dat, navíc rozšiřitelné o možnosti zamykání, souběžného přístupu, mapování do paměti a dalších, s využitím balíčku _java.nio_.
+* Nejjednodušší práce pomocí zapouzdřených funkcí, typicky vhodná pro jednoduché textové soubory s využitím balíčku `java.nio.files`.
+* Pokročilejší techniky práce s proudy umožňující plné přizpůsobení techniky čtení a zápisu dat s využitím balíčku `java.io`.
+* Nejnovější techniky práce s kanály umožňující plné přizpůsobení techniky čtení dat, navíc rozšiřitelné o možnosti zamykání, souběžného přístupu, mapování do paměti a dalších, s využitím balíčku `java.nio`.
 
 Poslední přístup vysvětlen nebude, jeho použití je vhodné už u pokročilejších aplikací a v případě potřeby je třeba se s ním seznámit individuálně.
 
 ## Práce se soubory s třídou Files
 
-Nejjednodušší práce se soubory je vhodná na problematiku malých (typicky textových) souborů a spočívá v načtení celého textového do nějaké proměnné, či naopak, v uložení dat do cílového souboru. Obě operace podporuje svými metodami třída _java.nio.file.Files_. Všechny metody očekávají zadání názvu souboru nikoliv jako řetězec, ale jako instanci od výše představené třídy _java.nio.file.Path_. Většina operací samozřejmě také typicky vyvolává výjimku _java.io.IOException_, kterou je třeba zachytit a ošetřit.
+Nejjednodušší práce se soubory je vhodná na problematiku malých (typicky textových) souborů a spočívá v načtení celého textového do nějaké proměnné, či naopak, v uložení dat do cílového souboru. Obě operace podporuje svými metodami třída `java.nio.file.Files`. Všechny metody očekávají zadání názvu souboru nikoliv jako řetězec, ale jako instanci od výše představené třídy `java.nio.file.Path`. Většina operací samozřejmě také typicky vyvolává výjimku `java.io.IOException`, kterou je třeba zachytit a ošetřit.
 
 <table><thead><tr><th width="159">Metoda</th><th width="421">Popis</th></tr></thead><tbody><tr><td><code>readAllBytes()</code></td><td>Načte obsah souboru jako pole bytů.</td></tr><tr><td><code>write(...)</code></td><td>Uloží pole bytů do souboru.</td></tr><tr><td><code>readAllLines()</code></td><td>Načte ze souboru všechny řádky jako <strong>kolekci řetězců</strong>. Při načítání se použije kódová stránka zadaná jako druhý parametr volání funkce.</td></tr><tr><td><code>write(...)</code></td><td>Druhé přetížení stejné metody umožňuje zapsat do souboru řetězec (či pole řetězců) se zadanou kódovu stránkou.</td></tr></tbody></table>
 
 Práce s polem bytů je jednoduchá, a proto nebude představena. Složitější je problematika řetězců, které při načítání potřebují vědět, v jaké kódové stránce se mají zpracovat. Programátor tedy musí vědět, v jaké kódové stránce byl soubor uložen, jinak buď soubor nepůjde vůbec načíst (a celá operace skončí vyhozenou výjimkou), nebo načtené znaky nebudou odpovídat znakům, které programátor očekával.
 
-Kódová stránka je reprezentována instancí třídy _java.nio.charsets.Charset_ a nová instance se nejjednodušším způsobem získá voláním statické metody _forName_ této třídy, které se dá jako parametr název kódové stránky (například UTF8, ASCII atd.).
+Kódová stránka je reprezentována instancí třídy `java.nio.charsets.Charset` a nová instance se nejjednodušším způsobem získá voláním statické metody `forName` této třídy, které se dá jako parametr název kódové stránky (například UTF8, ASCII atd.).
 
 Následuje jednoduchá ukázka načtení obsahu souboru do proměnné typu kolekce řetězců.
 
@@ -34,9 +34,9 @@ try {
 }
 ```
 
-V programu se připravil název souboru, převedl se na cestu, připravila se odpovídající kódová stránka a následně se načte celý obsah souboru do proměnné _kontent_. Pozor, že obsah souboru se nenačítá jako jeden řetězec, ale jako kolekce řetězců reprezentujících jednotlivé řádky. Pokud chce programátor získat prostý řetězec, musí kolekci spojit programově v jeden objekt.
+V programu se připravil název souboru, převedl se na cestu, připravila se odpovídající kódová stránka a následně se načte celý obsah souboru do proměnné `content`. Pozor, že obsah souboru se nenačítá jako jeden řetězec, ale jako kolekce řetězců reprezentujících jednotlivé řádky. Pokud chce programátor získat prostý řetězec, musí kolekci spojit programově v jeden objekt.
 
-Uložení textu do souboru je obdobně jednoduché. Důležité je však, že i zde se používají funkce využívající proměnného počtu argumentů. Posledním argumentem je volitelně jedna, nebo více následujících hodnot výčtového typu _StandardOpenOptions_, který nabývá mj. hodnoty uvedené v tabulce.
+Uložení textu do souboru je obdobně jednoduché. Důležité je však, že i zde se používají funkce využívající proměnného počtu argumentů. Posledním argumentem je volitelně jedna, nebo více následujících hodnot výčtového typu `StandardOpenOptions`, který nabývá mj. hodnoty uvedené v tabulce.
 
 <table><thead><tr><th width="206">Hodnota</th><th width="380">Význam</th></tr></thead><tbody><tr><td>WRITE</td><td>Otevře soubor pro zápis.</td></tr><tr><td>APPEND</td><td>Při zápisu se bude přidávat na konec souboru. Používá se v kombinaci s WRITE nebo CREATE.</td></tr><tr><td>TRUNCATE_EXISTING</td><td>Smaže obsah otevíranému souboru (soubor se tedy otevře, smaže se jeho obsah a případný zápis se provádí od začátku souboru). Používá se v kombinaci s WRITE.</td></tr><tr><td>CREATE_NEW</td><td>Otevře nový soubor. Pokud již soubor existuje, vyhodí se výjimka.</td></tr><tr><td>CREATE</td><td>Otevře soubor. Pokud soubor neexistuje, vytvoří se nový.</td></tr><tr><td>DELETE_ON_CLOSE</td><td>Smaže soubor po ukončení práce. Používá se pro dočasné soubory, které poté programátor nemusí mazat ručně.</td></tr></tbody></table>
 
@@ -78,9 +78,9 @@ java.nio.file.Files.write(filePath, lines, charset,
 
 Původní technika práce se soubory vycházel z pojmu tzv. _proudů_ - _stream_.
 
-Proud je obecný, abstraktní producent, nebo konzument dat. Obsahuje tedy jednoduchou metodu _read()_ nebo _write()_, pomocí které proud data dodává, případně přijímá. Podle toho se proudy dělí na vstupní (ty, které dodávají data) a výstupní (ty, které přijímají data).
+Proud je obecný, abstraktní producent, nebo konzument dat. Obsahuje tedy jednoduchou metodu `read()` nebo `write()`, pomocí které proud data dodává, případně přijímá. Podle toho se proudy dělí na vstupní (ty, které dodávají data) a výstupní (ty, které přijímají data).
 
-Proudem může být obecně cokoliv, co má tuto schopnost vůči vytvářenému programu. Typicky soubory (soubor pro zápis je schopen přijímat data, soubor pro čtení je schopen je dodávat), připojení k síti (zapisující proud posílá data z počítače pryč, čtecí proud přijímá data ze sítě), ale také například klávesnice (vstupní proud dodávající stisknuté klávesy) nebo tiskárna (výstupní proud posílající data tiskáren). Z běžně používaných tříd se programátor setkává nejčastěji s proudy výstupu a čtení z konzole (_System.in_ a _System.out_)
+Proudem může být obecně cokoliv, co má tuto schopnost vůči vytvářenému programu. Typicky soubory (soubor pro zápis je schopen přijímat data, soubor pro čtení je schopen je dodávat), připojení k síti (zapisující proud posílá data z počítače pryč, čtecí proud přijímá data ze sítě), ale také například klávesnice (vstupní proud dodávající stisknuté klávesy) nebo tiskárna (výstupní proud posílající data tiskáren). Z běžně používaných tříd se programátor setkává nejčastěji s proudy výstupu a čtení z konzole (`System.in` a `System.out`)
 
 V Javě povinně je proud vždy **buď vstupní, nebo výstupní.**
 
