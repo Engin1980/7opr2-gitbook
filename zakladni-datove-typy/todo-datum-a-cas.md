@@ -1,4 +1,4 @@
-# TODO Datum a čas
+# Datum a čas
 
 ## Původní Java Date API
 
@@ -41,9 +41,7 @@ Moderní třídy z balíčku `java.time` jsou naopak striktně neměnné (immuta
 
 Práce se starým API často připomínala detektivní hru. Vývojáři museli neustále myslet na podivná pravidla, která odporují lidské intuici. Například měsíce v třídě `Calendar` byly indexovány od nuly. Leden byl reprezentován číslem `0`, zatímco prosinec číslem `11`. Aby toho nebylo málo, roky se v některých konstruktorech třídy `Date` počítaly jako počet let od roku 1900. Pokud jste chtěli nastavit datum na 16. července 2026, museli jste napsat kód, který na první pohled nedává žádný smysl:
 
-Java
-
-```
+```java
 import java.util.Date;
 
 // Nastavení data na 16. červenec 2026 pomocí starého API
@@ -55,9 +53,7 @@ System.out.println("Staré datum: " + stareDatum);
 
 Takový kód je extrémně náchylný k chybám. Moderní API tyto nesmyslné historické relikvie odstraňuje. Pokud v novém API vytváříte datum, píšete přesně to, co vidíte v kalendáři:
 
-Java
-
-```
+```java
 import java.time.LocalDate;
 
 // Moderní, čisté a srozumitelné řešení
