@@ -42,7 +42,7 @@ Pokud jste projekt zákládali jako klasiký Java projekt v IntelliJ Idea, budet
 
 V takovém případě do projektu musíme vytvořit novou složku (ideálně na úrovni složky `src`), kterou můžeme nazvat libovolně, ale běžně se používají názv jako `tst` , `test` nebo `tests`.
 
-Pokud nově vytvořené složce pro testy neexplicitně nedefinujeme její význam, IntelliJ IDEA ji považuje za běžný adresář s textovými soubory. IDE v této složce nebude správně doplňovat kód Javy, nebude nabízet automatické importy pro knihovnu JUnit a především u testovacích tříd vůbec nezobrazí zelené spouštěcí šipky.&#x20;
+Pokud nově vytvořené složce pro testy neexplicitně nedefinujeme její význam, IntelliJ IDEA ji považuje za běžný adresář s textovými soubory. IDE v této složce nebude správně doplňovat kód Javy, nebude nabízet automatické importy pro knihovnu JUnit a především u testovacích tříd vůbec nezobrazí zelené spouštěcí šipky.
 
 Proto musíme složku označit jako takzvaný _Test Sources Root_. V IntelliJ IDEA toho docílíme kliknutím pravým tlačítkem myši na danou složku v levém panelu projektu, navigováním na položku _Mark Directory as_ a zvolením možnosti _Test Sources Root_. Jakmile tento krok provedeme, ikona složky v prostředí IntelliJ IDEA změní barvu ze standardní žluté na specifickou zelenou.
 
@@ -51,8 +51,6 @@ Proto musíme složku označit jako takzvaný _Test Sources Root_. V IntelliJ ID
 Tímto vizuálním tahem dáme vývojovému prostředí najevo, že soubory uvnitř této složky jsou plnohodnotné javové třídy, které mají přístup ke všem produkčním třídám v `src/main/java`, ale zároveň jsou izolovány pro účely testování. IntelliJ IDEA okamžitě přepne daný adresář do režimu plné podpory Javy – začne hlídat syntaktické chyby, správnost balíčků, umožní refaktorizaci a hlavně aktivuje spouštěč testů JUnit. Při automatickém generování testů pomocí klávesové zkratky pak IDE bude přesně vědět, kam má nově vznikající testovací třídy ukládat, a automaticky v zelené složce replikuje balíčkovou strukturu z produkční části projektu.
 
 ![Test directory created](.gitbook/assets/test-folder.png)
-
-
 
 ### Vytvoření vlastního testu
 
@@ -63,7 +61,7 @@ Test můžeme vytvořit dvěma způsoby:
 
 #### Vytvoření testu ručně
 
-Pro vytvoření testu ručně stačí do složky **s testy** vložit novou třídu (jako klasickou třídu do projektu) a do ní doplnit požadovaný kód. V základu se může jednat o úplně jednoduchou třídu.&#x20;
+Pro vytvoření testu ručně stačí do složky **s testy** vložit novou třídu (jako klasickou třídu do projektu) a do ní doplnit požadovaný kód. V základu se může jednat o úplně jednoduchou třídu.
 
 {% hint style="info" %}
 Testovací třídy mají typicky postfix `Test`.
@@ -120,339 +118,69 @@ Poslední lehce komplikovanou oblastí pro neznalé je spuštění testu. Testy 
 
 #### Spuštěním ze zdrojového kódu
 
-toto
-![Spuštění ze zdrojového kódu](imgs/test-start.png)
-takto
+Test lze spustit přímo ze zdrojového kódu pomocí zelených šipek. Šipka u názvu třídy spouští všechny testy v rámci dané třídy, šipka u samotného testu spouští konkrétní test.
 
+<figure><img src=".gitbook/assets/test-start.png" alt=""><figcaption></figcaption></figure>
 
+#### Spuštění přes konfigurace
 
+Když v IntelliJ IDEA klikneme na onu známou zelenou šipku vedle testovací třídy nebo metody, na pozadí se odehraje proces, který vývojové prostředí před uživatelem částečně skrývá. IDE nespouští testy „jen tak“. Pro každý takový klik vytvoří takzvanou spouštěcí konfiguraci (_Run/Debug Configuration_). Spouštěcí konfigurace je v podstatě předpis, recept nebo sada instrukcí, která říká, jakým způsobem, s jakými parametry a v jakém prostředí se má daný kód vykonat.
 
+{% hint style="info" %}
+Spouštěcí konfigurace vlastně říkají, co má Idea spustit v okamžiku, kdy uživatel obecně zvolí položku "Run" či "Debug".
 
+U nových projektů se typicky spouští "Current File" — současný soubor — pokud obsahuje metodu `main()` (a tedy lze spustit).
+{% endhint %}
 
-![Ukázka výsledku testu](.gitbook/assets/test-result.png)
+Princip spouštěcích konfigurací vychází z toho, že spuštění testu v Javě je ve skutečnosti komplexní záležitost. Aby se test vykonal, musí IntelliJ IDEA na pozadí sestavit složitý příkaz pro příkazovou řádku operačního systému. Tento příkaz musí obsahovat přesnou cestu k Java Development Kitu (JDK), nastavení classpath (seznam adresářů a JAR souborů, kde se nachází produkční kód, testovací kód a knihovna JUnit) a samotné argumenty pro spouštěč JUnit. Ruční psaní takového příkazu by bylo pro programátora extrémně zdlouhavé a náchylné k chybám. Spouštěcí konfigurace tento proces plně automatizuje.
 
-configsel
+V IntelliJ IDEA najdeme správu těchto konfigurací v pravém horním rohu obrazovky, vedle hlavního tlačítka Play. Jakmile klikneme na šipku u konkrétního testu v editoru, IDE automaticky vytvoří _dočasnou_ spouštěcí konfiguraci. Ta dostane název podle testované třídy nebo metody a v seznamu konfigurací se objeví se zašedlou ikonkou. Dočasných konfigurací může mít IntelliJ IDEA uloženo jen omezené množství a ty nejstarší postupně maže, jakmile se spouští nové testy. Pokud však uživatel ví, že určitý test či celou sadu testů bude spouštět velmi často a chce si u nich upravit specifické parametry, může dočasnou konfiguraci jedním kliknutím uložit jako trvalou.
 
 ![Zvolení konfigurace](.gitbook/assets/configurationselection.png)
 
-config
+Trvalá konfigurace (a vůbec správa konfigurací) se provádí přes kontextové menu "Edit Configurations".  Otevře se dialogové okno, kde uživatel může pomocí šipky "+" přidat další konfiguraci, nebo v levém menu zvolit existující konfiguraci a upravit její parametry.
 
 ![Run/Debug Configurations window](.gitbook/assets/configurationwindow.png)
 
-### Realizace TDD v NetBeans
+Výše uvedený obrázek ukazuje konfiguraci JUnit, která:
 
-V jazyce Java je testy řízený vývoj (nebo obecně testování[\[10\]](https://word2md.com/#footnote-10)) lze provádět s využitím knihoven - nejčastěji se používá knihovna nazvaná JUnit.
+* se spouští na lokálním počítači přes javu 21
+* má dodatečné parametry `-ea` (pokud znáte v Javě assertions, tak víte, co toto znamená)
+* Budet testovat pouze jednu třídu "Class" a to tu uvedenou hned za tímto parametrem - `CarTest`.
+* Dalšími parametry lze změnit chování testu.
 
-Knihovna JUnit obsahuje třídy a metody, které slouží pro vyvolávání testů a jejich vyhodnocení a publikování výsledků programátorovi.
+U testů je běžné, že se nespouští jen jeden konkrétní test nebo jedna třída, ale typicky všechny testy v balíku nebo složce. Proto lze upravit rozbalovací seznam s položkou "Class" a vybrat tam "All in package" nebo "All in directory" a v pravém textovém poli zadat vybranou hodnotu. Potom se bude spouštět celá skupina testů najednou.
 
-Celé řešení bude ukázáno na příkladu třídy _SMS_, která slouží pro práci se SMS zprávami. V této třídě bude metoda _compressAsSms()_, která na vstupu bere text (řetězec) a vrací výstup (také řetězec), který komprimuje takovým způsobem, že odstraní všechny mezery a první znaky v začátcích slov nahradí velkými písmeny, vyjma mezer za čárkou nebo na konci věty.
+Pro uložení konfigurace jako permamentní lze vybrat symbol diskety 💾 napravo od symbolu "+" vlevo nahoře.
 
-V kódu použijeme příkaz
+Po potvrzení a uložení dialogu pak stačí pouze v rozbalovacím seznamu konfigurací vybrat požadovanou konfiguraci a v IntelliJ Idea vybrat volbu Spustit/Run.
 
-throw new NotImplementedException();
+![Ukázka výsledku testu](.gitbook/assets/test-result.png)
 
-, který způsobí, že se běh aplikace zastaví chybou. Tento příkaz můžeme (a je to vhodné) používat kdykoliv, kdy se vytváří blok, jehož implementace se doplní později. Běhové prostředí Javy v tomto případě při volání tohoto bloku upozorní, že není implementován a že před použitím je třeba kód doplnit. Naopak, je krajně nevhodné takové bloky kódu nechávat projít bez chyby, protože se na ně typicky zapomene a následně se v kódu stanou nedohledatelnými.
+## Tvorba vlastních JUnit testů
 
-Zdrojový kód třídy _SMS_ může na počátku vypadat například takto:
+### Základy testování
 
-package eng.demos.tdd;\
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;\
-public class SMS {\
-\*\*public static String compressAsSms(String message){\
-\*\*throw new NotImplementedException();\
-\*\*}\
-\*\*}
+asf
 
-Funkce _compressAsSMS()_ je připravena, nic však nerealizuje.
 
-#### Vytvoření testu
 
-Prvním krokem tedy bude vytvoření testu, který ji bude ověřovat. V prostředí _NetBeans_ nad souborem _SMS.java_ s požadovanou třídou k testování zvolíme v kontextovém menu volby _Tools -> Create Tests_.
-
-Obrázek - Vygenerování testu v NetBeans
-
-V otevřeném dialogovém okně _Create Tests_ zvolíme název třídy, do které se mají testy generovat - testy se negenerují do třídy, která se testuje, ale do druhé třídy, která má typicky stejný název jako testovaná třída s dodatkem _Test_ - v tomto případě bude mít testovací třída název například _SMSTest_. Další možností je zvolit, které všechny členy tříd v dané třídě je vhodné testovat - pro každého člena třídy bude následně vytvořena metoda, která ověří jeho chování.
-
-Obrázek - Volba názvu a obsahu testovací třídy
-
-Pokud se v projektu vytváří první test, projekt potřebuje připojit odkaz na knihovnu, která bude testování provádět. Knihovna JUnit je v prostředí _NetBeans_ používána ve dvou verzích - 3.x a 4.x. V současném řešení je samozřejmě vhodné vždy používat knihovnu nejnovější, tedy 4.x. Po zvolení dialogu může být programátor volitelně požádán prostředím _NetBeans_ o povolení automatického stažení balíčku s touto knihovnou.
-
-Obrázek - Volba verze JUnit
-
-V prostředí _NetBeans_ se po ukončení vkládání a generování testovací třídy projeví dvě změny. První změnou je ve stromu _Projects_, větvi _Test Libraries_, kde přibude odkaz na knihovnu _JUnit 4.10-juni4-10.jar_. Druhou změnou je ve stromu ve větvi _Test Packages_, kde se objeví balíček i zdrojový kód třídy _SMSTest_.
-
-Obrázek - Připojení knihovny JUnit do testovacích knihoven
-
-Zdrojový kód třídy _SMSTest_ je ukázán níže.
-
-package eng.demos.tdd;\
-import org.junit.\*;\
-import static org.junit.Assert.\*;\
-public class SMSTest {\
-public SMSTest() {\
-}\
-@BeforeClass\
-public static void setUpClass() {\
-}\
-@AfterClass\
-public static void tearDownClass() {\
-}\
-@Before\
-public void setUp() {\
-}\
-@After\
-public void tearDown() {\
-}\
-\*\*public void testCompressAsSms() {\
-\*\*System.out.println("compressAsSms");\
-String message = "";\
-String expResult = "";\
-String result = SMS.compressAsSms(message);\
-assertEquals(expResult, result);\
-// TODO review the generated test code and remove
-
-// the default call to fail.\
-fail("The test case is a prototype.");\
-\*\*}\
-\*\*}
-
-Ve výpisu si lze povšimnout čtyř zajímavých metod, které blíže nebudou osvětleny, ale jejích význam je snad zřejmý z následující tabulky:
-
-| Název metody    | Význam                                                                                                                                                                                                       |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| setUpClass()    | Volá se **před** spuštěním **první** ze všech testovacích metod, které se budou v této třídě vykonávat při testování. Slouží typicky k nastavení proměnných a hodnot, které jsou společné pro všechny testy. |
-| tearDownClass() | Volá se **po** dokončení **poslední** ze všech testovacích metod, které se v této třídě vykonaly. Typicky slouží k úklidu po provedení testů.                                                                |
-| setUp()         | Volá se **před** spuštěním **každé** jednotlivé testovací metody dané třídy.                                                                                                                                 |
-| tearDown()      | Volá se **po** dokončení **každé** testovací metody dané třídy.                                                                                                                                              |
-
-Tyto metody tedy slouží pro nastavení třídy před spuštěním testů a také pro úklid po provedení všech testů.
-
-Důležitou testovací metodou je metoda _testCompressAsSMS()_, která je právě testovací metodou pro vytvářenou metodu _compressAsSms()_ třídy _SMS._ Tato metoda již obsahuje nějaký zdrojový kód, jehož jednotlivé řádky lze popsat.
+Všechny příkazy _assert….()_ mohou mít jako první, nepovinný, textový parametr, který říká, jaká chybová hláška se má vypsat, pokud test selže.
 
 @Test\
-public void testCompressAsSms() {\
-// vytiskně info na konzoli, jaký test se vlastně provádí\
-System.out.println("compressAsSms");\
-// "message" je vstupní parametr testovací metody, na tomto řádku může programátor\
-// nastavit, co bude do dané metody vstupovat pro testovací ověření\
-String message = "";\
-// "expResult" je proměnná, do které programátor v testu nastaví očekávaný výsledek\
-// po volání testované metody (tedy "expected result")\
-String expResult = "";\
-// Toto je samotné vyvolání testovací metody. Metoda "compressAsSMS()" je statická,\
-// nepotřebuje tedy instanci. V opačném případě by bylo třeba ještě vytvořit instanci,\
-// nad kterou by se daná metoda vyvolala\
-String result = SMS.compressAsSms(message);\
-// Testovací metoda "assert", která ověřuje, zda jsou výsledky testování shodné.\
-// Tato metoda poskytuje výsledek prostředí, zda se test povedl, či nikoliv.\
-// Pozor, po vykonání této metody funkce pokračuje dál! Nekončí se tedy tímto příkazem\
-// ani v případě, že test úspěšně projde!\
-assertEquals(expResult, result);\
-// Následující řádek je nagenerován, aby každý test po vytvoření generováním\
-// automaticky selhal. Až programátor nahoře doplní požadované vstupy a výstupy\
-// testu, následující řádek smaže.\
-fail("The test case is a prototype.");\
+public void testOwnMessage() {\
+assertEquals("Toto je vlastní zpráva.", 5, 7);\
 }
 
-#### Příprava a spuštění testu
+Tento test selže (5 != 7) a vypíše se vlastní chybová zpráva.
 
-Dalším krokem je příprava a spuštění testu. V přípravě nastavíme proměnné, které vstupují jako testovací do testu, na hodnoty, které chceme testovat. V ukázaném příkladu nastavíme hodnotu proměnné _message_ například na řetězec „Ahoj, Karle. Jdeme na squash?". Odpovídajícím způsobem musíme nastavit také hodnotu proměnné, která reprezentuje úspěšný očekávaný výsledek po volání této funkce, tedy v tomto případě: „Ahoj,Karle.JdemeNaSquash?"
+### Testování instancí
 
-@Test\
-public void testCompressAsSms() {\
-System.out.println("compressAsSms");\
-\*\*String message = "Ahoj, Karle. Jdeme na squash?";\
-String expResult = "Ahoj,Karle.JdemeNaSquash?";\
-\*\*\
-String result = SMS.compressAsSms(message);\
-assertEquals(expResult, result);\
-\~\~fail("The test case is a prototype.");\
-\~\~\
-}
+asfe
 
-Protože byl test připraven, odstraníme ještě poslední řádek s příkazem _fail_, který má selhat, když programátor vstupní a výstupní hodnoty testu ještě nenastavil.
+### Testování listů, polí a kolekcí
 
-Nyní lze test spustit. Test se spustí klávesovou zkratkou _Alt+F6_, nebo z menu _Run -> Test Project_.
-
-Test po spuštění zobrazí výsledek pomocí barevné čáry.
-
-Obrázek - Ukázka spuštění neúspěšného testu
-
-Test neprošel. To je samozřejmé, protože implementace ještě nebyla vytvořena. Proto bude proveden nástřel implementace (význam metod v tomto případě není důležitý, ale je vhodné se k tomuto testu vrátit po prostudování problematiky práce s řetězecem). Funkcionalita tedy nebude představena podrobně, jde pouze o ilustrační příklad. Funkcionalita bude tedy vytvořena například takto.
-
-public static String compressAsSms(String message){\
-boolean f = false;\
-StringBuilder sb = new StringBuilder();\
-for (int i = 0; i < message.length(); i++) {\
-char c = message.charAt(i);\
-if (c == ' ')\
-f = true;\
-else{\
-if (f){\
-sb.append(Character.toUpperCase(c));\
-f = false;\
-}else{\
-sb.append(c);\
-}\
-}\
-}\
-return sb.toString();\
-}
-
-Po spuštění tohoto kódu dostaneme úspěšný výsledek testu.
-
-Přesto však kód není dokonalý. Je vhodné jej trochu upravit, hlavně pojmenovat proměnné, protože takto je velmi nečitelný.
-
-Pro přejmenování proměnných použijeme tzv. _refactoring_. Po umístění kurzoru do textu proměnné lze stisknout klávesu _Ctrl+R_ a přepíšeme název proměnné na nový text. Následně potvrdíme klávesou _Enter_. Upravený zdrojový kód může vypadat například takto.
-
-public static String compressAsSms(String message){\
-boolean wasLastCharSpace = false;\
-StringBuilder result = new StringBuilder();\
-for (int i = 0; i < message.length(); i++) {\
-char currentChar = message.charAt(i);\
-if (currentChar == ' ')\
-// aktualni je mezera, nepridava se\
-wasLastCharSpace = true;\
-else{\
-// pokud byla predchozi mezera...\
-if (wasLastCharSpace){\
-// ... prevedeme znak na velka\
-result.append(Character.toUpperCase(currentChar));\
-wasLastCharSpace = false;\
-}else{\
-// .. jinak pouze pridame aktualni znak\
-result.append(currentChar);\
-}\
-}\
-}\
-return result.toString();\
-}
-
-Po přejmenování proměnných a po doplnění komentářů bude text pro programátora mnohem čitelnější.
-
-Opět spustíme test, aby se prokázalo, že změnou při redaktorování se neprovedla chyba a kód je stále v pořádku.
-
-#### Vlastní tvorba testu
-
-Při tvorbě testu není třeba se omezit pouze na nagenerované testy, ale je možno vytvářet i testy vlastní. Klasickým případem navazujícím na přechozí příklad je otestování nestandartních vstupů. Nechť je do třídy _SMSTest_ vytvořen nový test, který ověřuje, co se stane, když do testované metody _compressAsSms_() vstoupí jako parametr hodnota _null_.
-
-Nejdříve se tedy vytvoří prázdný test. Vytvoří se nová metoda (ve třídě _SMSTest_), a před ni se doplní tzv. anotace, tedy řetězec @Test. Podle něj prostředí _NetBeans_ pozná, že se daná metoda má spouštět jako testovací.
-
-\*\*@Test\
-\*\*public void testCompressAsSmsWithNull() {\
-}
-
-Dalším krokem je vytvoření očekávaných vstupních a výstupních hodnot. Jako vstup bude sloužit hodnota _null_, co s výstupem? To musí vědět ten, co program vytváří - jak se má metoda s takovým vstupem chovat? Má vyvolat chybu? Nebo má vrátit také hodnotu _null_? To musí vědět zadavatel - tvůrce zdrojového kódu. Řekněme, že v tomto příkladu bude očekáván výsledek _null_. Tedy:
-
-@Test\
-public void testCompressAsSmsWithNull() {\
-\*\*String message = null;\
-String expResult = null;\
-\*\*}
-
-Nyní bude doplněno samotné volání funkce.
-
-@Test\
-public void testCompressAsSmsWithNull() {\
-String message = null;\
-String expResult = null;\
-\*\*String result = SMS.compressAsSms(message);\
-\*\*}
-
-A konečně, pomocí funkce _assertEquals()_ bude ověřeno, zda je opravdu navrácený výsledek shodný s očekávaným výsledkem. Do funkce je vhodné ještě doplnit úvodní výpis na konzoli, aby na konzoli bylo prokazatelně vidět vyvolání testu.
-
-@Test\
-public void testCompressAsSmsWithNull() {\
-\*\*System.out.println("testCompressAsSmsWithNull");\
-\*\*\
-String message = null;\
-String expResult = null;\
-String result = SMS.compressAsSms(message);\
-\*\*assertEquals(expResult, result);\
-\*\*}
-
-Následně lze všechny testy spustit a počkat na výsledek.
-
-Obrázek - Spuštění ručně přidaného testu
-
-Ve výsledku jde vidět, že už se vykonávají testy dva. Úspěšně však prošla pouze polovina, nově vytvořený test na test hodnoty _null_ neprošel. V okně si lze také zkontrolovat důvod neúspěchu testu. Je vidět, že test vyvolal výjimku _java.lang.NullPointerException_, tedy, že někde se pracuje s hodnotou null a není to možné.
-
-Postupnou kontrolou by bylo zjištěno, že k chybě dojde v metodě _compressAsSMS(null)_ na příkazu
-
-for (int i = 0; i < message.length(); i++) {
-
-, protože metodu _length()_ nelze vyvolat nad objektem _null_, protože _null.length()_ nedává smysl. Původní funkci tedy stačí lehce poupravit.
-
-public static String compressAsSms(String message){\
-\*\*if (message == null) return null;\
-\*\*\
-...\
-}
-
-Po doplnění jednoho řádku již oba testy projdou úspěšně.
-
-#### Poznámky k testování
-
-V uvedeném příkladu bylo testování provedeno nad statickou metodou. Pokud je metoda instanční, potřebujeme vytvořit instanci. Například pro testování kalkulačky:
-
-public class Calculator {\
-public double multiply (double a, double b){\
-return a \* b;\
-}\
-}
-
-… bude test navíc obsahovat vytvoření instance pomocí klíčového slova _new_:
-
-@Test\
-public void testMultiply() {\
-System.out.println("multiply");\
-double a = 5.5;\
-double b = 2.0;\
-Calculator instance = new Calculator();\
-double expResult = 11.0;\
-double result = instance.multiply(a, b);\
-assertEquals(expResult, result, 0.0);\
-}
-
-Další úpravou je volání funkce _assertEquals_.
-
-**Pro neceločíselné typy:**
-
-Počítač automaticky zaokrouhluje výsledky s přesností tak, aby se mu hodnoty vešly do paměti přidělené pro daný datový typ. Proto pokud sečteme i s použitím typu _float_ například 1 + 0,000000000000000000000000000001, výsledkem bude opět hodnota 1. Počítač desetinnou část, která je nepatrná a do paměti se mu nevešla, opomine. V jednoduchém testu umocníme hodnotu PI na druhou a následně ji opět odmocníme - a vše vyjde v pořádku, test bude úspěšný.
-
-@Test\
-public void testMultiply2() {\
-double temp = Math.pow(Math.PI, 2.0);\
-double result = Math.pow( temp, 1/2.0);\
-double expResult = Math.PI;\
-assertEquals(expResult, result, 0.0);\
-}
-
-Pokud však v kódu již využijeme přetypování na rozsahově menší typ _float_, výsledek se bude drobně odlišovat. I drobná odchylka již způsobí, že test neprojde.
-
-@Test\
-public void testMultiply2() {\
-float temp = (float) Math.pow(Math.PI, 2.0);\
-double result = Math.pow( temp, 1/2.0);\
-double expResult = Math.PI;\
-assertEquals(expResult, result, 0.0);\
-}
-
-Tento test se vrátí s chybou:
-
-Failed: expected: <3.141592653589793>, but was: <3.1415926073757197>
-
-Proto při práci s desetinnýmí čísly se v metodě _assertEquals_ používá i třetí parametr, tzv. _delta_, která říká, o kolik se mohou dvě desetinná čísla lišit, aby byla ještě považována za ekvivalentní. Upravený test s přidanou hodnotou _delta_ již projde v pořádku.
-
-@Test\
-public void testMultiply2() {\
-float temp = (float) Math.pow(Math.PI, 2.0);\
-double result = Math.pow( temp, 1/2.0);\
-double expResult = Math.PI;\
-assertEquals(expResult, result, **0.000001**);\
-}
-
-**Testování polí:**
+aslefj
 
 Pole nelze porovnávat jako _assertEquals_, protože dvě pole se mohou v paměti nacházet na odlišných místech a funkce _assertEquals()_ porovnává adresy jejich uložení. Pokud tedy budou dvě pole, obě obsahovat stejné hodnoty, ale budou se nacházet na různých místech v paměti, metoda selže a bude tvrdit, že pole se liší.
 
@@ -472,20 +200,7 @@ int \[] b = new int \[] { 1, 2, 3};\
 assertArrayEquals(a, b);\
 }
 
-**Vlastní chybová zpráva:**
-
-Všechny příkazy _assert….()_ mohou mít jako první, nepovinný, textový parametr, který říká, jaká chybová hláška se má vypsat, pokud test selže.
-
-@Test\
-public void testOwnMessage() {\
-assertEquals("Toto je vlastní zpráva.", 5, 7);\
-}
-
-Tento test selže (5 != 7) a vypíše se vlastní chybová zpráva.
-
-Obrázek - Vlastní chybová zpráva v testu
-
-**Nucené selhání testu:**
+### Nucené selhání testu
 
 Je-li třeba v určitou chvíli nechat test selhat, lze využít volání příkazu _fail()_. Ten může brát jako parametr informaci o selhání testu. Test je chápán jako úspěšný, **pokud neselhal**, a test může selhat buď při volání funkce _assert…()_, nebo příkazem _fail()_. Pokud tedy vytvoříme prázdnou metodu, ve které se žádné vyhodnocení neprovede, bude tato metoda chápána jako úspěšné projití testu.
 
@@ -509,21 +224,3 @@ fail();\
 }
 
 Příkaz _fail()_ způsobí selhání testu. Jiné vyhodnocení testu se nevyskytuje, takže v opačném případě bude test chápán jako úspěšný. Tato technika se používá ve složitějších případech, kdy je složité, nebo nemožné napsat ohodnocení pomocí metody _assert…()_.
-
-**Kontrolní otázky:**
-
-* Jaké jsou hlavní výhody automatizovaného testování?
-* K čemu slouží metody „assert…()"?
-* Lze nechat libovolný test selhat? Jak?
-
-Úkoly k zamyšlení:
-
-Jak realizovat testování, pokud nemáte k dispozici JUnit?
-
-Korespondenční úkol:
-
-Realizujte kalkulačku s operacemi sčítání, odčítání, násobení a dělení jako třídu s metodami. Otestujte všechny tyto metody pomocí testů. Nezapomeňte na chybové stavy při dělení.
-
-Shrnutí obsahu kapitoly
-
-Kapitola představila problematiku testů a testování malých bloků aplikace při jejím výhody. Ukázala, proč automatizované testování pomáhá udržet kvalitu aplikace a jak může přispět k tomu, že v aplikaci bude v budoucnosti možno detekovat chyby způsobené změnou existujícího kódu.
