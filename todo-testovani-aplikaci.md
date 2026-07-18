@@ -2,27 +2,6 @@
 
 ## Testování aplikací
 
-V této kapitole se dozvíte:
-
-* Proč a jak aplikace testovat?
-* Jaké výhody přínáší automatizované testování?
-
-Po jejím prostudování byste měli být schopni:
-
-* Vytvořit vlastní test ověřující vaši implementaci
-
-Klíčová slova této kapitoly:
-
-Testování, testy řízený vývoj
-
-Doba potřebná ke studiu: 3 hodiny
-
-**Průvodce studiem**
-
-Kapitola představuje problematiku automatického testování, které usnadňuje vývoj aplikací a pozdější kontrolu a hledání chyb v kódu.
-
-Pro studium kapitoly a samostatné ověření příkladů vlastními programy si vyhraďte 3 hodiny.
-
 Při vývoji aplikaci musí programátor neustále kód, který vytvoří, kontrolovat na výskyt chyb. V praxi to znamená, že vytvoří nejen implementaci, která provádí požadovanou funkcionalitu, ale také vytvoří zdrojový kód, který tuto funkcionalitu otestuje. V ideálním případě by programátor měl testovat nejen to, že kód pro správné vstupy vykoná požadovaný výsledek, ale také to, jak se bude daný program chovat pro vstupy nesprávné - tedy například zadání data ve špatném formátu, zadání prázdné hodnoty místo očekávané hodnoty textu a podobně. Programátor **nikdy nesmí předpokládat**, že jeho zdrojový kód bude použit pouze správně, a vždy se musí věnovat i případu ošetření chyb. V programovacím jazyce Java je situace o to důležitější, že jazyk Java podporuje kontrolovaný výjimky (viz kapitola Výjimky a jejich zpracování).
 
 Samozřejmě je možné veškeré funkcionality testovat tak, že po jejich napsání upravíme například metodu _main()_ tak, aby nově vytvořenou funkcionalitu spustila a vyzkoušeli tak požadované chování. Tím samozřejmě ověříme, zda všechno funguje tak, jak má, nicméně při vytvoření další části kódu se typicky původní ověřovací kód původní implementace smaže a nahradí se blokem novým, testujícím nový kód.
@@ -46,6 +25,38 @@ TDD je obecně technika vývoje softwaru, která spočívá na základě, že ne
 * Dokud není programátor spokojený s vytvořenou funkcionalitou, vrací se k bodu 5. V opačném případě je daná funkcionalita implementovaná. **Test se neodstraňuje**, zůstává v balíku testů, které se budou nadále pouštět vždy s přidanou novou funkcionalitou. Pokud nějaký test v budoucnosti neprojde, znamená to, že se podařilo změnit i něco, co bylo naprogramováno dříve a některá část aplikace nyní nemusí fungovat korektně.
 
 Tento princip je obecný, slouží jako motivace k řešení projektů s využitím TDD vývoje.
+
+
+### Realizace v IntelliJ Idea
+
+Takhle:
+
+![Project view](imgs/testing/projectview.png)
+
+takhle:
+
+![Mark Directory](imgs/testing/testmarkdirectory.png)
+
+takhle:
+![Test directory created](imgs/testing/testfolder.png)
+
+takhle:
+
+
+takhle
+
+![Test](imgs/testing/testcreate.png)
+
+takhle:
+
+![test create screen](imgs/testing/testcreatescreen.png)
+
+asfasef
+
+![test](imgs/testing/testresult.png)
+
+
+
 
 ### Realizace TDD v NetBeans
 
