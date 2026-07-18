@@ -109,7 +109,13 @@ Pokud znáte výjimky, tak:
 * test je 🟢 úspěšný, pokud neselže s žádnou chybou.
 {% endhint %}
 
-Případy 1 a 3 jsou asi jasné. Zajímavá oblast je, jak testovat, zda se získaná data shodují s daty očekávanými.
+Případy 1 a 3 jsou asi jasné. Zajímavá oblast je, jak testovat, zda se získaná data shodují s daty očekávanými. Tato problematika bude vysvětlena dále.
+
+Po spuštění testu/ů vám vývojové prostředí vypíše výsledek, ze kterého lze typicky vidět, které testy proběhly úspěšně, které neúspěšně a proč.
+
+<figure><img src=".gitbook/assets/test-result.png" alt=""><figcaption></figcaption></figure>
+
+Například výše je uvedeno, že ze 3 testů jeden neprošel. Ten neprošel kvůli chybě `AssertionFailedError` - tj. nepovedlo se porovnání očekávaného výsledku s aktuálním. Očekávaná hodnota byla `null` a aktuální hodnota byla `""`. Programátor tak rychle vidí, co se nepovedlo a proč.
 
 ### Vyhodnocení výsledku testu
 
@@ -447,20 +453,11 @@ Po potvrzení a uložení dialogu pak stačí pouze v rozbalovacím seznamu konf
 
 ## Tvorba vlastních JUnit testů
 
-### Základy testování
+### Základní testování
 
-asf
+Na základě výše uvedeného už je jasné, jak se:
 
-
-
-Všechny příkazy _assert….()_ mohou mít jako první, nepovinný, textový parametr, který říká, jaká chybová hláška se má vypsat, pokud test selže.
-
-@Test\
-public void testOwnMessage() {\
-assertEquals("Toto je vlastní zpráva.", 5, 7);\
-}
-
-Tento test selže (5 != 7) a vypíše se vlastní chybová zpráva.
+1\)&#x20;
 
 ### Testování instancí
 
