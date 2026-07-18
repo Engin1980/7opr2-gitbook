@@ -31,29 +31,35 @@ Tento princip je obecný, slouží jako motivace k řešení projektů s využit
 
 Takhle:
 
-![Project view](imgs/testing/projectview.png)
+![Přehled projektu](imgs/projectview.png)
 
 takhle:
 
-![Mark Directory](imgs/testing/testmarkdirectory.png)
-
-takhle:
-![Test directory created](imgs/testing/testfolder.png)
+![Menu "Mark Directory"](imgs/test-markdirectory.png)
 
 takhle:
 
+![Test directory created](imgs/test-folder.png)
 
 takhle
 
-![Test](imgs/testing/testcreate.png)
+![Menu "Create Test"](imgs/test-create.png)
 
-takhle:
+takhle as as:
 
-![test create screen](imgs/testing/testcreatescreen.png)
+![Obrazovka "Create Test"](imgs/test-createscreen.png)
 
 asfasef
 
-![test](imgs/testing/testresult.png)
+![Ukázka výsledku testu](imgs/test-result.png)
+
+configsel
+
+![Zvolení konfigurace](imgs/configurationselection.png)
+
+config
+
+![Run/Debug Configurations window](imgs/configurationwindow.png)
 
 
 
