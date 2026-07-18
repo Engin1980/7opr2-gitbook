@@ -453,11 +453,114 @@ Po potvrzení a uložení dialogu pak stačí pouze v rozbalovacím seznamu konf
 
 ## Tvorba vlastních JUnit testů
 
+Následující část uvede základní použití JUnit pro tvorbu testů. Některé části mohou obsahovat části, se kterými čtenář nemusí být ještě seznámen, proto lze doporučit návrat k této kapitole v průběhu dalšího studia.
+
+Bude představen základ testování, základní testování statických metod, testování objektů, testování kolekcí a kontrola výjimek.
+
+### Co vše testovat
+
+Na začátek rychlý úvod, co vše by vlastně mělo být pokryto testy.&#x20;
+
+Nejběžnější je, že programátor vytvoří test pro ověření správného chování dané funkcionality, tzv" _happy day_ scénář - jak by se to mělo chovat, když jde všechno dobře. Často však k testování zvolí pouze triviální případy testovacích dat a netestuje krajní možnosti a nebo nevalidní vstupy.
+
+Uvažujme funkci na výpočet průměru ze seznamu čísel `List<Double>`. Základní testy určitě budou ověřit, zda funkce funguje pro validní vstupy. Průměrné programátory také napadne otestovat chování, když v listu žádné položky nebudou (tehdy u výpočtu průměru dojde k dělení nulou). Ale napadne dále někoho otestovat variantu, kdy jedno z čísel v listu bude `null` (což může, protože typ `Double` narozdíl od `double` může nabývat hodnotu `null`)?
+
+Je vidět, že vymýšlením testovacích případů si nejen programátor ujasní, jaká data budou na správném vstupu, ale také, jaké nevalidní vstupy může očekávat a hlavně, jak se jeho funkcionalita má pro tyto vstupy chovat.
+
+Z modelového pohledu lze říci, že pro knihovny je vhodné testovat všechny veřejné funkce, které může volat někdo "zvenku". Je také vhodné testovat složitější funkcionality interních metod. Naopak je důležité si uvědomit, že soukromé metody a soukromí členové jsou netestovatelní, protože nejsou viditelni mimo třídu, která je deklaruje.
+
+{% hint style="info" %}
+## Jak testovat privátní metody
+
+Jak bylo zmíněno, běžným způsobem to nejde, protože soukromou metodu zvenčí nejde vidět. Při testování lze zvážit dvě běžné možnosti:
+
+* povýšit metodu na "package private" (tj. nedat žádný modifikátor viditelnosti). Protože testovací třídy bývají zpravidla ve stejném balíčku, stane se pro ně funkce viditelná. Jedná se sice o nabourání zapozdření, ale v nutných případech to bývá použitelný kompromis.
+* použít reflexi. V Javě lze pomocí tzv. _reflexe_ přistoupit i na soukromé členy třídy. Použití je sice programátorsky složitější a programátor také při reflexi ztrácí typovou bezpečnost při kompilaci, ale opět je to řešení, které je v nouzi použitelné a navíc nenabourává model zapouzdření.
+{% endhint %}
+
 ### Základní testování
 
-Na základě výše uvedeného už je jasné, jak se:
+Na základě výše uvedeného už je jasné, že pro úspěšný průběh testu určité funkcionality je třeba mít k dispozici:
 
-1\)&#x20;
+* Vstupní data
+* Očekávaný výsledek
+* Mechanismus verifikaci výsledků
+* Implementaci řešení, která výsledek poskytne.
+
+Proto obecně lze test sekládat ze základních částí:
+
+```mermaid
+graph TD
+    A["1. Příprava dat"] --> B
+    B["2. Nastavení očekávaného výsledku"] --> C
+    C["3. Vlastní výpočet (Vytvoření instance, spuštění metody)"] --> D
+    D["4. Ověření výsledků (Assert)"]
+```
+
+#### Příprava dat
+
+Příprava dat je důležitou a často tou nejpracnější součástí tvorby testu. Na začátku je totiž třeba jednak vymyslet, jaké všechny varianty vstupů a výstupů bude nutno testovat, aby se ověřilo požadované chování.
+
+Tato oblast je ale naopak velmi zajímavá z pohledu návrhu. Při definici této oblasti si totiž programátor explicitně musí uvědomit, jaké bude mít funkcionalita vstupy a jaké od ní očekává výstupy. Nestane se mu tedy, že navrhne funkci, jejíž výstupy jsou následně nepoužitelné (a funkce se musí předělat), nebo které některé zásadní vstupy chybí nebo naopak přebývají (a funkce se opět musí předělat).
+
+Je vhodné si uvědomit i vliv jazyka a objektového přístupu na testování:
+
+* je vhodné testovat nejen jednoduché varianty, ale i složitější případy, kterým se lidský mozek nativně vyhýbá, protože je podprahově nechce řešit;
+* u celých čísel je vhodné testovat chování nejen pro kladná čísla, ale i pro záporná čísla; zvlášť také řešit možnost přetečení;
+* u desetinných čísel je třeba vzít v potaz předchozí bod. Navíc desetinná čísla mohou nabývat speciálních hodnot `NaN`, `Infiniti` a `NegativeInfiniti`.
+* u objektů je třeba myslet na to, že mohou nabývat hodnoty `null`;
+* obdobně je třeba si toto uvědomit u wrapovacích typů pro primitivní typy (`Integer` vs `int`, `Double` vs `double`), což může působit problémy zejména u kolekcí (a generických typů obecně), kde se wrapovací typy používat musí povinně;
+* u objektů je vhodné myslet na jejich stav po inicializaci a na varianty, kdy může být objekt prázdný (`String s = null;` vs `String s = ""`, obdobně pro listy/pole/kolekce);
+
+Ve složitějších testech je vhodné připravit hodnoty do jasně pojmenovaných proměnných, aby bylo jasné, jaké vstupy budou do funkcionality vstupovat a proč.
+
+#### Příprava očekávaného výsledku
+
+Zde je cílem si do proměnné nastavit očekávaný výsledek. Zde je situace snažší, protože na základě vstupů většinou víme, jaký výsledek očekáváme. Je běžné opět v testu vytvořit speciální proměnnou (typicky nazvanou `expected` či `expectedResult` atp.) a naplnit do ní vhodnou hodnotu.
+
+Je vhodné tuto hodnotu nepočítat přímo ze vstupních dat, ale nastavit ji přímo, aby se vyloučily případné další neočekávané chyby externích komponent. Uvažujme jednoduchou funkci `sum()`, která sčítá dvě čísla. Nechť máme následující unitový test, který sčítá `0.1 + 0.2`, což bychom očekávali, že bude `0.3`:
+
+```java
+@Test
+void testZaokrouhlovaciChyby() {
+    double a = 0.1;
+    double b = 0.2;
+    double expected = a + b;
+    double actual = sum(a, b);
+
+    assertEquals(expected, actual); // 
+}
+```
+
+Tento test projde, takže se všechno zdá být v pořádku. Když však s kódem budete dále pracovat, zjistíte, že výpočty vám nemusí vycházet, protože v proměnné `expected` (a tedy i `actual`) není hodnota `0.3`.
+
+Test upravíme tak, že hodnotu **nepočítáme ze vstupu**, ale nastavíme ji pevně:
+
+```java
+@Test
+void testZaokrouhlovaciChyby() {
+    double a = 0.1;
+    double b = 0.2;
+    double expected = 0.3; // <-- změna, pevná hodnota
+    double actual = sum(a, b);
+
+    assertEquals(expected, actual); // 
+}
+```
+
+Tento test už neprojde a upozorní nás, že očekáváme hodnotu `0.3`, ale skutečná hodnota výsledku je (kvůli zaokrouhlovací chybě) `0.300....04`.
+
+Jako programtáoři zjistíme, že číslo, co jsme získali, není zcela přesné, a můžeme situaci řešit (úpravou funkce `sum()`, či upravením testu, pokud nám taková situace nevadí).
+
+#### Vlastní výpočet
+
+TODO
+
+#### Zhodnocení výsledku
+
+TODO
+
+
 
 ### Testování instancí
 
