@@ -113,7 +113,14 @@ class CarTest {
 
 ### Spuštění testu v Idea
 
-Poslední lehce komplikovanou oblastí pro neznalé je spuštění testu.
+Poslední lehce komplikovanou oblastí pro neznalé je spuštění testu. Testy lze spustit:
+
+* Přímo ze zdrojového kódu pomocí zelených šipek
+* Vytvořením tzv. konfigurace a spouštěním konfigurace
+
+#### Spuštěním ze zdrojového kódu
+
+
 
 
 
