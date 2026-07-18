@@ -1,7 +1,5 @@
 # TODO Testování aplikací
 
-## Testování aplikací
-
 Při vývoji aplikaci musí programátor neustále kód, který vytvoří, kontrolovat na výskyt chyb. V praxi to znamená, že vytvoří nejen implementaci, která provádí požadovanou funkcionalitu, ale také vytvoří zdrojový kód, který tuto funkcionalitu otestuje. V ideálním případě by programátor měl testovat nejen to, že kód pro správné vstupy vykoná požadovaný výsledek, ale také to, jak se bude daný program chovat pro vstupy nesprávné - tedy například zadání data ve špatném formátu, zadání prázdné hodnoty místo očekávané hodnoty textu a podobně. Programátor **nikdy nesmí předpokládat**, že jeho zdrojový kód bude použit pouze správně, a vždy se musí věnovat i případu ošetření chyb. V programovacím jazyce Java je situace o to důležitější, že jazyk Java podporuje kontrolovaný výjimky (viz kapitola Výjimky a jejich zpracování).
 
 Samozřejmě je možné veškeré funkcionality testovat tak, že po jejich napsání upravíme například metodu _main()_ tak, aby nově vytvořenou funkcionalitu spustila a vyzkoušeli tak požadované chování. Tím samozřejmě ověříme, zda všechno funguje tak, jak má, nicméně při vytvoření další části kódu se typicky původní ověřovací kód původní implementace smaže a nahradí se blokem novým, testujícím nový kód.
@@ -10,23 +8,313 @@ Vždy tak je aktivní pouze blok, který testuje nově vytvořenou část aplika
 
 Je proto vhodné mít možnost testy realizovat systematicky, ponechávat je a moci je automatizovaně spouštět hromadným způsobem, aby se podařilo zjistit, zda po změnách i všechny původní bloky fungují v pořádku. Takový mechanismus přináší knihovna _JUnit_ a princip testy řízeného vývoje, tzv. _TDD_.
 
-### Obecný princip TDD
+## Obecný princip TDD
 
-TDD je obecně technika vývoje softwaru, která spočívá na základě, že nejdříve se naprogramuje test, který ověřuje danou funkcionalitu, teprve potom se provede požadovaná implementace (typicky co nejjednodušším způsobem, aby to „nějak fungovalo" a teprve po ověření se výsledný kód opravuje. Zjednodušeně to lze popsat pomocí bodů:
+TDD je obecně technika vývoje softwaru, která spočívá na základě, že nejdříve se naprogramuje test, který ověřuje danou funkcionalitu (který samořezjmě musí selhat, protože funkcionalita ještě neexistuje), teprve potom se provede požadovaná implementace (typicky co nejjednodušším způsobem, aby to „nějak fungovalo") a teprve po ověření se výsledný kód opravuje. Zjednodušeně to lze popsat pomocí bodů:
 
-* Vytvořit test, který ověřuje zatím nefungující funkcionalitu.
+* 1\. Vytvořit test, který ověřuje zatím nefungující funkcionalitu.
   * Tato část je důležitá, protože umožňuje, aby si programátor rozmyslel, **jak** bude daný kód používat, namísto toho **co** bude daný kód dělat. Typickou (špatnou) vlastností programátora je vymýšlení, co to bude dělat - a po implementaci programátor zjistí, že daná metoda/třída funguje správně, leč neposkytuje přesně to, co od ní potřebuje, a musí výsledný kód opravit.
-* Spuštěný testu, který **musí selhat**, protože daná funkcionalita ještě vůbec nebude vytvořena.
-* Vytvoření nějaké, co nejjednodušší implementace, který by měla způsobit úspěšné spuštění testu.
+* 2\. Spuštěný testu, který **musí selhat**, protože daná funkcionalita ještě vůbec nebude vytvořena.
+* 3\. Vytvoření nějaké, co nejjednodušší implementace, který by měla způsobit úspěšné spuštění testu.
   * Cílem není napsat dokonalý kód, ale kód, který bude fungovat. Jedná se vlastně o nějaké prototypové ověření, že požadovaná funkcionalita jde vytvořit, že ji lze napsat.
-* Spuštění testu, který by měl projít. Pokud test neprojde, vracíme se k bodu 3.
-* Refaktoring - to je metoda, kdy se programátor dívá na hotový kód (v daném případě na naprogramovanou implementaci) a vymýšlí, jak jej vyčistit a zlepšit, aby byl čitelnější. Typickými úlohamy je přejmenování proměnných na smysluplnější, dekompozice funkcí na menší, odstranění zakomentovaných bloků kódu a další.
-* Spuštění testu, který by měl projít i na refaktorovaném řešení.
+* 4\. Spuštění testu, který by měl projít. Pokud test neprojde, vracíme se k bodu 3.
+* 5\. Refaktoring - to je metoda, kdy se programátor dívá na hotový kód (v daném případě na naprogramovanou implementaci) a vymýšlí, jak jej vyčistit a zlepšit, aby byl čitelnější. Typickými úlohamy je přejmenování proměnných na smysluplnější, dekompozice funkcí na menší, odstranění zakomentovaných bloků kódu a další.
+* 6\. Spuštění testu, který by měl projít i na refaktorovaném řešení.
 * Dokud není programátor spokojený s vytvořenou funkcionalitou, vrací se k bodu 5. V opačném případě je daná funkcionalita implementovaná. **Test se neodstraňuje**, zůstává v balíku testů, které se budou nadále pouštět vždy s přidanou novou funkcionalitou. Pokud nějaký test v budoucnosti neprojde, znamená to, že se podařilo změnit i něco, co bylo naprogramováno dříve a některá část aplikace nyní nemusí fungovat korektně.
+* 7\. Nakonec by se měly spustit všechny (nebo relevantní sada testů), aby se ověřilo, že vzniklá funkcionalita nerozbila funkčnost ovlivňující některý z dřívějších testů.
 
-Tento princip je obecný, slouží jako motivace k řešení projektů s využitím TDD vývoje.
+Tento princip je obecný, slouží jako motivace k řešení projektů s využitím TDD vývoje. Je vhodné se jím řídit, nicméně i u obecného programování je vhodné používat testy pro ověření funkčnosti navržených metod.
+
+Je důležité si ještě představit, jak se testy spouštějí. Testy nespouští přímo programátor, ten pouze "požádá" vývojové prostředí o spuštění testů. Vývojové prostředí samo spustí testy a provede jejich vyhodnocení. Důležitým efektem je, že **programátor sám** po spuštění testu **nevyhodnocuje, zda byl test úspěšný či nikoliv**, to řeší prostředí. Programátor pouze dostane výstupní informaci o tom, co se povedlo a co nikoliv.
+
+## Obecný test v JUnit
+
+### Základní vzhled testu
+
+Obecný test v JUnit je reprezentován jednoduchou metodou. Pro tuto metodu platí:
+
+* Nesmí být `private`, protože pak by ji testovací mechanismus neviděl a nemohl spustit.
+* Nesmí přijímat žádné parametry, protože by testovací mechanismus nevěděl, jaké parametry má do metody přidat (viz poznámka níže).
+* Má před sebou anotaci `@Test`, podle které testovací mechanismus rozpozná, které metody jsou testovací a které jsou pouze pomocné.
+
+Oproti tomu název třídy, ve kterých jsou testovací metody, může být libovolný.
+
+{% hint style="info" %}
+**Parametry u testovací metody?**
+
+Některé pokročilejší přístupy umožňují definovat, že testovací metoda má vstupní parametry. Zároveň ale také definuje mechanismus, pomocí kterého se hodnoty těchto parametrů budou plnit.&#x20;
+
+Jedná se o pokročilejší oblast a studenty se zájmem odkazujeme například na studijní oporu k předmětu KIP/7TETL, či [https://docs.junit.org/6.1.2/writing-tests/parameterized-classes-and-tests.html](https://docs.junit.org/6.1.2/writing-tests/parameterized-classes-and-tests.html).
+{% endhint %}
+
+V těle metody se typicky vyskytuje:
+
+* definice proměnné obsahující očekávaný výsledek
+* definice proměnné obsahující reálný výsledek získaný výpočtem
+* **povinně** příkaz provádějící automatické zhodnocení, zda se test povedl či nikoliv.
+
+Před podrobnějším vysvětlením příklad:
+
+```java
+package cz.skripta.model;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+class CalculatorTest {
+
+    @Test
+    void testSumWithIntegerValues() {
+        // Arrange - Příprava celočíselných vstupů a očekávaného výsledku
+        int firstValue = 2;
+        int secondValue = 3;
+        int expectedResult = 5;
+
+        // Act - Volání statické metody pro celá čísla
+        int actualResult = Calculator.sum(firstValue, secondValue);
+
+        // Assert - Přímé porovnání dvou celých čísel
+        assertEquals(expectedResult, actualResult);
+    }
+}
+```
+
+V příkladu předpokládáme, že testujeme metodu `static int sum(int a, int b)` definovanou ve třídě `Calculator`. Metoda je statická a dělá triviální součet dvou čísel.
+
+Všimněme si, že test je definovaný jako metoda ve třídě. Metoda má interní viditelnost, anotaci `Test` a nemá žádné parametry.
+
+V metodě se definují vstupní data - proměnné `firstValue` a `secondValue`; dále se definuje `expectedResult` - to je hodnota "kolik by měl být správný výsledek" a hodnota `actualResult`  - kolik vrátil implementovaný výpočet: vidíme, že tuto hodnotu získáme reálným zavoláním metody `Calculator.sum(...)`.
+
+Důležitý je poslední příkaz - funkce `assertEquals(...)` vyhodnotí, zda jsou hodnoty shodné. Pokud ne, test selže.
+
+{% hint style="info" %}
+Zajímavé může být, kde se vzala metoda `assertEquals(...)`. Tato metoda je statickou metodu třídy `org.junit.jupiter.api.Assertions`. V  záhlaví je uveden příkaz `import static`, který importuje všechny statické funkce třídy `Assertions` k přímému použití.
+{% endhint %}
+
+### Princip vyhodnocení testu
+
+Důležitý je mechanismus, který vyhodnocuje, kdy je test úspěšný a kdy nikoliv.&#x20;
+
+Obecně může výpočet testu skončit třemi stavy:
+
+* Chyba při výpočtu - test nelze vyhodnotit, protože v průběhu testu vznikla chyba, která zabránila jeho dokončení. Takový test se zobrazí 🔴 červeně a je chápán jako neúspěšný. Tato varianta vznikne, pokud je implementace nekorektní a padá s chybou.
+* Výpočet se provedl, ale výsledek nesedí - test lze vyhodnotit, ale vyhodnocení nebylo úspěšné - výsledek nesedí s očekávaným výsledkem. Takový test se zobrazí 🟠 oranžově/žlutě a je chápán jako neúspěšný. Tato varianta znamená, že implementace vrátí nějaký výsledek, ale ten nesedí s očekávanou hodnotou.
+* Výpočet se provedl a nedošlo k žádné chybě - test lze vyhodnotit a při vyhodnocení očekávaných výsledků nevznikl žádný problém. Takový test se zobrazí 🟢  zeleně a je chápán jako úspěšný. Tato varianta znamená, že test se provedl a výsledek sedí s očekávanou hodnotou.
+
+{% hint style="info" %}
+Pokud znáte výjimky, tak:
+
+* test je 🔴 neúspěšný, pokud je při jeho zpracování vyhozena výjimka (mimo další bod);
+* test je 🟠 neúspěšný, pokud je při jeho zpracování vyhozena pouze výjimka/y typu `AssertionError`;
+* test je 🟢 úspěšný, pokud neselže s žádnou chybou.
+{% endhint %}
+
+Případy 1 a 3 jsou asi jasné. Zajímavá oblast je, jak testovat, zda se získaná data shodují s daty očekávanými.
+
+### Vyhodnocení výsledku testu
+
+Základním kamenem ověřovací fáze každého unit testu je zjištění, zda se to, co program skutečně spočítal, shoduje s tím, co jsme od něj dopředu očekávali. K tomuto účelu slouží v knihovně JUnit 5 rodina přetížených metod `assertEquals`. Přestože v kódu používáme stále stejný název metody, na pozadí framework automaticky vybírá správnou variantu podle toho, jaké datové typy do ní předáváme.
+
+Mechanismus fungování `assertEquals` má jedno striktní a neměnné pravidlo, které začínající programátoři často zaměňují: pořadí zadávaných argumentů. Metoda vždy jako svůj první parametr vyžaduje očekávanou hodnotu (`expected`) a jako druhý parametr hodnotu skutečnou (`actual`), kterou vrátila testovaná metoda. Toto pořadí je kriticky důležité pro vývojové prostředí IntelliJ IDEA. Pokud test selže, IDE porovná oba parametry a studentovi vypíše přehledný text ve stylu „Očekáváno: X, ale bylo: Y“. Pokud by student argumenty prohodil, test sice v případě úspěchu projde, ale při chybě bude výpis v IntelliJ IDEA tvrdit přesný opak reality, což zbytečně komplikuje hledání chyby.
+
+Pro běžné testování si student vystačí se dvěma základními variantami této metody:
+
+* První varianta je určena pro celočíselné datové typy (jako je `int` či `long`) a pro primitivní typ `boolean` nebo `char`. Zde funguje `assertEquals` na principu absolutní shody. Framework hodnoty interně porovná pomocí klasického javového operátoru rovnosti `==`. Pokud se hodnoty shodují, test pokračuje dál. Pokud se liší byť o jediný bit, testovací framework běh metody okamžitě přeruší a označí test za selhaný.
+* Druhá základní varianta se aktivuje tehdy, když do metody předáme objekty – typickým příkladem je textový řetězec `String` nebo jakákoli vlastní vytvořená třída. U objektů JUnit nemůže použít operátor `==`, protože ten v Javě porovnává paměťové adresy, nikoli obsah. Metoda `assertEquals` proto na pozadí zavolá standardní javovou metodu `equals()`.&#x20;
+
+{% hint style="info" %}
+U druhé varianty je  zjevné, že využívá základního principu porovnávání shodnosti objektu založeném na funkci `equals()`, který byl vysvětlen v [todo-object.md](zakladni-datove-typy/todo-object.md "mention").
+{% endhint %}
+
+```java
+@Test
+void testPorovnaniCelychCisel() {
+    // Arrange
+    int expectedResult = 10;
+
+    // Act
+    int actualResult = 5 + 5;
+
+    // Assert - Zde se interně porovnává pomocí operátoru ==
+    assertEquals(expectedResult, actualResult);
+}
+
+@Test
+void testPorovnaniTextovychRetezcu() {
+    // Arrange
+    String expectedResult = "Java";
+
+    // Act
+    String actualResult = "jaVa".substring(0, 2) + "va";
+
+    // Assert - Zde se interně volá metoda equals(), porovnává se znak po znaku
+    assertEquals(expectedResult, actualResult);
+}
+```
+
+#### Prorovnávání desetinných čísel
+
+Při testování metod, které pracují s desetinnými čísly typu `double` nebo `float`, narážíme v Javě na specifický problém, který vychází ze samotné podstaty toho, jak počítače s těmito čísly pracují. Počítače interně ukládají čísla ve dvojkové soustavě. Zatímco celá čísla dokáže systém reprezentovat naprosto přesně, u mnoha desetinných čísel (například u zdánlivě jednoduchého čísla 0.1 nebo 0.3) to není možné a dochází k periodickému opakování bitů. Výsledkem je, že při matematických operacích vznikají miniaturní zaokrouhlovací nepřesnosti.
+
+Pokud v produkčním kódu sečteme `0.1 + 0.2`, lidské oko očekává výsledek přesně `0.3`. Java však kvůli těmto interním mikroskopickým chybám může vrátit hodnotu `0.30000000000000004`.
+
+Pokud bychom se pokusili použít základní metodu `assertEquals(0.3, actualResult)`, test by okamžitě selhal. Pro JUnit framework jsou tato čísla odlišná, přestože z pohledu byznys logiky aplikace je výsledek správný. Z toho důvodu nemůžeme desetinná čísla nikdy porovnávat na absolutní shodu.
+
+Řešením je speciální varianta metody `assertEquals`, která přijímá třetí číselný parametr, v programování označovaný jako delta nebo epsilon. Tento parametr definuje maximální povolenou odchylku (toleranci), o kterou se může očekávaný a skutečný výsledek lišit, aby test stále prošel.
+
+```java
+@Test
+void testPiValueApproximation() {
+    // Arrange
+    double expectedResult = Math.PI; // 3.141592653589793...
+    double epsilon = 0.001; // Zajímají nás pouze první 3 desetinná místa
+
+    // Act
+    double actualResult = 22.0 / 7.0; // Historický zlomkový odhad pí (3.142857...)
+
+    // Assert - Test projde, protože rozdíl (cca 0.00126) se vejde do zaokrouhlení tolerance
+    assertEquals(expectedResult, actualResult, epsilon);
+}
+```
+
+Volba velikosti epsilonu závisí na konkrétní doméně. Pro běžné finanční nebo technické výpočty se nejčastěji volí hodnoty jako `0.001` nebo `0.00001`. Pokud by student na tento třetí parametr u typu `double` zapomněl (neni povinný), moderní verze JUnit 5/6 může upozornit pouze varováním, ale parametr není povinný.
+
+#### Další porovnávací metody Equals
+
+Kromě metody `assertEquals`, která porovnává shodu dvou hodnot, nabízí knihovna JUnit 5 celou řadu dalších asertivních metod. Tyto metody nám umožňují psát testy čitelněji, protože přesně vyjadřují logický záměr daného ověření. Pokud například testujeme, zda je nějaký objekt prázdný, je elegantnější použít metodu k tomu určenou než složitě porovnávat objekt s hodnotou `null` přes `assertEquals`.
+
+Podívejme se na základní trojici pomocných metod, které se v testovací praxi vyskytují hned vedle kontroly rovnosti.
+
+**Kontrola pravdivosti: assertTrue a assertFalse**
+
+Tyto dvě metody používáme v situacích, kdy testovaná metoda vrací logickou hodnotu `boolean` (tedy `true` nebo `false`), nebo když ověřujeme stav nějakého objektu (například zda je seznam prázdný).
+
+* `assertTrue(actual)` – test projde pouze tehdy, pokud je předaná hodnota nebo výraz roven `true`.
+* `assertFalse(actual)` – test projde pouze tehdy, pokud je předaná hodnota nebo výraz roven `false`.
+
+Typickým příkladem využití je testování validační logiky nebo vyhledávání:
+
+```java
+package cz.skripta.model;
+
+import org.junit.jupiter.api.Test;
+import java.util.List;
+import java.util.ArrayList;
+import static org.junit.jupiter.api.Assertions.*;
+
+class ValidaceTest {
+
+    @Test
+    void testStavuSeznamu() {
+        // Arrange
+        List<String> uzivatele = new ArrayList<>();
+
+        // Act & Assert
+        // Ověřujeme, že nově vytvořený seznam je skutečně prázdný (isEmpty() vrací true)
+        assertTrue(uzivatele.isEmpty());
+
+        // Přidáme prvek a ověříme opačný stav
+        uzivatele.add("Martin");
+        assertFalse(uzivatele.isEmpty());
+    }
+}
+```
+
+**Kontrola existence objektů: assertNull a assertNotNull**
+
+V Javě je běžné, že metody v určitých situacích vracejí hodnotu `null` – například když databáze nenajde uživatele podle zadaného ID. Pro tyto scénáře má JUnit připravené specializované metody, které hlídají přítomnost či absenci objektu v paměti.
+
+* `assertNull(actual)` – očekává, že v proměnné není uložena žádná reference (hodnota je `null`). Pokud proměnná na nějaký objekt ukazuje, test selže.
+* `assertNotNull(actual)` – přesný opak. Test vyžaduje, aby proměnná obsahovala žijící instanci objektu. Pokud je v ní `null`, test okamžitě končí chybou.
+
+```java
+package cz.skripta.model;
+
+import org.junit.jupiter.api.Test;
+import java.util.Map;
+import java.util.HashMap;
+import static org.junit.jupiter.api.Assertions.*;
+
+class VyhledavaniTest {
+
+    @Test
+    void testHledaniUzivatele() {
+        // Arrange
+        Map<String, String> databaze = new HashMap<>();
+        databaze.put("admin", "Martin");
+
+        // Act
+        String nalezeny = databaze.get("admin");
+        String nenalezeny = databaze.get("hacker");
+
+        // Assert
+        // Pro existující klíč musíme dostat reálný objekt
+        assertNotNull(nalezeny);
+        
+        // Pro neexistující klíč očekáváme striktně null
+        assertNull(nenalezeny);
+    }
+}
+```
+
+#### Vynucené selhání - Fail
+
+V některých situacích potřebujeme test ukončit jako neúspěšný, aniž bychom porovnávali konkrétní hodnoty pomocí standardních asercí. K tomuto účelu slouží metoda `fail`. Jejím jediným úkolem je okamžitě přerušit vykonávání testovací metody, označit test v IntelliJ IDEA červenou barvou a nahlásit selhání.
+
+Metoda `fail` se v praxi používá jako pojistka v místech kódu, kam by se správně napsaný program při testování vůbec neměl dostat. Pokud tam tok programu přesto dorazí, znamená to, že v testované logice je chyba. Tato metoda se nejčastěji předává s textovým parametrem, který popisuje důvod selhání.
+
+Tento přístup se používá například u primitivního testování výjimek uvedené dále.
+
+{% hint style="info" %}
+Obecně je předdefinovaných metod velké množství. Pro bližší seznam například viz dokumentace: [https://docs.junit.org/6.1.2/api/org.junit.jupiter.api/org/junit/jupiter/api/Assertions.html](https://docs.junit.org/6.1.2/api/org.junit.jupiter.api/org/junit/jupiter/api/Assertions.html).
+{% endhint %}
+
+{% hint style="info" %}
+Samotné chování testů se dá ještě v mnohém rozšiřovat a měnit. Cílem zde je popsat jen naprosté základy. Pro další studium například viz dokumentace: [https://docs.junit.org/6.1.2/overview.html](https://docs.junit.org/6.1.2/overview.html).
+{% endhint %}
+
+#### Vlastní textové zprávy: Parametr message v asercích
+
+Na závěr přehledu ověřovacích metod je důležité zmínit jeden společný prvek, který najdeme u všech doposud probraných funkcí, jako jsou `assertEquals`, `assertTrue`, `assertNull` či `fail`. Každá z těchto metod má totiž k dispozici ještě jednu schovanou variantu (přetížení), která jako svůj úplně poslední parametr přijímá textový řetězec `String message`.
+
+Tento parametr slouží k zadání vlastního textového vysvětlení, které se zobrazí pouze a jen tehdy, když test selže. Pokud test dopadne dobře a projde, JUnit tento text kompletně ignoruje a nikde ho nevypisuje.
+
+Význam tohoto parametru spočívá v lepší čitelnosti chybových výstupů, zejména ve chvíli, kdy v rámci jedné testovací metody provádíme více ověření za sebou, nebo když testujeme komplexní logiku. Standardní hlášení frameworku typu _„Expected true but was false“_ nám sice řekne, co se stalo technicky, ale neřekne nám, co to znamená logicky v kontextu aplikace.
+
+Podívejme se na praktický rozdíl v zápisu:
+
+```java
+package cz.skripta.model;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+class EshopTest {
+
+    @Test
+    void testOdeslaniObjednavky() {
+        Objednavka objednavka = new Objednavka();
+        objednavka.pridejPolozku("Kniha o Javě");
+        
+        // Act
+        objednavka.odeslat();
+
+        // Assert s využitím parametru message na konci
+        assertTrue(objednavka.jeZaplacena(), "Objednávka by měla být po odeslání automaticky zaplacena.");
+        assertNotNull(objednavka.getDorucovaciAdresa(), "Doručovací adresa nesmí být po odeslání prázdná.");
+    }
+}
+```
+
+Pokud by v tomto případě první aserce selhala, IntelliJ IDEA nevypíše pouze strohé hlášení o nesplněné podmínce, ale přímo programátorovi v červeném chybovém panelu zobrazí text: `Visual Failure: Objednávka by měla být po odeslání automaticky zaplacena.`
+
+Psaní těchto zpráv je výborným cvičením. Nutí totiž už při psaní testu přemýšlet nad tím, co přesně daný řádek kódu ověřuje a jaká situace nastane, když kód nebude fungovat správně. V reálné vývojářské praxi navíc tyto zprávy dramaticky zkracují čas strávený debugováním a hledáním příčin chyb v rozsáhlých projektech.
 
 ## Realizace v IntelliJ Idea
+
+{% hint style="info" %}
+Pozor, že přestože můžete v rámci různých vývojových prostředí (VS Code, Idea, NetBeans, Eclipse, ...) používat stejný framework "JUnit", způsob nastavení, spouštění a vyhodnocení testů (tj. postup operací) se může zásadně měnit.
+{% endhint %}
 
 ### Složka pro testy
 
