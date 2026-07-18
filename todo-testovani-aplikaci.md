@@ -120,6 +120,9 @@ Poslední lehce komplikovanou oblastí pro neznalé je spuštění testu. Testy 
 
 #### Spuštěním ze zdrojového kódu
 
+toto
+![Spuštění ze zdrojového kódu](imgs/test-start.png)
+takto
 
 
 
