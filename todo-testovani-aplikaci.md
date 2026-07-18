@@ -26,43 +26,108 @@ TDD je obecně technika vývoje softwaru, která spočívá na základě, že ne
 
 Tento princip je obecný, slouží jako motivace k řešení projektů s využitím TDD vývoje.
 
+## Realizace v IntelliJ Idea
 
-### Realizace v IntelliJ Idea
+### Složka pro testy
 
-Takhle:
+Aby mohl testovací framework JUnit i samotné vývojové prostředí správně fungovat, nemůžeme testovací třídy ukládat na libovolné místo v projektu. **Čistá architektura softwaru vyžaduje striktní oddělení produkčního kódu od kódu testovacího.** V praxi to znamená, že testy nikdy nebalíme do výsledného programu (např. do souboru JAR) určeného pro koncové uživatele. Testy potřebujeme pouze během vývoje a v nástrojích pro kontinuální integraci. Z toho důvodu vzniká v projektu paralelní adresářová struktura.
 
-![Přehled projektu](imgs/projectview.png)
+Většina moderních javových projektů postavených na nástrojích Maven nebo Gradle používá standardizované uspořádání. Zatímco produkční zdrojové kódy se nacházejí v adresáři `src/main/java`, pro testy se zakládá sesterská složka `src/test/java`. Pokud student vytváří projekt od nuly ručně nebo pracuje na specifickém zadání, může se stát, že tuto složku (např. s jednoduchým názvem `test` nebo `tests`) musí vytvořit sám. Samotná existence složky na disku však vývojovému prostředí nestačí. IntelliJ IDEA totiž ke každému adresáři v projektu přistupuje na základě jeho specifické role.
 
-takhle:
+{% hint style="info" %}
+Pokud jste projekt zákládali jako klasiký Java projekt v IntelliJ Idea, budete mít vytvouřenou pouze složku na zdrojové kódy - `src`.
+{% endhint %}
 
-![Menu "Mark Directory"](imgs/test-markdirectory.png)
+![Přehled projektu bez složky pro testy](.gitbook/assets/projectview.png)
 
-takhle:
+V takovém případě do projektu musíme vytvořit novou složku (ideálně na úrovni složky `src`), kterou můžeme nazvat libovolně, ale běžně se používají názv jako `tst` , `test` nebo `tests`.
 
-![Test directory created](imgs/test-folder.png)
+Pokud nově vytvořené složce pro testy neexplicitně nedefinujeme její význam, IntelliJ IDEA ji považuje za běžný adresář s textovými soubory. IDE v této složce nebude správně doplňovat kód Javy, nebude nabízet automatické importy pro knihovnu JUnit a především u testovacích tříd vůbec nezobrazí zelené spouštěcí šipky.&#x20;
 
-takhle
+Proto musíme složku označit jako takzvaný _Test Sources Root_. V IntelliJ IDEA toho docílíme kliknutím pravým tlačítkem myši na danou složku v levém panelu projektu, navigováním na položku _Mark Directory as_ a zvolením možnosti _Test Sources Root_. Jakmile tento krok provedeme, ikona složky v prostředí IntelliJ IDEA změní barvu ze standardní žluté na specifickou zelenou.
 
-![Menu "Create Test"](imgs/test-create.png)
+![Menu "Mark Directory"](.gitbook/assets/test-markdirectory.png)
 
-takhle as as:
+Tímto vizuálním tahem dáme vývojovému prostředí najevo, že soubory uvnitř této složky jsou plnohodnotné javové třídy, které mají přístup ke všem produkčním třídám v `src/main/java`, ale zároveň jsou izolovány pro účely testování. IntelliJ IDEA okamžitě přepne daný adresář do režimu plné podpory Javy – začne hlídat syntaktické chyby, správnost balíčků, umožní refaktorizaci a hlavně aktivuje spouštěč testů JUnit. Při automatickém generování testů pomocí klávesové zkratky pak IDE bude přesně vědět, kam má nově vznikající testovací třídy ukládat, a automaticky v zelené složce replikuje balíčkovou strukturu z produkční části projektu.
 
-![Obrazovka "Create Test"](imgs/test-createscreen.png)
+![Test directory created](.gitbook/assets/test-folder.png)
 
-asfasef
 
-![Ukázka výsledku testu](imgs/test-result.png)
+
+### Vytvoření vlastního testu
+
+Test můžeme vytvořit dvěma způsoby:
+
+* necháme si ho vygenerovat přes prostředí IntelliJ, které samo vytvoří potřebný soubor a případně nageneruje další kód,
+* vytvoříme si ho ručně a kód budeme implmentovat sami.
+
+#### Vytvoření testu ručně
+
+Pro vytvoření testu ručně stačí do složky **s testy** vložit novou třídu (jako klasickou třídu do projektu) a do ní doplnit požadovaný kód. V základu se může jednat o úplně jednoduchou třídu.&#x20;
+
+{% hint style="info" %}
+Testovací třídy mají typicky postfix `Test`.
+{% endhint %}
+
+```java
+public class CarTest {
+}
+```
+
+Do takové třídy budeme dále psát kód dle potřeby. Je důležité si povšimnout, že třída se opravdu musí vytvořit do testové složky.
+
+#### Vytvoření testu automaticky
+
+Automatické vytvoření testu může být výhodnější - jednak proto, že nemusíme psát potřebný kód, ale také proto, že u nového projektu většinou chybí předinstalovaná knihovna pro testování a automatický proces nám pomůže knihovnu do projektu připojit.
+
+V IntelliJ Idea umístíme kurzur nad název třídy, pro kterou chceme dělat test (v našem případě do názvu `Car`) a otevřeme kontextové menu (Alt+Enter). Z nabídky vybereme položku "Create test".
+
+{% hint style="info" %}
+Pozor, i v tomto případě již musíme mít v projektu vytvořenou a nastavenou testovací složku. V opačném případě nám bude protředí testovací třídy dávat mezi běžné třídy projektu, což je nechtěné chování.
+{% endhint %}
+
+![Menu "Create Test" pro automatické vytvoření testu](.gitbook/assets/test-create.png)
+
+Po potvrzení volby se otevře dialog "Create Test" pro vytvoření testu. V tomto dialogu:
+
+* Můžeme vybrat testovací knihovnu. Pro javu je k dispozici několik testovacích frameworků, my si budeme ukazovat framework "JUnit"; vybereme odpovídající verzi (aktálně verzi 5 nebo 6).
+* Můžeme doplnit chybějící knihovnu - symbol 💡 říká, že v projektu chybí odpovídající knihovna. Stiskem tlačítka "Fix" ji do projektu můžeme nechat automaticky přidat (pouze potvrdíme následně otevřený dialog).
+* Class Name - udává, jak se bude naše testovací třída jmenovat. Typicky se jmenuje jako původní třída s přidaným postfixem `Test`.
+* Superclass - chceme-li, můžeme definovat předka pro naši testovací třídu, který už může obsahovat nějakou předdefinovanou funkcionalitu.
+* Destination package - můžeme definovat balíček, do kterého se třída bude vytvářet.
+
+![Obrazovka "Create Test"](.gitbook/assets/test-createscreen.png)
+
+* Varianty `setUp`/`@Before` a `tearDown`/`@After` slouží k vytvoření metod, které se volají před a po testech. Bližší vysvětlení bude uvedeno dále.
+* Poslední část okna nabízí zašktávací pole pro automatické generování **koster** testů pro vybrané metody. Můžeme je zvolit a nechat si testy vygenerovat; v našem případě si však testy napíšeme sami.
+
+Po potvrzení dostaneme vytvořenou testovací třídu se základním obsahem a případně vygenerovaným kódem:
+
+```java
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+class CarTest {
+}
+```
+
+### Spuštění testu v Idea
+
+Poslední lehce komplikovanou oblastí pro neznalé je spuštění testu.
+
+
+
+
+
+![Ukázka výsledku testu](.gitbook/assets/test-result.png)
 
 configsel
 
-![Zvolení konfigurace](imgs/configurationselection.png)
+![Zvolení konfigurace](.gitbook/assets/configurationselection.png)
 
 config
 
-![Run/Debug Configurations window](imgs/configurationwindow.png)
-
-
-
+![Run/Debug Configurations window](.gitbook/assets/configurationwindow.png)
 
 ### Realizace TDD v NetBeans
 
@@ -154,7 +219,7 @@ Tyto metody tedy slouží pro nastavení třídy před spuštěním testů a tak
 
 Důležitou testovací metodou je metoda _testCompressAsSMS()_, která je právě testovací metodou pro vytvářenou metodu _compressAsSms()_ třídy _SMS._ Tato metoda již obsahuje nějaký zdrojový kód, jehož jednotlivé řádky lze popsat.
 
-&#x20;@Test\
+@Test\
 public void testCompressAsSms() {\
 // vytiskně info na konzoli, jaký test se vlastně provádí\
 System.out.println("compressAsSms");\
@@ -230,7 +295,7 @@ Přesto však kód není dokonalý. Je vhodné jej trochu upravit, hlavně pojme
 
 Pro přejmenování proměnných použijeme tzv. _refactoring_. Po umístění kurzoru do textu proměnné lze stisknout klávesu _Ctrl+R_ a přepíšeme název proměnné na nový text. Následně potvrdíme klávesou _Enter_. Upravený zdrojový kód může vypadat například takto.
 
-&#x20;public static String compressAsSms(String message){\
+public static String compressAsSms(String message){\
 boolean wasLastCharSpace = false;\
 StringBuilder result = new StringBuilder();\
 for (int i = 0; i < message.length(); i++) {\
