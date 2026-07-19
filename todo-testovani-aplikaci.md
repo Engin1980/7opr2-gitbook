@@ -690,7 +690,86 @@ void setPlateNumber() {
 }
 ```
 
+### Test metody isValid()
 
+Následuje ukázka test metody `isValid()`. Separátně se testují všechny různé kombinace a korektní chování. Nedáváme tedy volání do jednoho testu, ale pro každou variantu děláme vlastní test:
+
+```java
+package cz.skripta.model;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+class CarTest {
+
+    @Test
+    void testIsValidKdyzJsouVsechnyAtributyPlneVyplnene() {
+        // Arrange - Plně validní auto (všechny vlastnosti jsou přítomny)
+        Car car = new Car("1A2B3C4D5E6F7G8H9", "1AB 1234", Color.RED);
+
+        // Act - Spuštění testované metody
+        boolean actual = car.isValid();
+
+        // Assert - Očekáváme true
+        assertTrue(actual, "Auto by mělo být validní, pokud má VIN, SPZ i barvu.");
+    }
+
+    @Test
+    void testIsValidKdyzJeVinNumberNull() {
+        // Arrange - Inicializace konstruktorem, který nastaví vinNumber na null
+        // (plateNumber a color nastavíme ručně, abychom izolovali pouze chybějící VIN)
+        Car car = new Car(null);
+        car.setPlateNumber("1AB 1234");
+        car.setColor(Color.BLUE);
+
+        // Act
+        boolean actual = car.isValid();
+
+        // Assert - Očekáváme false
+        assertFalse(actual, "Auto nesmí být validní, pokud je vinNumber rovno null.");
+    }
+
+    @Test
+    void testIsValidKdyzJePlateNumberNull() {
+        // Arrange - Nastavíme SPZ záměrně na null pomocí setteru
+        Car car = new Car("1A2B3C4D5E6F7G8H9", null, Color.YELLOW);
+
+        // Act
+        boolean actual = car.isValid();
+
+        // Assert - Očekáváme false
+        assertFalse(actual, "Auto nesmí být validní, pokud je plateNumber rovno null.");
+    }
+
+    @Test
+    void testIsValidKdyzJeColorNull() {
+        // Arrange - Barvu necháme null (využijeme jednoargumentový konstruktor)
+        Car car = new Car("1A2B3C4D5E6F7G8H9");
+        car.setPlateNumber("1AB 1234");
+        // color zůstává implicitně null
+
+        // Act
+        boolean actual = car.isValid();
+
+        // Assert - Očekáváme false
+        assertFalse(actual, "Auto nesmí být validní, pokud je color rovno null.");
+    }
+
+    @Test
+    void testIsValidKdyzJsouVsechnyAtributyNull() {
+        // Arrange - Vytvoříme auto v maximálně nevalidním stavu
+        Car car = new Car(null, null, null);
+
+        // Act
+        boolean actual = car.isValid();
+
+        // Assert - Očekáváme false
+        assertFalse(actual, "Auto nesmí být validní, pokud jsou všechny jeho klíčové atributy null.");
+    }
+}
+```
+
+TODO
 
 ### Testování instancí
 
