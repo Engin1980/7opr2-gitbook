@@ -554,7 +554,17 @@ Jako programtáoři zjistíme, že číslo, co jsme získali, není zcela přesn
 
 #### Vlastní výpočet
 
-TODO
+Implementace vlastního výpočtu a získání aktuálního výsledku už záleží na konkrétní implementaci. Tady neprobíhá nic složitého — prostě se jen zavolá požadovaná metoda (nebo sekvence metod).
+
+V případě statické metody typicky stačí jen zavolat tuto metodou nad třídou.
+
+V případě instanční metody je třeba nejdříve nějakým způsobem získat požadovanou instanci, případně ji připravit do správného stavu pro běh testu a teprvé poté zavolat požadovanou funkcionalitu.
+
+Co zajímavější je rozsah testu. Jak velká funkcionalita by se měla testovat?
+
+Unitový test by měl ze své podstaty pokrývat tu **malou, samostatně testovatelnou jednotku kódu**, což v objektově orientovaném programování typicky představuje **jednu konkrétní metodu s jedním jasným logickým scénářem**. Cílem není v rámci jednoho testu ověřit kompletní chování celého systému, ale izolovaně otestovat specifickou cestu kódem – například to, jak metoda zareaguje na správný vstup, jak si poradí s hraniční hodnotou, nebo zda správně vyhodí výjimku při neplatných datech. Pokud testovaná metoda obsahuje kontroly, komplexní větvení nebo cykly, je správným postupem napsat pro ni více menších, specializovaných unit testů, z nichž každý hlídá právě jednu logickou větev. Díky tomuto striktnímu zaměření na minimální funkcionalitu získáte při selhání testu okamžitou a chirurgicky přesnou informaci o tom, kde přesně v kódu nastal problém.
+
+Jen zřídkakdy by se tedy v unitovém testu měl výsledek získávat voláním více metod. Typicky se jedná o volání jedné metody, která na základě vložených dat poskytne výsledek.
 
 #### Zhodnocení výsledku
 
