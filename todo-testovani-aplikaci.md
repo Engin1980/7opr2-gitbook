@@ -478,7 +478,7 @@ Jak bylo zmíněno, běžným způsobem to nejde, protože soukromou metodu zven
 * použít reflexi. V Javě lze pomocí tzv. _reflexe_ přistoupit i na soukromé členy třídy. Použití je sice programátorsky složitější a programátor také při reflexi ztrácí typovou bezpečnost při kompilaci, ale opět je to řešení, které je v nouzi použitelné a navíc nenabourává model zapouzdření.
 {% endhint %}
 
-### Základní testování
+### Základní obsah testu
 
 Na základě výše uvedeného už je jasné, že pro úspěšný průběh testu určité funkcionality je třeba mít k dispozici:
 
@@ -497,7 +497,7 @@ graph TD
     D["4. Ověření výsledků (Assert)"]
 ```
 
-#### Příprava dat
+### Příprava dat
 
 Příprava dat je důležitou a často tou nejpracnější součástí tvorby testu. Na začátku je totiž třeba jednak vymyslet, jaké všechny varianty vstupů a výstupů bude nutno testovat, aby se ověřilo požadované chování.
 
@@ -514,7 +514,7 @@ Je vhodné si uvědomit i vliv jazyka a objektového přístupu na testování:
 
 Ve složitějších testech je vhodné připravit hodnoty do jasně pojmenovaných proměnných, aby bylo jasné, jaké vstupy budou do funkcionality vstupovat a proč.
 
-#### Příprava očekávaného výsledku
+### Příprava očekávaného výsledku
 
 Zde je cílem si do proměnné nastavit očekávaný výsledek. Zde je situace snažší, protože na základě vstupů většinou víme, jaký výsledek očekáváme. Je běžné opět v testu vytvořit speciální proměnnou (typicky nazvanou `expected` či `expectedResult` atp.) a naplnit do ní vhodnou hodnotu.
 
@@ -552,7 +552,7 @@ Tento test už neprojde a upozorní nás, že očekáváme hodnotu `0.3`, ale sk
 
 Jako programtáoři zjistíme, že číslo, co jsme získali, není zcela přesné, a můžeme situaci řešit (úpravou funkce `sum()`, či upravením testu, pokud nám taková situace nevadí).
 
-#### Vlastní výpočet
+### Vlastní výpočet
 
 Implementace vlastního výpočtu a získání aktuálního výsledku už záleží na konkrétní implementaci. Tady neprobíhá nic složitého — prostě se jen zavolá požadovaná metoda (nebo sekvence metod).
 
@@ -566,9 +566,129 @@ Unitový test by měl ze své podstaty pokrývat tu **malou, samostatně testova
 
 Jen zřídkakdy by se tedy v unitovém testu měl výsledek získávat voláním více metod. Typicky se jedná o volání jedné metody, která na základě vložených dat poskytne výsledek.
 
-#### Zhodnocení výsledku
+### Zhodnocení výsledku
 
-TODO
+Způsob zhodnocení výsledku - zda je test úspěšný či nikoliv - byl již popsán v sekci [#vyhodnoceni-vysledku-testu](todo-testovani-aplikaci.md#vyhodnoceni-vysledku-testu "mention").
+
+Zde jen shrneme základní fakta:
+
+* Každý test by měl obsahovat alespoň jednu asert metodu, která bude kontrolovat požadovaný stav. Bez ní typicky nedává smysl.
+* Test může obsahovat více assert metod, které mohou kontrolovat více pohledů na výstup. Lze tedy například kontrolovat pořadí prvků v poli několika assert příkazy za sebou.
+* Test by měl ale testovat pouze jednu funkcionalitu, takže by neměl provádět více volání vyhodnocovací metod a testovat různé věci. Neměl by tedy nejdříve testovat, zda první funkce korektně vynechává pouze záporná čísla a následně druhá funkce vynechává hodnoty `null`. To jsou dvě různé funkcionality, které by měly pokrývat různé testy. Obdobně pro stejnou metodu, pokud je třeba testovat chování pro vstup `null` a také chování pro vstup prázdného řetězce `""`, měly by to dělat dva různé testy, protože se jedná o dva různé případy užití metody.
+
+## Základní příklady
+
+V této sekci bude uvedeno několik základních příkladů unitových testů.
+
+V testu budeme uvažovat následující příklad:
+
+```mermaid
+classDiagram
+    class Car {
+        <<class>>
+        -≪get≫ vinNumber : String
+        -≪get/set≫ plateNumber : String
+        -≪get/set≫ color : Color
+        +Car(vinNumber : String)
+        +Car(vinNumber : String, plateNumber : String, color : Color)
+        +isValid() boolean
+    }
+
+class Color {
+        <<enumeration>>
+        RED
+        BLUE
+        YELLOW
+    }
+
+    class CarManager {
+        -List~Car~ cars
+        +registerCar(Car car) boolean
+        +getRegisteredCars() List~Car~
+        -vinAlreadyContained(Car car) boolean
+    }
+
+    CarManager -- Car
+    Car -- Color
+
+    note for Car "Stereotypy ≪get≫ a ≪get≫ říkají, 
+    že pro dané pole existují 
+    veřejné get/set metody."
+```
+
+Modelová třída `Car` udržuje neměnnou hodnotu VIN kódu (`vinNumber`). Navíc má dvě měnitelné vlastnosti pro barvu (`color`) a registrační značku (`plateNumber`). Navíc má třída funkce vracejííc příznak `isValid()`, která říká, zda je stav auta validní.
+
+Třída `CarManager` pak udržuje seznam registrovaných aut. Platí, že každé auto může být registrováno jen jednou (dle VIN) a pouze pokud je ve validním stavu.
+
+### Test vytvoření instance
+
+Základní jednoduchý test na vytvoření instance. Zároveň může testovat, zda se při volání konstruktoru korektně naplní VIN kód.
+
+```java
+@Test
+void createWithVinExplained(){
+  // input data
+  String inputVinNumber = "WBA8F3107M5K48291";
+
+  // test data
+  String expectedVinNumber;
+  String actualVinNumber;
+
+  // code run
+  Car car = new Car(inputVinNumber);
+
+  // test data set up
+  expectedVinNumber = inputVinNumber;
+  actualVinNumber = car.getVinNumber();
+
+  // test evaluation
+  assertEquals(expectedVinNumber,actualVinNumber);
+}
+```
+
+Test ověřuje, zda se korektně vytvoří instance (tj. zda volání konstruktoru neskončí s chybou) a zda je po vytvoření korektně nastaven kód VIN.
+
+Výše uvedený kód je poměrně upovídaný, ale přehledně ukazuje, co přesně se v testu dělá a kdy. Samozřejmě pro zkušenější programátory lze test velmi zjednodušit.
+
+```java
+@Test
+void createWithVin(){
+  String inputVinNumber = "WBA8F3107M5K48291";
+  Car car = new Car(inputVinNumber);
+  assertEquals(inputVinNumber,car.getVinNumber());
+}
+```
+
+Tento tet je identický, pouze kód je mnohem komaktenější. Konečně, tento konstruktor by neměl nastavovat registrační značku a barvu, ty by měly zůstat prázdné. To lze tedy také v testu ověřit:
+
+```java
+@Test
+void createWithVinExtended(){
+  String inputVinNumber = "WBA8F3107M5K48291";
+  Car car = new Car(inputVinNumber);
+  assertEquals(inputVinNumber,car.getVinNumber());
+  assertNull(car.getPlateNumber());
+  assertNull(car.getColor());
+}
+```
+
+### Test set/get metod
+
+Set metody nelze testovat přímo, protože nic nevracejí a nastavují soukromé členy, na které se přímo nelze dostat. Test se tedy provádí následným ověřením chování přes get metodu.
+
+```java
+@Test
+void setPlateNumber() {
+  String inputVinNumber = "WBA8F3107M5K48291";
+  String plateNumber = "9T8 4937";
+
+  Car car = new Car(inputVinNumber);
+  assertNull(car.getPlateNumber()); // <-- při vytvoření je prázdné
+  
+  car.setPlateNumber(plateNumber);
+  assertEquals(plateNumber, car.getPlateNumber()); // <-- po nastavení je správná hodnota
+}
+```
 
 
 
