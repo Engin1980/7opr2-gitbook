@@ -1,4 +1,4 @@
-# TODO Testování aplikací
+# Testování aplikací
 
 Při vývoji aplikaci musí programátor neustále kód, který vytvoří, kontrolovat na výskyt chyb. V praxi to znamená, že vytvoří nejen implementaci, která provádí požadovanou funkcionalitu, ale také vytvoří zdrojový kód, který tuto funkcionalitu otestuje. V ideálním případě by programátor měl testovat nejen to, že kód pro správné vstupy vykoná požadovaný výsledek, ale také to, jak se bude daný program chovat pro vstupy nesprávné - tedy například zadání data ve špatném formátu, zadání prázdné hodnoty místo očekávané hodnoty textu a podobně. Programátor **nikdy nesmí předpokládat**, že jeho zdrojový kód bude použit pouze správně, a vždy se musí věnovat i případu ošetření chyb. V programovacím jazyce Java je situace o to důležitější, že jazyk Java podporuje kontrolovaný výjimky (viz kapitola Výjimky a jejich zpracování).
 
@@ -882,53 +882,298 @@ class CarManagerTest {
 Zejména u posledního testu si povšimněte, že děláme **druhou instanci** se stejným VIN kódem, nepoužíváme znovu původní. Tak bychom totiž neměli garantované, že i úplně jiný objekt se stejným VIN kódem voláním neprojde.
 {% endhint %}
 
-### Testování instancí
+#### Testování získání registrovaných aut
 
-asfe
+Ani poslední funkcionalita - získání zaregistrovaných aut - není na testování úplně triviální.
+
+Pro otestování metody `getRegisteredCars()` je ideální napsat dva samostatné testy:
+
+* První test ověří běžnou funkcionalitu (zda metoda vrací správný seznam registrovaných aut).
+* Druhý test ověří kritický bezpečnostní detail z produkčního kódu – zda metoda vrací defenzivní kopii (aby externí kód nemohl modifikovat vnitřní seznam `cars` obcházením metody `registerCar`).
+
+```java
+package cz.skripta.model;
+
+import org.junit.jupiter.api.Test;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class CarManagerGetRegisteredCarsTest {
+
+    @Test
+    void testGetRegisteredCarsVraciVsechnaZaregistrovanaAuta() {
+        // Arrange - Příprava manažera a vložení dvou platných aut
+        CarManager carManager = new CarManager();
+        Car firstCar = new Car("1A2B3C4D5E6F7G8H9", "1AB 1234", Color.RED);
+        Car secondCar = new Car("9Z8Y7X6W5V4U3T2S1", "2CD 5678", Color.BLUE);
+
+        carManager.registerCar(firstCar);
+        carManager.registerCar(secondCar);
+
+        // Act - Získání seznamu registrovaných aut
+        List<Car> registeredCars = carManager.getRegisteredCars();
+
+        // Assert - Ověření velikosti a obsahu seznamu
+        assertEquals(2, registeredCars.size(), "Seznam by měl obsahovat přesně 2 auta.");
+        assertTrue(registeredCars.contains(firstCar), "Seznam by měl obsahovat první auto.");
+        assertTrue(registeredCars.contains(secondCar), "Seznam by měl obsahovat druhé auto.");
+    }
+
+    @Test
+    void testGetRegisteredCarsVraciDefenzivniKopii() {
+        // Arrange - Příprava manažera a jednoho auta
+        CarManager carManager = new CarManager();
+        Car car = new Car("1A2B3C4D5E6F7G8H9", "1AB 1234", Color.RED);
+        carManager.registerCar(car);
+
+        // Act - Získáme vrácený seznam a pokusíme se ho zvenčí upravit
+        List<Car> returnedList = carManager.getRegisteredCars();
+        Car externalCar = new Car("9Z8Y7X6W5V4U3T2S1", "2CD 5678", Color.YELLOW);
+        
+        // Přidáme auto do vráceného seznamu
+        returnedList.add(externalCar);
+
+        // Assert - Vnitřní stav v CarManageru musí zůstat nezměněn (stále jen 1 auto)
+        List<Car> actualManagerCars = carManager.getRegisteredCars();
+        assertEquals(1, actualManagerCars.size(), 
+            "Úprava vráceného seznamu nesmí ovlivnit vnitřní seznam v CarManageru (musí jít o kopii).");
+        assertFalse(actualManagerCars.contains(externalCar), 
+            "Neoprávněně přidané auto by se nemělo nacházet ve vnitřním seznamu manažera.");
+    }
+}
+```
+
+{% hint style="info" %}
+Druhý test je extrémně důležitý, protože vystavení soukromých proměnných navenek je běžnou chybou zejména programátorů začátečníků, kteří prostě jednoduše udělají:
+
+```
+public class CarManager {
+  private final List<Car> cars = new ArrayList<>();
+
+    public List<Car> getRegisteredCars() {
+    return cars; // <-- CHYBA, vrací ven soukromou proměnnou
+  }
+}
+```
+{% endhint %}
 
 ### Testování listů, polí a kolekcí
 
-aslefj
+U listů, polí, a obecně kolekcí je třeba dávat pozor na to, co vlastně chceme testovat:
+
+* chceme zjistit, zda jsou oba objekty shodné (tj. jsou to stejné instance v paměti)?
+* Nebo chceme zjistit, zda mají stejné prvky?
+* A chceme navíc, aby prvky byl v garantovaném pořadí?
+
+#### Testování polí
 
 Pole nelze porovnávat jako _assertEquals_, protože dvě pole se mohou v paměti nacházet na odlišných místech a funkce _assertEquals()_ porovnává adresy jejich uložení. Pokud tedy budou dvě pole, obě obsahovat stejné hodnoty, ale budou se nacházet na různých místech v paměti, metoda selže a bude tvrdit, že pole se liší.
 
-@Test\
-public void testArray() {\
-int \[] a = new int \[]{ 1, 2, 3};\
-int \[] b = new int \[] { 1, 2, 3};\
-assertEquals(a,b);\
+{% hint style="info" %}
+Je to logický důsledek chování metody `assertEquals`, která u objektů testuje, zda se objekty shodují pomocí funkce `equals()`. Pole se ale nativně porovnávají pomocí `==`.
+{% endhint %}
+
+```java
+@Test
+public void testArray() {
+    int [] a = new int []{ 1, 2, 3};
+    int [] b = new int [] { 1, 2, 3};
+    assertEquals(a,b);
 }
+```
 
-Takový test se vrátí s chybou, že očekávaná hodnota byla \[I&53431, ale nalezená hodnota \[I@8674 - tedy, že pole nejsou shodná. Přitom však lze vidět, že pole obsahují stejné hodnoty. Pokud je třeba porovnávat pole (a kolekce) na rovnost jejich jednotlivých prvků, je třeba využít funkce _assertArrayEquals()_.
+Takový test se vrátí s chybou, že očekávaná hodnota byla `[I&53431`, ale nalezená hodnota `[I@8674` - tedy, že pole nejsou shodná. Přitom však lze vidět, že pole obsahují stejné hodnoty. Pokud je třeba porovnávat pole (a kolekce) na rovnost jejich jednotlivých prvků, je třeba využít funkce `assertArrayEquals()`.
 
-@Test\
-public void testArray() {\
-int \[] a = new int \[]{ 1, 2, 3};\
-int \[] b = new int \[] { 1, 2, 3};\
-assertArrayEquals(a, b);\
+```java
+@Test
+public void testArray() {
+    int [] a = new int []{ 1, 2, 3};
+    int [] b = new int [] { 1, 2, 3};
+    assertArrayEquals(a, b);
 }
+```
 
-### Nucené selhání testu
+#### Testování listů
 
-Je-li třeba v určitou chvíli nechat test selhat, lze využít volání příkazu _fail()_. Ten může brát jako parametr informaci o selhání testu. Test je chápán jako úspěšný, **pokud neselhal**, a test může selhat buď při volání funkce _assert…()_, nebo příkazem _fail()_. Pokud tedy vytvoříme prázdnou metodu, ve které se žádné vyhodnocení neprovede, bude tato metoda chápána jako úspěšné projití testu.
+Jelikož rozhraní `List` v Javě definuje uspořádanou kolekci (kde záleží na pozici každého prvku), porovnání dvou listů musí vždy ověřit dvě věci:
 
-Bude-li jednoduchý příklad třídy, která vrací konstantní hodnotu:
+1. Zda obsahují stejné prvky.
+2. Zda jsou tyto prvky ve stejném pořadí.
 
-public class GetNumber {\
-public int getZero(){\
-return 0;\
-}\
+V Javě je metoda `equals()` na rozhraní `List` specifikována tak, že vrátí `true` pouze v případě, že oba listy mají stejnou velikost a na každém indexu obsahují shodný prvek (porovnáno přes `equals()` daných prvků).
+
+{% hint style="info" %}
+Je tedy vidět, že funkce `equals()` se pro Listy schová "korektně".
+{% endhint %}
+
+V JUnit 5 proto stačí použít klasický `assertEquals`:
+
+```java
+@Test
+void testShodnostiListuVcetnePoradi() {
+    // Arrange
+    List<String> expected = List.of("Jan", "Karel", "Petr");
+    List<String> actual = List.of("Jan", "Karel", "Petr");
+
+    // Assert
+    assertEquals(expected, actual, "Listy se musejí shodovat v obsahu i přesném pořadí prvků.");
 }
+```
 
-Jednoduchý test, který toto ověřuje, může mít klasický výraz _assertEquals(result, 0)_, ale také jej lze zapsat jako:
+{% hint style="info" %}
+Kdy test selže: Pokud by v `actual` byly prvky v jiném pořadí (např. `"Karel", "Jan", "Petr"`), `assertEquals` vyhodnotí test jako neúspěšný.
+{% endhint %}
 
-@Test\
-public void testGetZero() {\
-System.out.println("getZero");\
-GetNumber instance = new GetNumber();\
-int result = instance.getZero();\
-if (result != 0)\
-fail();\
+JUnit 5 obsahuje specializovanou metodu `assertIterableEquals`. Funkčně dělá totéž co `assertEquals` (ověřuje pořadí i obsah), ale má dvě velké výhody:
+
+* Detailnější chybová hláška: Při selhání testu přesně vypíše index, na kterém se listy rozcházejí, a jaké hodnoty tam byly očekávány.
+* Akceptuje různé typy kolekcí: Porovná např. `ArrayList` oproti `LinkedList` bez ohledu na jejich konkrétní třídu, pokud jejich iterátory vracejí stejné prvky ve stejném pořadí.
+
+```java
+@Test
+void testPomociAssertIterableEquals() {
+    List<String> expected = List.of("Jan", "Karel", "Petr");
+    List<String> actual = List.of("Jan", "Karel", "Petr");
+
+    assertIterableEquals(expected, actual, "Seznamy se rozcházejí v obsahu nebo pořadí.");
 }
+```
 
-Příkaz _fail()_ způsobí selhání testu. Jiné vyhodnocení testu se nevyskytuje, takže v opačném případě bude test chápán jako úspěšný. Tato technika se používá ve složitějších případech, kdy je složité, nebo nemožné napsat ohodnocení pomocí metody _assert…()_.
+Třetí variantou je napsat si test ručně sám (zejména v případě potřeby nějakých specialit):
+
+```java
+@Test
+void testRucniPorovnaniPomociCykly() {
+    // Arrange
+    List<String> expected = List.of("Jan", "Karel", "Petr");
+    List<String> actual = List.of("Jan", "Karel", "Petr");
+
+    // Assert 1: Nejprve ověříme, že oba listy mají stejnou velikost
+    assertEquals(expected.size(), actual.size(), 
+        "Listy nemají stejnou délku, nemohou být shodné.");
+
+    // Assert 2: Ruční průchod cyklem a kontrola prvku po prvku na stejných indexech
+    for (int i = 0; i < expected.size(); i++) {
+        String expectedElement = expected.get(i);
+        String actualElement = actual.get(i);
+
+        assertEquals(expectedElement, actualElement, 
+            "Prvky na indexu " + i + " se neshodují.");
+    }
+}
+```
+
+{% hint style="info" %}
+Tady je vidět, že i assert v testu může být složitější kód, ne jen jednoduchá metoda.
+{% endhint %}
+
+#### Testování množin
+
+Při testování množin (`Set`) nebo kolekcí, u kterých nezáleží na pořadí prvků, ověřujeme dvě klíčové vlastnosti:
+
+1. Obě kolekce mají stejný počet prvků.
+2. Obě kolekce obsahují tytéž prvky.
+
+V JUnit 5 a v praxi existuje několik způsobů, jak toto chování správně otestovat.
+
+Pokud vaše testovaná metoda přímo vrací typ `Set` (např. `HashSet`), máte práci velmi snadnou. Rozhraní `Set` má v Javě specifikovanou metodu `equals()` tak, že vrátí `true`, pokud obě množiny obsahují přesně tytéž prvky bez ohledu na jejich vnitřní uspořádání.
+
+```java
+@Test
+void testShodnostiMnozinPomociAssertEquals() {
+    // Arrange - Vytvoříme dvě množiny se stejným obsahem, ale v různém pořadí
+    Set<String> expected = Set.of("Jan", "Karel", "Petr");
+    Set<String> actual = HashSet.newHashSet(3);
+    actual.add("Petr");
+    actual.add("Jan");
+    actual.add("Karel");
+
+    // Assert - Porovnání projde, protože Set ignoruje pořadí
+    assertEquals(expected, actual, "Množiny musejí obsahovat stejné prvky.");
+}
+```
+
+Pokud máte `List`, ale business logika říká, že na pořadí prvků nezáleží, nesmíte použít obyčejné `assertEquals(expected, actual)` – test by byl nestabilní (_flaky_).
+
+Nejpřímější cesta v čistém JUnit 5 je převést oba seznamy na množinu (pokud víte, že seznamy neobsahují duplicity).
+
+Pokud seznamy mohou obsahovat duplicity nebo nechcete vytvářet nové objekty, ověříte velikost a oboustrannou přítomnost prvků:
+
+```java
+@Test
+void testListuBezOhleduNaPoradiPomociContainsAll() {
+    // Arrange
+    List<String> expected = List.of("Jan", "Karel", "Petr");
+    List<String> actual = List.of("Petr", "Jan", "Karel");
+
+    // Assert
+    assertEquals(expected.size(), actual.size(), "Seznamy nemají stejnou délku.");
+    assertTrue(actual.containsAll(expected) && expected.containsAll(actual), 
+        "Seznamy neobsahují stejnou množinu prvků.");
+}
+```
+
+### Testování výjimek
+
+Při unit testování v JUnit 5 častokrát potřebujeme ověřit nejen to, zda kód funguje za běžných podmínek, ale i to, zda správně vyhodí výjimku, pokud dostáhne nevalidních vstupů nebo chybového stavu.
+
+Zde jsou dva základní způsoby, jak vyhození výjimky otestovat.
+
+#### 1. Moderní způsob: Metoda `assertThrows` s lambdou (Doporučeno)
+
+{% hint style="info" %}
+Tento přístup předpokládá znalost tzv. _lambda výrazů_. Budete s nimi seznámeni později. Pokud je neznáte, je možné zatím tuto sekci přeskočit a později se k ní vrátit.
+{% endhint %}
+
+Standardním a nejčistším způsobem v JUnit 5 je použití metody `assertThrows`. Té předáme:
+
+1. Třídu očekávané výjimky (`IllegalArgumentException.class`),
+2. Lambda výraz s kódem, který má výjimku vyvolat.
+
+Metoda `assertThrows` navíc vyvolanou výjimku vrátí, díky čemuž můžeme v případě potřeby následně zkontrolovat i její chybovou hlášku (`getMessage()`).
+
+```java
+@Test
+void testRegistraceNullAutaVyhodiVyjimku() {
+    CarManager manager = new CarManager();
+
+    // Act & Assert - Ověření, že zavolání metody vyhodí očkávanou výjimku
+    IllegalArgumentException exception = assertThrows(
+        IllegalArgumentException.class,
+        () -> manager.registerCar(null),
+        "Při vložení null auta měla být vyhozena IllegalArgumentException."
+    );
+
+    // Volitelně: Ověření přesného textu chybové hlášky uvnitř výjimky
+    assertEquals("Auto nesmí být null.", exception.getMessage());
+}
+```
+
+Kód je velmi krátký, přehledný a test okamžitě selže, pokud kód výjimku nevyhodí nebo pokud vyhodí jiný typ výjimky.
+
+#### 2. Klasický způsob: Blok `try-catch` s funkcí `fail()` (Bez lambdy)
+
+Před příchodem lambd se v testovacích frameworcích používal klasický blok `try-catch`.
+
+Princip spočívá v tom, že testovaný kód zavoláme uvnitř bloku `try`. Pokud kód proběhne bez vyhození výjimky, zavolá se metoda `fail()`, která test okamžitě ukončí jako neúspěšný. Pokud výjimka nastane, odchytíme ji v bloku `catch` a test úspěšně projde.
+
+```java
+@Test
+void testRegistraceNullAutaStarymZpusobem() {
+    CarManager manager = new CarManager();
+
+    try {
+        // Act - Pokusíme se zavolat kód, který má vyhodit výjimku
+        manager.registerCar(null);
+
+        // Pokud kód došel až sem, výjimka NEBYLA vyhozena -> test musí selhat
+        fail("Měla být vyhozena IllegalArgumentException, ale kód proběhl bez chyby.");
+
+    } catch (IllegalArgumentException e) {
+        // Assert - Výjimka byla úspěšně zachycena, test je v pořádku.
+        // Volitelně můžeme zkontrolovat hlášku:
+        assertEquals("Auto nesmí být null.", e.getMessage());
+    }
+}
+```

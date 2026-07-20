@@ -16,7 +16,7 @@
 
 ***
 
-* [TODO Testování aplikací](todo-testovani-aplikaci.md)
+* [Testování aplikací](todo-testovani-aplikaci.md)
 
 ## Pole, Kolekce
 
