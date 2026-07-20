@@ -10,6 +10,7 @@
 ## Základní datové typy
 
 * [Primitivní a wrapovací datové typy](zakladni-datove-typy/todo-primitivni-datove-typy.md)
+* [Výčtové typy](zakladni-datove-typy/vyctove-typy.md)
 * [Object, equals(), hashcode()](zakladni-datove-typy/todo-object.md)
 * [String, StringBuilder](zakladni-datove-typy/todo-string-stringbuilder.md)
 * [Datum a čas](zakladni-datove-typy/todo-datum-a-cas.md)
